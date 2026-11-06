@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Caja Personal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Caja">
+<meta name="theme-color" content="#1E1B4B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Diseño: tarjetas luminosas sobre un degradado índigo → violeta → verde azulado.
+   Computadora: barra lateral. Tableta: barra lateral compacta. Teléfono: barra inferior con íconos y botón flotante. */
+:root{
+  --bg:#F4F3FA; --surface:#FFFFFF; --surface-2:#F0EEF8; --line:#E4E1F0;
+  --fg:#16132B; --muted:#6B6785; --accent:#7C3AED; --accent-2:#0EA5A4; --accent-soft:#EFE7FE;
+  --in:#059669; --in-soft:#DDF6EC; --out:#E11D48; --out-soft:#FDE4EA;
+  --grad:linear-gradient(135deg,#1E1B4B 0%,#4C1D95 52%,#0F766E 120%);
+  --grad-btn:linear-gradient(135deg,#7C3AED 0%,#5B21B6 60%,#0F766E 140%);
+  --shadow:0 1px 2px rgb(22 19 43/.04),0 8px 24px -12px rgb(22 19 43/.18);
+  --display:"Sora","Segoe UI",system-ui,sans-serif;
+  --body:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E0C1A; --surface:#17142A; --surface-2:#211D38; --line:#2D2848;
+  --fg:#EDEBFA; --muted:#A29DC0; --accent:#A78BFA; --accent-2:#2DD4BF; --accent-soft:#2A2150;
+  --in:#34D399; --in-soft:#123328; --out:#FB7185; --out-soft:#3A1622;
+  --shadow:0 1px 2px rgb(0 0 0/.3),0 10px 30px -14px rgb(0 0 0/.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E0C1A; --surface:#17142A; --surface-2:#211D38; --line:#2D2848;
+  --fg:#EDEBFA; --muted:#A29DC0; --accent:#A78BFA; --accent-2:#2DD4BF; --accent-soft:#2A2150;
+  --in:#34D399; --in-soft:#123328; --out:#FB7185; --out-soft:#3A1622;
+  --shadow:0 1px 2px rgb(0 0 0/.3),0 10px 30px -14px rgb(0 0 0/.6); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.02em}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--display);font-weight:600;letter-spacing:-.01em}
+.label{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.in{color:var(--in)} .out{color:var(--out)}
+svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Botones y campos ---------- */
+.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:700;background:var(--grad-btn);color:#fff;box-shadow:0 8px 20px -10px rgb(124 58 237/.7);transition:transform .15s,filter .15s}
+.btn:hover{filter:brightness(1.08)} .btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;filter:none}
+.btn.ghost{background:var(--surface-2);color:var(--fg);box-shadow:none}
+.btn.small{padding:8px 14px;font-size:13px;border-radius:10px}
+.btn.confirm{background:var(--out)}
+form{display:grid;gap:14px}
+.field{display:grid;gap:6px}
+.field label{font-size:13px;font-weight:700}
+.field input,.field select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.pass-wrap{position:relative}
+.pass-wrap input{padding-right:84px}
+.pass-wrap button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;color:var(--muted)}
+.msg{font-size:14px;padding:11px 14px;border-radius:12px;background:var(--surface-2)}
+.msg.err{background:var(--out-soft);color:var(--out)}
+.msg.ok{background:var(--in-soft);color:var(--in)}
+.link{background:none;border:0;color:var(--accent);font-weight:700;padding:0}
+
+/* ---------- Acceso ---------- */
+#auth{min-height:100%;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}
+.auth-hero{position:relative;overflow:hidden;background:var(--grad);color:#fff;padding:48px clamp(32px,5vw,72px);display:flex;flex-direction:column;justify-content:space-between;gap:40px;min-height:100vh}
+.auth-hero::before,.auth-hero::after{content:"";position:absolute;border-radius:50%;filter:blur(2px);pointer-events:none}
+.auth-hero::before{width:520px;height:520px;right:-180px;top:-160px;background:radial-gradient(circle,rgb(167 139 250/.55),transparent 65%)}
+.auth-hero::after{width:460px;height:460px;left:-160px;bottom:-200px;background:radial-gradient(circle,rgb(45 212 191/.45),transparent 65%)}
+.auth-hero>*{position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:700;font-size:18px}
+.brand-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#A78BFA,#2DD4BF);color:#1E1B4B;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;box-shadow:0 6px 18px -6px rgb(0 0 0/.4)}
+.auth-hero h1{font-size:clamp(34px,4.2vw,54px);line-height:1.05;max-width:13ch}
+.auth-hero h1 em{font-style:normal;background:linear-gradient(90deg,#C4B5FD,#5EEAD4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.auth-hero p{margin:14px 0 0;opacity:.82;font-size:16px;max-width:40ch}
+.feats{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.feats li{display:flex;gap:10px;align-items:center;font-weight:600;font-size:14.5px}
+.feats li span{width:30px;height:30px;border-radius:9px;background:rgb(255 255 255/.14);display:grid;place-items:center}
+.feats svg.i{width:17px;height:17px}
+.mock{background:rgb(255 255 255/.1);border:1px solid rgb(255 255 255/.2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:20px;padding:20px 22px;max-width:360px;display:grid;gap:12px}
+.mock .label{color:#fff;opacity:.7}
+.mock .big{font-family:var(--display);font-weight:700;font-size:32px;line-height:1}
+.mock-bars{display:flex;gap:6px;align-items:end;height:54px}
+.mock-bars i{flex:1;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,#5EEAD4,#A78BFA)}
+.mock-row{display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+.mock-row b{font-family:var(--display)} .mock-row .u{color:#6EE7B7} .mock-row .d{color:#FDA4AF}
+
+.auth-side{display:grid;place-items:center;padding:40px clamp(20px,4vw,56px)}
+.auth-card{width:100%;max-width:420px;display:grid;gap:22px}
+.auth-card .head h2{font-size:28px}
+.auth-card .head p{margin:6px 0 0;color:var(--muted)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border-radius:14px;padding:5px}
+.tabs button{border:0;background:none;padding:10px;border-radius:10px;font-weight:700;color:var(--muted);transition:background .15s,color .15s}
+.tabs button[aria-selected="true"]{background:var(--grad-btn);color:#fff;box-shadow:0 6px 16px -8px rgb(124 58 237/.8)}
+.rules{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);font-weight:600}
+.rules li::before{content:"○";margin-right:6px}
+.rules li.ok{color:var(--in)} .rules li.ok::before{content:"●"}
+.meter{height:6px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.meter i{display:block;height:100%;width:0;border-radius:4px;transition:width .2s,background .2s}
+.auth-foot{font-size:14px;color:var(--muted);margin:0;text-align:center}
+.secure-note{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin:0}
+.secure-note svg.i{width:16px;height:16px;margin-top:2px;color:var(--in)}
+
+/* ---------- App ---------- */
+#app{min-height:100%;display:grid;grid-template-columns:248px minmax(0,1fr)}
+.side{background:var(--grad);color:#fff;padding:26px 16px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh;overflow:hidden}
+.side::after{content:"";position:absolute;width:320px;height:320px;left:-120px;bottom:-140px;border-radius:50%;background:radial-gradient(circle,rgb(45 212 191/.35),transparent 65%);pointer-events:none}
+.side>*{position:relative;z-index:1}
+.side nav{display:grid;gap:6px}
+.side nav button{display:flex;align-items:center;gap:12px;text-align:left;border:0;background:none;color:inherit;opacity:.78;padding:11px 14px;border-radius:12px;font-weight:600;transition:background .15s,opacity .15s}
+.side nav button:hover{opacity:1;background:rgb(255 255 255/.08)}
+.side nav button[aria-current="page"]{opacity:1;background:rgb(255 255 255/.16);box-shadow:inset 0 0 0 1px rgb(255 255 255/.18)}
+.side .who{margin-top:auto;font-size:13px;word-break:break-all;display:grid;gap:10px;background:rgb(255 255 255/.08);border-radius:14px;padding:12px}
+.side .who span{opacity:.85}
+.side .who button{justify-self:start;background:rgb(255 255 255/.14);border:0;color:inherit;border-radius:9px;padding:7px 12px;font-size:13px;font-weight:600}
+main{min-width:0;padding-block:32px 48px;padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px));display:grid;gap:24px;align-content:start;max-width:1200px;width:100%}
+.top{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px}
+.top h2{font-size:30px}
+.top .sub{color:var(--muted);font-size:14px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.controls select,.controls input{padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);min-width:0}
+.demo-band{background:var(--accent-soft);border-radius:var(--r);padding:12px 16px;font-size:14px;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;font-weight:600}
+
+/* Saldo */
+.hero{position:relative;overflow:hidden;background:var(--grad);color:#fff;border-radius:24px;padding:26px 28px;display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:16px;box-shadow:0 20px 40px -24px rgb(76 29 149/.8)}
+.hero::after{content:"";position:absolute;width:380px;height:380px;right:-120px;top:-170px;border-radius:50%;background:radial-gradient(circle,rgb(167 139 250/.5),transparent 65%);pointer-events:none}
+.hero>*{position:relative;z-index:1}
+.hero .label{color:#fff;opacity:.72}
+.hero .big{font-family:var(--display);font-weight:700;font-size:clamp(30px,4vw,44px);line-height:1.05;margin-top:8px}
+.hero .kpi{background:rgb(255 255 255/.1);border:1px solid rgb(255 255 255/.16);border-radius:16px;padding:14px 16px;align-self:end}
+.hero .val{font-family:var(--display);font-weight:600;font-size:21px;margin-top:6px}
+.hero .note{font-size:12px;opacity:.7;margin-top:4px}
+.hero .val.in{color:#6EE7B7} .hero .val.out{color:#FDA4AF}
+
+.grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;min-width:0;display:grid;gap:14px;align-content:start;box-shadow:var(--shadow)}
+.panel h3{font-size:17px}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+
+/* barras por categoría */
+.cats{display:grid;gap:14px}
+.cat-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;font-weight:600;font-size:14px}
+.cat-row .bar{grid-column:1/-1;height:10px;background:var(--surface-2);border-radius:6px;overflow:hidden}
+.cat-row .bar i{display:block;height:100%;background:linear-gradient(90deg,#FB7185,#E11D48);border-radius:6px}
+.cat-row.inc .bar i{background:linear-gradient(90deg,#2DD4BF,#059669)}
+.cat-row .pct{color:var(--muted);font-size:12px;margin-left:6px;font-weight:600}
+
+/* gráfico mensual */
+.months{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px;align-items:end;height:190px;border-bottom:1px solid var(--line);padding-top:8px}
+.month{display:grid;grid-template-rows:1fr auto;height:100%;gap:6px;min-width:0}
+.month .pair{display:flex;gap:4px;align-items:end;justify-content:center;height:100%}
+.month .pair i{width:min(20px,42%);border-radius:6px 6px 2px 2px;min-height:3px}
+.month .pair i.a{background:linear-gradient(180deg,#2DD4BF,#059669)} .month .pair i.b{background:linear-gradient(180deg,#FB7185,#E11D48)}
+.month span{font-size:12px;color:var(--muted);text-align:center;margin-bottom:-26px;font-weight:600;text-transform:capitalize}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted);margin-top:20px;font-weight:600}
+.legend b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* tabla */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:hover td{background:var(--surface-2)}
+td.r,th.r{text-align:right}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface-2);white-space:nowrap}
+.chip.in{background:var(--in-soft);color:var(--in)} .chip.out{background:var(--out-soft);color:var(--out)}
+.desc{font-weight:600}
+.meta{font-size:12.5px;color:var(--muted)}
+.del{border:0;background:none;color:var(--muted);font-size:13px;padding:2px 4px;font-weight:600}
+.del.confirm{color:var(--out);font-weight:700}
+.det-grid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 16px;margin:0;font-size:14px}
+.det-grid dt{color:var(--muted);font-weight:600}
+.det-grid dd{margin:0;overflow-wrap:anywhere}
+.del-zone{border:1px solid var(--out);background:var(--out-soft);border-radius:14px;padding:14px;display:grid;gap:10px}
+.del-zone h4{margin:0;color:var(--out);font-size:15px}
+.del-zone p{margin:0;font-size:13px}
+.del-zone input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-family:var(--mono, inherit)}
+.btn.danger{background:var(--out);box-shadow:none}
+.link.danger{color:var(--out)}
+.totals{display:flex;flex-wrap:wrap;gap:8px;font-size:14px}
+.totals span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:600}
+.empty{color:var(--muted);text-align:center;padding:28px 8px}
+.list-mobile{display:none}
+.m-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.m-item:last-child{border-bottom:0}
+.m-item .num{text-align:right}
+
+/* formulario nuevo */
+.fab{display:none}
+dialog{border:0;padding:0;border-radius:24px;background:var(--surface);color:var(--fg);width:min(480px,calc(100vw - 32px));max-height:calc(100dvh - 32px);box-shadow:0 30px 60px -20px rgb(0 0 0/.45)}
+dialog::backdrop{background:rgb(14 12 26/.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.sheet{padding:24px;display:grid;gap:16px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--surface-2);padding:5px;border-radius:14px}
+.seg button{border:0;background:none;border-radius:10px;padding:11px;font-weight:700;color:var(--muted)}
+.seg button[aria-pressed="true"][data-t="Ingreso"]{background:var(--in);color:#fff}
+.seg button[aria-pressed="true"][data-t="Gasto"]{background:var(--out);color:#fff}
+.amount input{font-family:var(--display);font-weight:700;font-size:30px;padding:12px 14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.actions{display:flex;gap:10px;justify-content:flex-end}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:#1E1B4B;color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:600;z-index:50;box-shadow:0 10px 30px -10px rgb(0 0 0/.5)}
+
+/* atajo */
+.steps{margin:0;padding-left:22px;display:grid;gap:10px;font-size:14px}
+.steps ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--surface-2);padding:1px 6px;border-radius:6px}
+.copy-list{display:grid;gap:10px}
+.copy-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center}
+.copy-row .label{grid-column:1/-1}
+.copy-row .val{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;overflow-wrap:anywhere;min-width:0}
+.copy-row .val.secret{background:var(--accent-soft);border-color:var(--accent)}
+.acct-band{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;font-size:14px}
+.acct-band label{font-weight:600}
+.acct-band select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-weight:600;min-width:0;max-width:100%}
+.acct-band.shared{background:var(--accent-soft);border-color:var(--accent)}
+.share-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.check{display:flex;gap:8px;align-items:center;font-size:14px}
+.mobile-acct{display:none;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);gap:8px}
+
+/* ---------- Tableta ---------- */
+@media (max-width:1100px) and (min-width:821px){
+  #app{grid-template-columns:200px minmax(0,1fr)}
+  main{padding-left:24px;padding-right:24px}
+  .hero{grid-template-columns:1fr 1fr 1fr}
+  .hero .main{grid-column:1/-1}
+  .grid2{grid-template-columns:1fr}
+}
+@media (max-width:980px){
+  #auth{grid-template-columns:1fr}
+  .auth-hero{min-height:auto;padding:28px max(20px,env(safe-area-inset-left,0px)) 64px;gap:22px}
+  .auth-hero h1{font-size:clamp(28px,7vw,40px);max-width:16ch}
+  .auth-hero p{font-size:15px}
+  .feats,.mock{display:none}
+  .auth-side{place-items:start center;padding:0 16px 32px;margin-top:-36px;position:relative;z-index:2}
+  .auth-card{background:var(--surface);border-radius:24px;padding:24px 20px;box-shadow:0 20px 40px -20px rgb(22 19 43/.35);border:1px solid var(--line)}
+}
+
+/* ---------- Teléfono ---------- */
+@media (max-width:820px){
+  #app{grid-template-columns:1fr}
+  .side{position:fixed;inset:auto 10px calc(10px + env(safe-area-inset-bottom,0px)) 10px;height:auto;top:auto;flex-direction:row;padding:6px;z-index:20;gap:0;border-radius:20px;box-shadow:0 12px 30px -10px rgb(30 27 75/.6)}
+  .side::after{display:none}
+  .side .brand,.side .who{display:none}
+  .side nav{grid-auto-flow:column;grid-auto-columns:1fr;width:100%;gap:4px}
+  .side nav button{flex-direction:column;gap:3px;text-align:center;padding:8px 4px;font-size:11.5px;border-radius:14px}
+  main{padding-block:20px 128px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));gap:18px}
+  .hero{grid-template-columns:1fr 1fr;padding:20px;border-radius:22px;gap:10px}
+  .hero .main{grid-column:1/-1;margin-bottom:6px}
+  .hero .kpi{padding:12px}
+  .hero .kpi.real{grid-column:1/-1}
+  .hero .val{font-size:18px}
+  .grid2{grid-template-columns:1fr}
+  .panel{padding:18px;border-radius:18px}
+  .top h2{font-size:26px}
+  .new-desk{display:none}
+  .fab{display:grid;place-items:center;position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px));width:60px;height:60px;border-radius:20px;border:0;background:var(--grad-btn);color:#fff;box-shadow:0 12px 26px -8px rgb(124 58 237/.8);z-index:21}
+  .fab svg.i{width:26px;height:26px;stroke-width:2.4}
+  .table-wrap{display:none}
+  .list-mobile{display:grid}
+  .row2{grid-template-columns:1fr}
+  .mobile-acct{display:flex!important}
+  .controls select,.controls input{flex:1 1 140px}
+  dialog{width:100vw;max-width:100vw;margin:auto 0 0;border-radius:24px 24px 0 0;max-height:92dvh}
+  .sheet{padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<section id="auth">
+  <div class="auth-hero">
+    <div class="brand"><div class="brand-mark">S/</div>Caja Personal</div>
+    <div>
+      <h1>Tu dinero, <em>claro y a la mano</em></h1>
+      <p>Registra ingresos y gastos en segundos, desde la web o con un atajo del iPhone. Cada persona tiene su propia cuenta privada.</p>
+    </div>
+    <ul class="feats">
+      <li><span><svg class="i" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>Solo tú ves tus movimientos</li>
+      <li><span><svg class="i" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg></span>Pensada para el teléfono</li>
+      <li><span><svg class="i" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6"/></svg></span>Resumen por mes y por categoría</li>
+    </ul>
+    <div class="mock" aria-hidden="true">
+      <div class="label">Saldo disponible</div>
+      <div class="big">S/ 4,284.00</div>
+      <div class="mock-bars"><i style="height:40%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:80%"></i><i style="height:58%"></i><i style="height:92%"></i></div>
+      <div class="mock-row"><span>Ingresos <b class="u">+S/ 7,300</b></span><span>Salidas <b class="d">−S/ 3,016</b></span></div>
+    </div>
+  </div>
+
+  <div class="auth-side">
+    <div class="auth-card">
+      <div class="head">
+        <h2 id="auth-title">Bienvenido de vuelta</h2>
+        <p id="auth-sub">Entra con tu correo y contraseña.</p>
+      </div>
+      <div class="tabs" role="tablist">
+        <button id="tab-login" role="tab" aria-selected="true">Iniciar sesión</button>
+        <button id="tab-signup" role="tab" aria-selected="false">Crear cuenta</button>
+      </div>
+      <form id="auth-form" novalidate>
+        <div class="field" id="name-field" hidden><label for="a-name">Nombre</label><input id="a-name" autocomplete="name" placeholder="Ana P."></div>
+        <div class="field"><label for="a-email">Correo</label><input id="a-email" type="email" required autocomplete="email" placeholder="tucorreo@gmail.com"></div>
+        <div class="field">
+          <label for="a-pass">Contraseña</label>
+          <div class="pass-wrap"><input id="a-pass" type="password" required autocomplete="current-password" placeholder="Tu contraseña"><button type="button" class="toggle-pass" data-for="a-pass">Mostrar</button></div>
+          <div id="pass-help" hidden>
+            <div class="meter" aria-hidden="true"><i id="pass-meter"></i></div>
+            <ul class="rules" id="pass-rules">
+              <li data-r="len">8 caracteres o más</li>
+              <li data-r="let">Letras</li>
+              <li data-r="dig">Números</li>
+              <li data-r="mix">Mayúscula o símbolo (recomendado)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="field" id="pass2-field" hidden>
+          <label for="a-pass2">Repite la contraseña</label>
+          <div class="pass-wrap"><input id="a-pass2" type="password" autocomplete="new-password" placeholder="Escríbela otra vez"><button type="button" class="toggle-pass" data-for="a-pass2">Mostrar</button></div>
+        </div>
+        <div id="auth-msg" class="msg" hidden></div>
+        <button class="btn" id="auth-submit" type="submit">Entrar</button>
+        <p class="secure-note"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 018 0v3"/></svg><span>Tu contraseña se guarda cifrada y nadie puede verla, ni siquiera el administrador.</span></p>
+      </form>
+      <p class="auth-foot">¿Solo quieres ver cómo funciona? <button class="link" id="demo-btn" type="button">Ver con datos de ejemplo</button></p>
+    </div>
+  </div>
+</section>
+
+<div id="app" hidden>
+  <aside class="side">
+    <div class="brand"><div class="brand-mark">S/</div><strong>Caja Personal</strong></div>
+    <nav>
+      <button data-view="resumen" aria-current="page"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Resumen</button>
+      <button data-view="movimientos"><svg class="i" viewBox="0 0 24 24"><path d="M7 4v16M7 4L3 8M7 4l4 4M17 20V4M17 20l-4-4M17 20l4-4"/></svg>Movimientos</button>
+      <button data-view="atajo"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Atajo iPhone</button>
+      <button data-view="compartir" id="nav-compartir"><svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="17" cy="7" r="2.5"/><path d="M2.5 19c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6"/><path d="M14.5 13.2c.7-.4 1.6-.6 2.5-.6 2.3 0 4.1 1.3 4.6 3.9"/></svg>Compartir</button>
+      <button data-view="cuentas" id="nav-cuentas" hidden><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M17 8v6M14 11h6"/></svg>Cuentas</button>
+    </nav>
+    <div class="who"><span id="who-email"></span><button id="logout">Cerrar sesión</button></div>
+  </aside>
+  <main>
+    <div id="demo-band" class="demo-band" hidden><span>Estás viendo datos de ejemplo inventados. Nada se guarda.</span><button class="btn small ghost" id="exit-demo">Salir del ejemplo</button></div>
+
+    <div id="acct-band" class="acct-band" hidden>
+      <span><label for="acct-sel">Viendo la cuenta de</label> <select id="acct-sel"></select></span>
+      <span class="meta" id="acct-note"></span>
+    </div>
+
+    <!-- RESUMEN -->
+    <section id="v-resumen" style="display:grid;gap:20px">
+      <div class="top">
+        <div><h2>Resumen</h2><div class="sub" id="r-sub"></div></div>
+        <div class="controls">
+          <label class="label" for="r-mes">Periodo</label>
+          <select id="r-mes"></select>
+          <button class="btn small new-desk" data-new>+ Nuevo movimiento</button>
+        </div>
+      </div>
+      <div class="hero">
+        <div class="main"><div class="label">Saldo disponible (a cuenta)</div><div class="big" id="k-saldo">S/ 0.00</div><div class="note" id="k-saldo-note"></div></div>
+        <div class="kpi"><div class="label">Entradas</div><div class="val in" id="k-in"></div></div>
+        <div class="kpi"><div class="label">Salidas</div><div class="val out" id="k-out"></div></div>
+        <div class="kpi real"><div class="label">Gasto real</div><div class="val" id="k-real"></div><div class="note">Sin transferencias ni efectivo para ti</div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <div class="panel-head"><h3>Gastos por categoría</h3><span class="meta" id="cat-total"></span></div>
+          <div class="cats" id="cats-out"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Entradas vs. salidas por mes</h3></div>
+          <div class="months" id="months"></div>
+          <div class="legend"><span><b style="background:var(--in)"></b>Entradas</span><span><b style="background:var(--out)"></b>Salidas</span></div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <div class="panel-head"><h3>Entradas por origen (FAB)</h3></div>
+          <div class="cats" id="cats-in"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Últimos movimientos</h3><button class="link" data-goto="movimientos">Ver todos</button></div>
+          <div id="recent"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOVIMIENTOS -->
+    <section id="v-movimientos" hidden style="display:grid;gap:18px">
+      <div class="top">
+        <div><h2>Movimientos</h2><div class="sub">Cada ingreso y gasto, con su categoría y a quién fue</div></div>
+        <button class="btn small new-desk" data-new>+ Nuevo movimiento</button>
+      </div>
+      <div class="controls">
+        <select id="f-tipo" aria-label="Tipo"><option value="">Todos los tipos</option><option>Ingreso</option><option>Gasto</option></select>
+        <select id="f-cat" aria-label="Categoría"><option value="">Todas las categorías</option></select>
+        <select id="f-mes" aria-label="Mes"></select>
+        <input id="f-q" type="search" placeholder="Buscar descripción o persona" aria-label="Buscar">
+      </div>
+      <div class="totals" id="f-totals"></div>
+      <div class="panel" style="padding:8px 16px">
+        <div class="table-wrap"><table>
+          <thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Descripción</th><th>Persona</th><th>Medio</th><th>Registró</th><th class="r">Monto</th><th></th></tr></thead>
+          <tbody id="t-body"></tbody>
+        </table></div>
+        <div class="list-mobile" id="m-list"></div>
+      </div>
+      <div class="mobile-acct"><span id="who-email-m"></span><button class="btn small ghost" id="logout-m">Cerrar sesión</button></div>
+    </section>
+
+    <!-- COMPARTIR -->
+    <section id="v-compartir" hidden style="display:grid;gap:18px">
+      <div class="top">
+        <div><h2>Compartir mi cuenta</h2><div class="sub">Da permiso a otra persona para que vea tu cuenta desde la suya. Tú decides si también puede registrar movimientos, y puedes quitar el acceso cuando quieras.</div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <h3>Dar acceso</h3>
+          <form id="s-form" novalidate>
+            <div class="field"><label for="s-correo">Correo de su cuenta en Caja Personal</label><input id="s-correo" type="email" placeholder="correo@gmail.com" autocomplete="off"></div>
+            <label class="check"><input type="checkbox" id="s-reg" checked> También puede registrar movimientos en mi cuenta</label>
+            <div id="s-msg" class="msg" hidden></div>
+            <button class="btn" id="s-submit" type="submit">Dar acceso</button>
+          </form>
+          <p class="meta" style="margin:0;font-size:14px">Cada movimiento guarda quién lo registró, así siempre sabes si lo hiciste tú o la otra persona.</p>
+        </div>
+        <div class="panel">
+          <h3>Personas con acceso</h3>
+          <div id="s-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CUENTAS (solo administrador) -->
+    <section id="v-cuentas" hidden style="display:grid;gap:18px">
+      <div class="top">
+        <div><h2>Cuentas</h2><div class="sub">Crea la cuenta de cada persona, entrégale su acceso y activa su hoja de cálculo</div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel">
+          <h3>Nueva cuenta</h3>
+          <form id="c-form" novalidate>
+            <div class="field"><label for="c-nombre">Nombre</label><input id="c-nombre" placeholder="Ana P." autocomplete="off"></div>
+            <div class="field"><label for="c-correo">Correo de la persona</label><input id="c-correo" type="email" placeholder="correo@gmail.com" autocomplete="off"></div>
+            <div class="field">
+              <label for="c-pass">Contraseña que le entregas</label>
+              <div class="pass-wrap"><input id="c-pass" type="text" autocomplete="new-password" placeholder="8+ con letras y números"><button type="button" id="c-gen">Generar</button></div>
+              <ul class="rules" id="c-rules"><li data-r="len">8 caracteres o más</li><li data-r="let">Letras</li><li data-r="dig">Números</li></ul>
+            </div>
+            <div id="c-msg" class="msg" hidden></div>
+            <button class="btn" id="c-submit" type="submit">Crear cuenta</button>
+          </form>
+        </div>
+        <div class="panel" id="c-entrega" hidden>
+          <h3>Datos para entregar</h3>
+          <p class="meta" style="margin:0;font-size:14px">Envíaselos a la persona. La contraseña no se vuelve a mostrar aquí.</p>
+          <div class="copy-list" id="c-entrega-datos"></div>
+          <button class="btn small" id="c-copiar-todo" type="button">Copiar todo en un mensaje</button>
+        </div>
+        <div class="panel" id="c-ayuda">
+          <h3>Cómo activar su hoja de cálculo</h3>
+          <ol class="steps">
+            <li>En la lista de abajo toca <b>Clave de hoja</b> en su cuenta y cópiala.</li>
+            <li>Abre la <a id="c-plantilla" href="#" target="_blank" rel="noopener">hoja plantilla</a> y toca <b>Hacer una copia</b>. Ponle su nombre.</li>
+            <li>En la copia: menú <b>Caja Personal → Conectar con la plataforma</b> y pega la clave.</li>
+            <li>Comparte la hoja con el correo de la persona (<b>Compartir</b>).</li>
+          </ol>
+          <p class="meta" style="margin:0;font-size:14px">Lo que se escriba en la hoja pasa a la plataforma, y lo que se registre en la plataforma o el atajo aparece en la hoja.</p>
+        </div>
+      </div>
+      <div class="panel" style="padding:8px 16px">
+        <div class="table-wrap"><table>
+          <thead><tr><th>Nombre</th><th>Correo</th><th>Creada</th><th class="r">Movimientos</th><th class="r">Saldo</th><th>Hoja</th><th></th></tr></thead>
+          <tbody id="c-body"></tbody>
+        </table></div>
+        <div class="list-mobile" id="c-list"></div>
+      </div>
+      <div id="c-clave" class="panel" hidden></div>
+    </section>
+
+    <!-- ATAJO IPHONE -->
+    <section id="v-atajo" hidden style="display:grid;gap:18px">
+      <div class="top">
+        <div><h2>Atajo de iPhone</h2><div class="sub">Registra un gasto o ingreso en segundos, sin abrir la web: desde la pantalla de inicio, con Siri o tocando la parte de atrás del teléfono</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>1. Tu clave personal</h3><span class="meta" id="ak-status"></span></div>
+        <p class="meta" style="margin:0;font-size:14px">El atajo usa esta clave para guardar en <b>tu</b> cuenta. Trátala como una contraseña: no la compartas. Si generas una nueva, la anterior deja de funcionar.</p>
+        <div id="ak-new" class="copy-list" hidden>
+          <div class="msg">Copia la clave ahora: por seguridad no se vuelve a mostrar.</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button class="btn small" id="ak-gen">Generar mi clave</button>
+          <button class="btn small ghost" id="ak-test" hidden>Probar la clave</button>
+        </div>
+        <div id="ak-msg" class="msg" hidden></div>
+      </div>
+
+      <div class="panel">
+        <h3>2. Datos para el atajo</h3>
+        <p class="meta" style="margin:0;font-size:14px">Los vas a pegar en los pasos de abajo. Toca <b>Copiar</b> en cada uno.</p>
+        <div class="copy-list" id="ak-datos"></div>
+      </div>
+
+      <div class="panel">
+        <h3>3. Crea el atajo "Gastos e Ingresos"</h3>
+        <p class="meta" style="margin:0;font-size:14px">En el iPhone abre la app <b>Atajos</b>, toca <b>+</b> y ponle de nombre <b>Gastos e Ingresos</b>. Agrega estas acciones en orden (búscalas por su nombre):</p>
+        <ol class="steps">
+          <li><b>Lista</b> → escribe dos elementos: <code>Gasto</code> y <code>Ingreso</code>.</li>
+          <li><b>Elegir de la lista</b> → pregunta: <i>¿Gasto o ingreso?</i></li>
+          <li><b>Establecer variable</b> → nombre <code>Tipo</code>.</li>
+          <li><b>Solicitar entrada</b> → tipo <b>Número</b>, pregunta: <i>¿Cuánto? (S/)</i></li>
+          <li><b>Establecer variable</b> → nombre <code>Monto</code>.</li>
+          <li><b>Obtener contenido de URL</b> → pega la <b>URL de categorías</b>. Toca <b>Mostrar más</b>:
+            <ul>
+              <li>Método: <b>POST</b></li>
+              <li>Encabezados: agrega uno con clave <code>apikey</code> y valor la <b>clave pública</b>.</li>
+              <li>Cuerpo de la solicitud: <b>JSON</b>. Agrega <code>p_clave</code> (Texto) = tu clave personal, y <code>p_tipo</code> (Texto) = variable <b>Tipo</b>.</li>
+            </ul></li>
+          <li><b>Elegir de la lista</b> (usa el resultado anterior) → pregunta: <i>¿Categoría?</i></li>
+          <li><b>Establecer variable</b> → nombre <code>Categoria</code>.</li>
+          <li><b>Solicitar entrada</b> → tipo <b>Texto</b>, pregunta: <i>¿Descripción? (opcional)</i></li>
+          <li><b>Establecer variable</b> → nombre <code>Descripcion</code>.</li>
+          <li><b>Obtener contenido de URL</b> → pega la <b>URL para registrar</b>. Mostrar más:
+            <ul>
+              <li>Método <b>POST</b>, mismo encabezado <code>apikey</code>.</li>
+              <li>Cuerpo <b>JSON</b>: <code>p_clave</code> (Texto) = tu clave, <code>p_tipo</code> (Texto) = <b>Tipo</b>, <code>p_monto</code> (Número) = <b>Monto</b>, <code>p_categoria</code> (Texto) = <b>Categoria</b>, <code>p_descripcion</code> (Texto) = <b>Descripcion</b>.</li>
+            </ul></li>
+          <li><b>Obtener valor del diccionario</b> → clave <code>mensaje</code>.</li>
+          <li><b>Mostrar notificación</b> → con el <b>Valor del diccionario</b>. Verás algo como: <i>Gasto de S/ 25.00 guardado (Alimentos). Saldo: S/ 1,474.50</i></li>
+        </ol>
+        <p class="meta" style="margin:0;font-size:14px">Opcional: también puedes agregar <code>p_persona</code> (a quién o de quién) y <code>p_medio</code> (Efectivo, Yape, Depósito, Transferencia, Cajero o Tarjeta) al JSON del último paso.</p>
+      </div>
+
+      <div class="panel">
+        <h3>4. Tenlo a la mano</h3>
+        <ul class="steps">
+          <li><b>Pantalla de inicio:</b> mantén presionado el atajo → Compartir → <b>Agregar a pantalla de inicio</b>.</li>
+          <li><b>Siri:</b> di <i>"Oye Siri, Gastos e Ingresos"</i>.</li>
+          <li><b>Tocar atrás:</b> Configuración → Accesibilidad → Tocar → <b>Tocar atrás</b> → Doble toque → elige el atajo.</li>
+          <li><b>Botón de acción</b> (iPhone 15 Pro Max): Configuración → Botón de acción → <b>Atajo</b> → elige el atajo.</li>
+        </ul>
+        <p class="meta" style="margin:0;font-size:14px">Los movimientos que entran por el atajo aparecen en <b>Movimientos</b> marcados como <span class="chip">atajo</span>.</p>
+      </div>
+    </section>
+  </main>
+  <button class="fab" data-new aria-label="Nuevo movimiento"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+</div>
+
+<dialog id="dlg">
+  <form id="mov-form" class="sheet">
+    <h3 style="font-size:20px">Nuevo movimiento</h3>
+    <div class="seg" role="group" aria-label="Tipo">
+      <button type="button" data-t="Ingreso" aria-pressed="false">Ingreso</button>
+      <button type="button" data-t="Gasto" aria-pressed="true">Gasto</button>
+    </div>
+    <div class="field amount"><label for="m-monto">Monto (S/)</label><input id="m-monto" type="number" inputmode="decimal" step="0.01" min="0.01" required placeholder="0.00"></div>
+    <div class="row2">
+      <div class="field"><label for="m-cat">Categoría</label><select id="m-cat" required></select></div>
+      <div class="field"><label for="m-sub">Subcategoría</label><input id="m-sub" list="subs" placeholder="Opcional"></div>
+    </div>
+    <datalist id="subs"></datalist>
+    <div class="field"><label for="m-desc">Descripción</label><input id="m-desc" required placeholder="Ej. Cena con amigos"></div>
+    <div class="row2">
+      <div class="field"><label for="m-persona">Persona</label><input id="m-persona" placeholder="A quién o de quién"></div>
+      <div class="field"><label for="m-medio">Medio</label><select id="m-medio"><option value="">—</option><option>Efectivo</option><option>Yape</option><option>Depósito</option><option>Transferencia</option><option>Cajero</option><option>Tarjeta</option></select></div>
+    </div>
+    <div class="field"><label for="m-fecha">Fecha</label><input id="m-fecha" type="date" required></div>
+    <div id="mov-msg" class="msg err" hidden></div>
+    <div class="actions"><button type="button" class="btn ghost" id="m-cancel">Cancelar</button><button class="btn" id="m-save">Guardar</button></div>
+  </form>
+</dialog>
+<dialog id="det">
+  <div class="sheet">
+    <h3 style="font-size:20px">Detalle del movimiento</h3>
+    <dl class="det-grid" id="det-body"></dl>
+    <button type="button" class="link danger" id="det-open-del" style="justify-self:start">Eliminar…</button>
+    <div class="del-zone" id="det-del" hidden>
+      <h4>¿Eliminar este movimiento?</h4>
+      <p>Para confirmar, escribe el monto exacto: <b class="num" id="det-monto"></b></p>
+      <input id="det-check" inputmode="decimal" autocomplete="off" placeholder="Monto" aria-label="Escribe el monto para confirmar">
+      <div id="det-msg" class="msg err" hidden></div>
+      <button type="button" class="btn danger" id="det-del-btn" disabled>Eliminar definitivamente</button>
+    </div>
+    <div class="actions"><button type="button" class="btn ghost" id="det-close">Cerrar</button></div>
+  </div>
+</dialog>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = "https://uzukftcciyvvyukplqrp.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6dWtmdGNjaXl2dnl1a3BscXJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NDc2NDMsImV4cCI6MjEwOTQyMzY0M30.0taUv7gNulC9KeYek0w31012HIG4T8gBZ4RSIrlPIQI";
+
+const DEFAULT_CATS = {
+  Ingreso:["Efectivo a cuenta","Depósitos / Yape a cuenta","Depósito a cuenta","Pago recibido","Transferencia recibida"],
+  Gasto:["Alimentos","Compras personales","Material de trabajo","Depósitos / Yape a terceros","Efectivo a terceros","Efectivo para mí","Transferencia a mi cuenta","Otros gastos"]
+};
+const SUBS = {"Alimentos":["Cena","Almuerzo","Desayuno","Comida","Mercado"],"Compras personales":["Ropa","Calzado","Accesorios","Tecnología"],"Transferencia a mi cuenta":["Cuenta BCP"],"Material de trabajo":["Herramientas","Materiales"]};
+// Pases a tu propia cuenta: no cuentan como gasto real
+const PROPIA = ["Transferencia a mi cuenta","Efectivo para mí"];
+
+// Datos de ejemplo inventados (no corresponden a ninguna persona real)
+const HOJA = [
+["2026-10-03","Ingreso","Pago recibido","","Pago por trabajo de pintura","Carla","Transferencia",1200],
+["2026-10-04","Gasto","Alimentos","Mercado","Compras del mercado","","Efectivo",145],
+["2026-10-06","Gasto","Depósitos / Yape a terceros","","Yape a Martín","Martín","Yape",80],
+["2026-10-08","Gasto","Alimentos","Almuerzo","Almuerzo del trabajo","","Efectivo",18],
+["2026-10-10","Ingreso","Depósitos / Yape a cuenta","","Yape de Sofía","Sofía","Yape",350],
+["2026-10-11","Gasto","Compras personales","Ropa","Polo y pantalón","","Tarjeta",160],
+["2026-10-12","Gasto","Otros gastos","Movilidad","Recarga de pasajes","","Efectivo",50],
+["2026-10-14","Gasto","Depósitos / Yape a terceros","","Depósito a Diego","Diego","Depósito",250],
+["2026-10-15","Ingreso","Efectivo a cuenta","","Pago semanal","","Efectivo",900],
+["2026-10-17","Gasto","Alimentos","Cena","Cena con amigos","","Tarjeta",72],
+["2026-10-18","Gasto","Compras personales","Tecnología","Audífonos","","Tarjeta",120],
+["2026-10-20","Gasto","Transferencia a mi cuenta","Ahorro","Pase a cuenta de ahorro","","Transferencia",400],
+["2026-10-22","Gasto","Efectivo a terceros","","Efectivo a Martín","Martín","Efectivo",100],
+["2026-10-24","Ingreso","Efectivo a cuenta","","Pago semanal","","Efectivo",900],
+["2026-10-25","Gasto","Alimentos","Mercado","Compras del mercado","","Efectivo",132],
+["2026-10-27","Gasto","Otros gastos","Servicios","Recibo de celular","","Tarjeta",49],
+["2026-10-29","Gasto","Depósitos / Yape a terceros","","Yape a Sofía","Sofía","Yape",60],
+["2026-10-31","Gasto","Alimentos","Cena","Pizza familiar","","Yape",54],
+["2026-11-01","Ingreso","Depósito a cuenta","","Depósito en cajero","","Cajero",1000],
+["2026-11-01","Gasto","Transferencia a mi cuenta","Ahorro","Pase a cuenta de ahorro","","Transferencia",300],
+["2026-11-02","Gasto","Alimentos","Desayuno","Desayuno","","Efectivo",15],
+["2026-11-03","Gasto","Depósitos / Yape a terceros","","Depósito a Diego","Diego","Depósito",150],
+["2026-11-04","Gasto","Material de trabajo","Herramientas","Juego de destornilladores","","Tarjeta",85],
+["2026-11-05","Ingreso","Transferencia recibida","","Devolución de préstamo","Carla","Transferencia",200]
+].map(([fecha,tipo,categoria,subcategoria,descripcion,persona,medio,monto])=>({fecha,tipo,categoria,subcategoria,descripcion,persona,medio,monto}));
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = n => "S/ " + Number(n||0).toLocaleString("es-PE",{minimumFractionDigits:2,maximumFractionDigits:2});
+const fDate = d => { const [y,m,dd] = d.split("-"); return `${dd}/${m}/${y}`; };
+const today = () => new Date().toLocaleDateString("en-CA",{timeZone:"America/Lima"});
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const mesLabel = ym => { const [y,m] = ym.split("-"); return `${MESES[+m-1][0].toUpperCase()+MESES[+m-1].slice(1)} ${y}`; };
+const mesCorto = ym => MESES[+ym.split("-")[1]-1].slice(0,3);
+
+function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>el.hidden=true,2600); }
+
+/* ---------- Datos ---------- */
+let sb = null;
+try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { sb = null; }
+
+const state = { demo:false, user:null, cuenta:null, compartidas:[], movs:[], cats:{...DEFAULT_CATS}, view:"resumen", rMes:"todo", f:{tipo:"",cat:"",mes:"todo",q:""} };
+
+const api = {
+  async load(){
+    if(state.demo){ return; }
+    // Solo los movimientos de la cuenta elegida (la propia o una compartida contigo)
+    const uid = state.cuenta.id;
+    const [m, c] = await Promise.all([
+      sb.from("movimientos").select("*").eq("user_id", uid).order("fecha",{ascending:false}).order("created_at",{ascending:false}),
+      sb.from("categorias").select("tipo,nombre").eq("user_id", uid).order("id")
+    ]);
+    if(m.error) throw m.error; if(c.error) throw c.error;
+    state.movs = m.data.map(x=>({...x, monto:Number(x.monto)}));
+    state.cats = {...DEFAULT_CATS};
+    if(c.data.length){ state.cats = {Ingreso:[],Gasto:[]}; c.data.forEach(r=>state.cats[r.tipo].push(r.nombre)); }
+  },
+  async add(mov){
+    if(state.demo){ state.movs.unshift({...mov, id:crypto.randomUUID(), created_at:new Date().toISOString()}); sortMovs(); return; }
+    const { data, error } = await sb.from("movimientos").insert({...mov, user_id: state.cuenta.id}).select().single();
+    if(error) throw error; state.movs.unshift({...data, monto:Number(data.monto)}); sortMovs();
+  },
+  async del(id){
+    if(!state.demo){ const { data, error } = await sb.from("movimientos").delete().eq("id",id).select("id"); if(error) throw error; if(!data.length) throw new Error("No tienes permiso para eliminar este movimiento."); }
+    state.movs = state.movs.filter(m=>m.id!==id);
+  },
+};
+function sortMovs(){ state.movs.sort((a,b)=> a.fecha<b.fecha?1:a.fecha>b.fecha?-1:(a.created_at<b.created_at?1:-1)); }
+
+/* ---------- Acceso ---------- */
+let mode = "login";
+function setMode(m){
+  mode = m;
+  const su = m==="signup";
+  $("#tab-login").setAttribute("aria-selected", !su);
+  $("#tab-signup").setAttribute("aria-selected", su);
+  $("#name-field").hidden = !su; $("#pass2-field").hidden = !su; $("#pass-help").hidden = !su;
+  $("#auth-title").textContent = su ? "Crea tu cuenta" : "Bienvenido de vuelta";
+  $("#auth-sub").textContent = su ? "Es gratis y tus datos son solo tuyos." : "Entra con tu correo y contraseña.";
+  $("#auth-submit").textContent = su ? "Crear cuenta" : "Entrar";
+  $("#a-pass").autocomplete = su ? "new-password" : "current-password";
+  $("#a-pass").placeholder = su ? "Mínimo 8, con letras y números" : "Tu contraseña";
+  $("#auth-msg").hidden = true;
+  checkPass();
+}
+
+/* Reglas de contraseña (las mismas que exige Supabase: 8+ caracteres, letras y números) */
+function passRules(p){ return { len:p.length>=8, let:/[A-Za-zÀ-ÿ]/.test(p), dig:/\d/.test(p), mix:/[A-ZÀ-Ý]/.test(p)||/[^A-Za-z0-9À-ÿ]/.test(p) }; }
+function checkPass(){
+  const p = $("#a-pass").value, r = passRules(p);
+  $$("#pass-rules li").forEach(li=> li.classList.toggle("ok", r[li.dataset.r]));
+  const score = [r.len,r.let,r.dig,r.mix,p.length>=12].filter(Boolean).length;
+  const m = $("#pass-meter"); m.style.width = (p ? score/5*100 : 0)+"%";
+  m.style.background = score<=2 ? "var(--out)" : score<=3 ? "#F59E0B" : "var(--in)";
+  return r.len && r.let && r.dig;
+}
+$("#a-pass").addEventListener("input", checkPass);
+$$(".toggle-pass").forEach(b=> b.onclick = () => { const i=$("#"+b.dataset.for); const show = i.type==="password"; i.type = show ? "text" : "password"; b.textContent = show ? "Ocultar" : "Mostrar"; });
+$("#tab-login").onclick = () => setMode("login");
+$("#tab-signup").onclick = () => setMode("signup");
+
+function authMsg(t, err){ const el=$("#auth-msg"); el.textContent=t; el.className = "msg"+(err?" err":""); el.hidden=false; }
+function traducir(e){
+  const m = (e && e.message) || "";
+  if(/Invalid login/i.test(m)) return "Correo o contraseña incorrectos.";
+  if(/already registered/i.test(m)) return "Ese correo ya tiene una cuenta. Inicia sesión.";
+  if(/Password should|weak|at least/i.test(m)) return "La contraseña es muy débil: usa 8 caracteres o más, con letras y números.";
+  if(/rate limit|too many/i.test(m)) return "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.";
+  if(/Unable to validate email|invalid format/i.test(m)) return "Ese correo no es válido.";
+  if(/Email not confirmed/i.test(m)) return "Confirma tu correo primero: revisa la bandeja de entrada (y spam).";
+  if(/Failed to fetch|NetworkError|Load failed/i.test(m)) return "No se pudo conectar con el servidor. Revisa tu internet e inténtalo de nuevo.";
+  return m || "Algo salió mal. Inténtalo de nuevo.";
+}
+
+$("#auth-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  if(!sb){ authMsg("No se pudo cargar la conexión. Recarga la página.", true); return; }
+  const email = $("#a-email").value.trim(), password = $("#a-pass").value;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ authMsg("Escribe un correo válido.", true); return; }
+  if(!password){ authMsg("Escribe tu contraseña.", true); return; }
+  if(mode==="signup"){
+    if(!checkPass()){ authMsg("La contraseña necesita 8 caracteres o más, con letras y números.", true); return; }
+    if(password !== $("#a-pass2").value){ authMsg("Las dos contraseñas no coinciden.", true); return; }
+  }
+  const btn = $("#auth-submit"); btn.disabled = true;
+  try{
+    if(mode==="login"){
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      if(error) throw error; await enter(data.user);
+    } else {
+      const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ nombre:$("#a-name").value.trim() } } });
+      if(error) throw error;
+      if(data.session){ await enter(data.user); }
+      else { setMode("login"); authMsg("Cuenta creada. Te enviamos un correo para confirmarla; después inicia sesión aquí."); }
+    }
+  } catch(err){ authMsg(traducir(err), true); }
+  finally{ btn.disabled = false; }
+});
+
+$("#demo-btn").onclick = () => { state.demo = true; state.movs = HOJA.map((r,i)=>({...r,id:"d"+i,created_at:"2026-01-01T00:00:"+String(i).padStart(2,"0")})); sortMovs(); showApp("Ejemplo"); };
+$("#exit-demo").onclick = () => { state.demo=false; state.movs=[]; showAuth(); };
+
+function nombreDe(user){ return (user.user_metadata && user.user_metadata.nombre) || user.email; }
+async function enter(user){
+  state.user = user; state.demo = false;
+  state.cuenta = { id:user.id, nombre:nombreDe(user), propia:true, registrar:true };
+  try{ const { data } = await sb.rpc("cuentas_compartidas"); state.compartidas = data || []; } catch(e){ state.compartidas = []; }
+  try{ await api.load(); } catch(err){ authMsg(traducir(err), true); return; }
+  try{ const { data } = await sb.rpc("es_admin"); state.admin = data === true; } catch(e){ state.admin = false; }
+  $("#nav-cuentas").hidden = !state.admin;
+  showApp(user.email);
+}
+function showAuth(){ $("#app").hidden = true; $("#auth").hidden = false; }
+function renderAcct(){
+  const propia = state.demo || !state.cuenta || state.cuenta.propia;
+  const sinRegistro = !propia && !state.cuenta.registrar;
+  $$("[data-new]").forEach(b=> b.hidden = sinRegistro);
+  $("#nav-compartir").hidden = state.demo || !propia;
+  $$('.side nav button[data-view="atajo"]').forEach(b=> b.hidden = !propia);
+  const band = $("#acct-band");
+  band.hidden = state.demo || !state.compartidas.length;
+  if(band.hidden) return;
+  $("#acct-sel").innerHTML = `<option value="${state.user.id}">${esc(nombreDe(state.user))} (mi cuenta)</option>` +
+    state.compartidas.map(c=>`<option value="${c.dueno_id}">${esc(c.nombre)}</option>`).join("");
+  $("#acct-sel").value = state.cuenta.id;
+  band.classList.toggle("shared", !state.cuenta.propia);
+  $("#acct-note").textContent = state.cuenta.propia ? "Otras personas te dieron acceso a sus cuentas" :
+    (state.cuenta.registrar ? "Compartida contigo · puedes ver y registrar" : "Compartida contigo · solo puedes ver");
+}
+$("#acct-sel").onchange = async e => {
+  const id = e.target.value;
+  if(id===state.user.id) state.cuenta = { id, nombre:nombreDe(state.user), propia:true, registrar:true };
+  else { const c = state.compartidas.find(x=>x.dueno_id===id); state.cuenta = { id, nombre:c.nombre, propia:false, registrar:c.puede_registrar }; }
+  try{ await api.load(); } catch(err){ toast(traducir(err)); }
+  if(!state.cuenta.propia && ["atajo","compartir","cuentas"].includes(state.view)) go("resumen"); else { renderAcct(); render(); }
+};
+
+function showApp(label){
+  $("#auth").hidden = true; $("#app").hidden = false;
+  $("#who-email").textContent = label; $("#who-email-m").textContent = label;
+  $("#demo-band").hidden = !state.demo;
+  renderAcct(); render();
+}
+async function logout(){ if(!state.demo && sb) await sb.auth.signOut(); claveNueva=null; state.admin=false; $("#nav-cuentas").hidden=true; if(state.view==="cuentas") go("resumen"); state.demo=false; state.user=null; state.cuenta=null; state.compartidas=[]; state.movs=[]; showAuth(); }
+$("#logout").onclick = logout; $("#logout-m").onclick = logout;
+
+
+/* ---------- Vistas ---------- */
+function go(v){
+  state.view = v;
+  $$(".side nav button").forEach(b=> b.dataset.view===v ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
+  ["resumen","movimientos","atajo","cuentas","compartir"].forEach(x=> $("#v-"+x).hidden = v!==x);
+  $$(".new-desk,.fab").forEach(b=> b.style.visibility = (v==="atajo"||v==="cuentas"||v==="compartir") ? "hidden" : "");
+  renderAcct(); render(); window.scrollTo(0,0);
+}
+$$(".side nav button").forEach(b=> b.onclick = () => go(b.dataset.view));
+$$("[data-goto]").forEach(b=> b.onclick = () => go(b.dataset.goto));
+
+function mesesDisponibles(){ return [...new Set(state.movs.map(m=>m.fecha.slice(0,7)))].sort().reverse(); }
+function fillMesSelect(sel, val){
+  const opts = ['<option value="todo">Todo el historial</option>', ...mesesDisponibles().map(m=>`<option value="${m}">${mesLabel(m)}</option>`)];
+  sel.innerHTML = opts.join(""); sel.value = [...sel.options].some(o=>o.value===val) ? val : "todo";
+}
+const sum = arr => arr.reduce((a,m)=>a+m.monto,0);
+
+function render(){
+  if(state.view==="resumen") renderResumen(); else if(state.view==="movimientos") renderMovs(); else if(state.view==="cuentas") renderCuentas(); else if(state.view==="compartir") renderCompartir(); else renderAtajo();
+}
+
+/* ---------- Atajo de iPhone ---------- */
+const RPC = SUPABASE_URL + "/rest/v1/rpc/";
+let claveNueva = null;
+function copyRow(label, value, secret){
+  return `<div class="copy-row"><span class="label">${esc(label)}</span><div class="val${secret?" secret":""}">${esc(value)}</div><button class="btn small ghost" data-copy="${esc(value)}">Copiar</button></div>`;
+}
+async function copiar(t){
+  try{ await navigator.clipboard.writeText(t); }
+  catch(e){ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); }catch(_){} ta.remove(); }
+  toast("Copiado");
+}
+document.addEventListener("click", e => { const b=e.target.closest("[data-copy]"); if(b) copiar(b.dataset.copy); });
+function akMsg(t, err){ const el=$("#ak-msg"); el.textContent=t; el.className="msg"+(err?" err":""); el.hidden=!t; }
+const fHora = iso => new Date(iso).toLocaleString("es-PE",{timeZone:"America/Lima",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+
+async function renderAtajo(){
+  $("#ak-datos").innerHTML = copyRow("URL de categorías", RPC+"categorias_atajo") + copyRow("URL para registrar", RPC+"registrar_atajo") + copyRow("Clave pública (encabezado apikey)", SUPABASE_KEY);
+  $("#ak-new").hidden = !claveNueva;
+  if(claveNueva) $("#ak-new").innerHTML = `<div class="msg">Copia la clave ahora: por seguridad no se vuelve a mostrar.</div>` + copyRow("Tu clave personal", claveNueva, true);
+  $("#ak-test").hidden = !claveNueva;
+  if(state.demo){ $("#ak-gen").disabled = true; $("#ak-status").textContent = "No disponible en el ejemplo"; return; }
+  $("#ak-gen").disabled = false;
+  const { data, error } = await sb.from("claves_atajo").select("pista,created_at,ultimo_uso").maybeSingle();
+  if(error){ $("#ak-status").textContent = ""; return; }
+  $("#ak-gen").textContent = data ? "Generar una clave nueva" : "Generar mi clave";
+  $("#ak-status").textContent = data ? `Clave activa ····${data.pista} · ${data.ultimo_uso ? "último uso "+fHora(data.ultimo_uso) : "aún sin usar"}` : "Aún no tienes clave";
+}
+$("#ak-gen").onclick = async () => {
+  const b=$("#ak-gen");
+  if(b.textContent.includes("nueva") && !b.classList.contains("confirm")){
+    b.classList.add("confirm"); b.textContent="¿Seguro? El atajo actual dejará de funcionar"; akMsg("Toca otra vez para confirmar.");
+    setTimeout(()=>{ if(b.classList.contains("confirm")){ b.classList.remove("confirm"); akMsg(""); renderAtajo(); } },4000); return;
+  }
+  b.classList.remove("confirm"); b.disabled=true; akMsg("");
+  try{ const { data, error } = await sb.rpc("generar_clave_atajo"); if(error) throw error; claveNueva = data; await renderAtajo(); akMsg("Clave creada. Si ya tenías el atajo armado, reemplaza la clave en las dos acciones \"Obtener contenido de URL\"."); }
+  catch(err){ akMsg(traducir(err), true); }
+  finally{ b.disabled=false; }
+};
+$("#ak-test").onclick = async () => {
+  try{
+    const r = await fetch(RPC+"categorias_atajo",{method:"POST",headers:{apikey:SUPABASE_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_clave:claveNueva,p_tipo:"Gasto"})});
+    const j = await r.json(); if(!r.ok) throw new Error(j.message);
+    akMsg(`La clave funciona: el atajo verá ${j.length} categorías de gasto.`); renderAtajo();
+  } catch(err){ akMsg(traducir(err), true); }
+};
+
+function catBars(list, tipo){
+  const total = sum(list);
+  const by = {}; list.forEach(m=> by[m.categoria]=(by[m.categoria]||0)+m.monto);
+  const rows = Object.entries(by).sort((a,b)=>b[1]-a[1]);
+  if(!rows.length) return `<div class="empty">Sin ${tipo==="Gasto"?"gastos":"entradas"} en este periodo</div>`;
+  const max = rows[0][1];
+  return rows.map(([c,v])=>`<div class="cat-row ${tipo==="Ingreso"?"inc":""}"><span>${esc(c)}</span><span class="num">${fmt(v)}<span class="pct">${(v/total*100).toFixed(1)}%</span></span><div class="bar"><i style="width:${(v/max*100).toFixed(1)}%"></i></div></div>`).join("");
+}
+
+function renderResumen(){
+  fillMesSelect($("#r-mes"), state.rMes); state.rMes = $("#r-mes").value;
+  const list = state.rMes==="todo" ? state.movs : state.movs.filter(m=>m.fecha.startsWith(state.rMes));
+  const ins = list.filter(m=>m.tipo==="Ingreso"), outs = list.filter(m=>m.tipo==="Gasto");
+  const tin=sum(ins), tout=sum(outs), propia=sum(outs.filter(m=>PROPIA.includes(m.categoria)));
+  const saldoTotal = sum(state.movs.filter(m=>m.tipo==="Ingreso")) - sum(state.movs.filter(m=>m.tipo==="Gasto"));
+  $("#k-saldo").textContent = fmt(state.rMes==="todo" ? saldoTotal : tin-tout);
+  $("#k-saldo-note").textContent = state.rMes==="todo" ? `${state.movs.length} movimientos registrados` : `Saldo de ${mesLabel(state.rMes).toLowerCase()} · acumulado total ${fmt(saldoTotal)}`;
+  $("#k-in").textContent = fmt(tin); $("#k-out").textContent = fmt(tout); $("#k-real").textContent = fmt(tout-propia);
+  $("#r-sub").textContent = state.rMes==="todo" ? "Todo el historial" : mesLabel(state.rMes);
+  $("#cats-out").innerHTML = catBars(outs,"Gasto"); $("#cats-in").innerHTML = catBars(ins,"Ingreso");
+  $("#cat-total").textContent = fmt(tout);
+
+  const meses = mesesDisponibles().slice(0,6).reverse();
+  const data = meses.map(ym=>{ const l=state.movs.filter(m=>m.fecha.startsWith(ym)); return {ym, i:sum(l.filter(m=>m.tipo==="Ingreso")), o:sum(l.filter(m=>m.tipo==="Gasto"))}; });
+  const max = Math.max(1,...data.flatMap(d=>[d.i,d.o]));
+  $("#months").innerHTML = data.length ? data.map(d=>`<div class="month" title="${mesLabel(d.ym)}: entradas ${fmt(d.i)}, salidas ${fmt(d.o)}"><div class="pair"><i class="a" style="height:${d.i/max*100}%"></i><i class="b" style="height:${d.o/max*100}%"></i></div><span>${mesCorto(d.ym)}</span></div>`).join("") : `<div class="empty" style="grid-column:1/-1">Aún no hay meses registrados</div>`;
+
+  const rec = state.movs.slice(0,6);
+  $("#recent").innerHTML = rec.length ? rec.map(m=>`<div class="m-item" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:10px 0;border-bottom:1px solid var(--line)"><span class="desc">${esc(m.descripcion||m.categoria)}</span><span class="num ${m.tipo==="Ingreso"?"in":"out"}" style="text-align:right">${m.tipo==="Ingreso"?"+":"−"}${fmt(m.monto)}</span><span class="meta">${fDate(m.fecha)} · ${esc(m.categoria)}</span></div>`).join("") : `<div class="empty">Registra tu primer movimiento con el botón +</div>`;
+}
+
+const ORIGEN = {web:"web", atajo:"atajo iPhone", hoja:"hoja", importado:"importado", foto:"foto"};
+function registro(m){
+  const quien = m.registrado_nombre || (state.demo ? "Ejemplo" : "—");
+  const via = m.origen && m.origen!=="web" ? ` <span class="chip">${esc(ORIGEN[m.origen]||m.origen)}</span>` : "";
+  const hora = m.created_at && !state.demo ? `<div class="meta">${fHora(m.created_at)}</div>` : "";
+  return `${esc(quien)}${via}${hora}`;
+}
+function puedeBorrar(m){ return state.demo || !state.cuenta || state.cuenta.propia || (state.cuenta.registrar && m.registrado_por===state.user.id); }
+
+function renderMovs(){
+  const f = state.f;
+  const allCats = [...state.cats.Ingreso, ...state.cats.Gasto, ...state.movs.map(m=>m.categoria)];
+  const cats = [...new Set(allCats)];
+  $("#f-cat").innerHTML = '<option value="">Todas las categorías</option>' + cats.map(c=>`<option>${esc(c)}</option>`).join("");
+  $("#f-cat").value = f.cat; $("#f-tipo").value = f.tipo;
+  fillMesSelect($("#f-mes"), f.mes); f.mes = $("#f-mes").value;
+  const q = f.q.toLowerCase();
+  const list = state.movs.filter(m=> (!f.tipo||m.tipo===f.tipo) && (!f.cat||m.categoria===f.cat) && (f.mes==="todo"||m.fecha.startsWith(f.mes)) && (!q || `${m.descripcion} ${m.persona} ${m.subcategoria}`.toLowerCase().includes(q)));
+  const tin=sum(list.filter(m=>m.tipo==="Ingreso")), tout=sum(list.filter(m=>m.tipo==="Gasto"));
+  $("#f-totals").innerHTML = `<span>${list.length} movimientos</span><span>Entradas <b class="num in">${fmt(tin)}</b></span><span>Salidas <b class="num out">${fmt(tout)}</b></span><span>Neto <b class="num">${fmt(tin-tout)}</b></span>`;
+  const sign = m => m.tipo==="Ingreso" ? "+" : "−";
+  $("#t-body").innerHTML = list.length ? list.map(m=>`<tr>
+    <td class="num" style="white-space:nowrap">${fDate(m.fecha)}</td>
+    <td><span class="chip ${m.tipo==="Ingreso"?"in":"out"}">${m.tipo}</span></td>
+    <td>${esc(m.categoria)}${m.subcategoria?`<div class="meta">${esc(m.subcategoria)}</div>`:""}</td>
+    <td class="desc">${esc(m.descripcion)}</td>
+    <td>${esc(m.persona)}</td><td>${esc(m.medio)}</td>
+    <td>${registro(m)}</td>
+    <td class="r num ${m.tipo==="Ingreso"?"in":"out"}" style="white-space:nowrap">${sign(m)}${fmt(m.monto)}</td>
+    <td class="r"><button class="del" data-ver="${m.id}">Detalle</button></td></tr>`).join("") : `<tr><td colspan="9" class="empty">No hay movimientos con estos filtros</td></tr>`;
+  $("#m-list").innerHTML = list.length ? list.map(m=>`<div class="m-item">
+    <span class="desc">${esc(m.descripcion||m.categoria)}${m.origen==="atajo"?` <span class="chip">atajo</span>`:""}</span>
+    <span class="num ${m.tipo==="Ingreso"?"in":"out"}">${sign(m)}${fmt(m.monto)}</span>
+    <span class="meta">${fDate(m.fecha)} · ${esc(m.categoria)}${m.subcategoria?" · "+esc(m.subcategoria):""}${m.persona?" · "+esc(m.persona):""}</span>
+    <span class="meta" style="grid-column:1/-1">Registró: ${registro(m)}</span>
+    <button class="del" data-ver="${m.id}" style="justify-self:end">Detalle</button></div>`).join("") : `<div class="empty">No hay movimientos con estos filtros</div>`;
+}
+$("#r-mes").onchange = e => { state.rMes = e.target.value; renderResumen(); };
+$("#f-tipo").onchange = e => { state.f.tipo = e.target.value; renderMovs(); };
+$("#f-cat").onchange = e => { state.f.cat = e.target.value; renderMovs(); };
+$("#f-mes").onchange = e => { state.f.mes = e.target.value; renderMovs(); };
+$("#f-q").oninput = e => { state.f.q = e.target.value; renderMovs(); };
+
+/* Eliminar no es directo: 1) abrir el detalle, 2) tocar "Eliminar…", 3) escribir el monto exacto.
+   La base de datos guarda una copia de todo lo eliminado (movimientos_eliminados). */
+let detMov = null;
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-ver]"); if(!b) return;
+  const m = state.movs.find(x=>x.id===b.dataset.ver); if(!m) return;
+  detMov = m;
+  $("#det-body").innerHTML = [
+    ["Fecha", fDate(m.fecha)], ["Tipo", esc(m.tipo==="Ingreso"?"Entrada":"Salida")],
+    ["Categoría", esc(m.categoria)+(m.subcategoria?` · ${esc(m.subcategoria)}`:"")],
+    ["Descripción", esc(m.descripcion||"—")], ["Persona", esc(m.persona||"—")], ["Medio", esc(m.medio||"—")],
+    ["Monto", `<b class="num ${m.tipo==="Ingreso"?"in":"out"}">${fmt(m.monto)}</b>`], ["Registró", registro(m)]
+  ].map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("");
+  $("#det-open-del").hidden = !puedeBorrar(m);
+  $("#det-del").hidden = true; $("#det-check").value = ""; $("#det-del-btn").disabled = true; $("#det-msg").hidden = true;
+  $("#det-monto").textContent = Number(m.monto).toFixed(2);
+  $("#det").showModal();
+});
+$("#det-close").onclick = () => $("#det").close();
+$("#det-open-del").onclick = () => { $("#det-open-del").hidden = true; $("#det-del").hidden = false; setTimeout(()=>$("#det-check").focus(),50); };
+$("#det-check").oninput = e => {
+  const v = parseFloat(String(e.target.value).replace(",", "."));
+  $("#det-del-btn").disabled = !(detMov && Math.abs(v - Number(detMov.monto)) < 0.005);
+};
+$("#det-del-btn").onclick = async () => {
+  const b = $("#det-del-btn"); b.disabled = true;
+  try{ await api.del(detMov.id); $("#det").close(); toast("Movimiento eliminado (queda una copia de respaldo)"); render(); }
+  catch(err){ const el=$("#det-msg"); el.textContent = traducir(err); el.hidden = false; b.disabled = false; }
+};
+
+/* ---------- Nuevo movimiento ---------- */
+let tipoSel = "Gasto";
+function setTipo(t){
+  tipoSel = t;
+  $$(".seg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.t===t));
+  $("#m-cat").innerHTML = state.cats[t].map(c=>`<option>${esc(c)}</option>`).join("");
+  updSubs();
+}
+function updSubs(){ $("#subs").innerHTML = (SUBS[$("#m-cat").value]||[]).map(s=>`<option value="${esc(s)}">`).join(""); }
+$$(".seg button").forEach(b=> b.onclick = () => setTipo(b.dataset.t));
+$("#m-cat").onchange = updSubs;
+function openNew(){
+  $("#mov-form").reset(); $("#mov-msg").hidden = true;
+  setTipo("Gasto"); $("#m-fecha").value = today();
+  $("#dlg").showModal(); setTimeout(()=>$("#m-monto").focus(),50);
+}
+document.addEventListener("click", e => { if(e.target.closest("[data-new]")) openNew(); });
+$("#m-cancel").onclick = () => $("#dlg").close();
+$("#mov-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const monto = parseFloat($("#m-monto").value);
+  if(!(monto>0)){ const el=$("#mov-msg"); el.textContent="Escribe un monto mayor que 0."; el.hidden=false; return; }
+  const mov = { fecha:$("#m-fecha").value, tipo:tipoSel, categoria:$("#m-cat").value, subcategoria:$("#m-sub").value.trim()||null,
+    descripcion:$("#m-desc").value.trim(), persona:$("#m-persona").value.trim()||null, medio:$("#m-medio").value||null, monto, origen:"web" };
+  const btn=$("#m-save"); btn.disabled=true;
+  try{ await api.add(mov); $("#dlg").close(); toast(`${tipoSel} de ${fmt(monto)} guardado`); render(); }
+  catch(err){ const el=$("#mov-msg"); el.textContent=traducir(err); el.hidden=false; }
+  finally{ btn.disabled=false; }
+});
+
+/* ---------- Compartir mi cuenta ---------- */
+function sMsg(t, err){ const el=$("#s-msg"); el.textContent=t; el.className="msg"+(err?" err":" ok"); el.hidden=!t; }
+async function renderCompartir(){
+  if(state.demo || !state.cuenta || !state.cuenta.propia) return;
+  const { data, error } = await sb.from("accesos").select("id,invitado_correo,puede_registrar,created_at").eq("dueno_id", state.user.id).order("created_at");
+  if(error){ $("#s-list").innerHTML = `<div class="empty">${esc(traducir(error))}</div>`; return; }
+  $("#s-list").innerHTML = data.length ? data.map(a=>`<div class="share-row">
+      <span class="desc" style="overflow-wrap:anywhere">${esc(a.invitado_correo)}</span>
+      <button class="btn small ghost" data-quitar="${a.id}">Quitar acceso</button>
+      <label class="check meta"><input type="checkbox" data-permiso="${a.id}" ${a.puede_registrar?"checked":""}> Puede registrar</label>
+      <span class="meta" style="text-align:right">desde ${fHora(a.created_at)}</span></div>`).join("")
+    : `<div class="empty">Nadie más tiene acceso a tu cuenta</div>`;
+}
+$("#s-form").addEventListener("submit", async e => {
+  e.preventDefault(); sMsg("");
+  const correo = $("#s-correo").value.trim().toLowerCase();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)){ sMsg("Escribe un correo válido.", true); return; }
+  if(correo === (state.user.email||"").toLowerCase()){ sMsg("Ese es tu propio correo.", true); return; }
+  const b=$("#s-submit"); b.disabled=true;
+  try{
+    const { error } = await sb.from("accesos").insert({ invitado_correo:correo, puede_registrar:$("#s-reg").checked });
+    if(error){ if(/duplicate|unique/i.test(error.message)) throw new Error("Esa persona ya tiene acceso."); throw error; }
+    $("#s-form").reset(); $("#s-reg").checked = true;
+    sMsg(`Listo. ${correo} verá tu cuenta la próxima vez que entre a Caja Personal.`);
+    renderCompartir();
+  } catch(err){ sMsg(traducir(err), true); }
+  finally{ b.disabled=false; }
+});
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-quitar]"); if(!b) return;
+  if(!b.classList.contains("confirm")){ b.classList.add("confirm"); b.textContent="¿Quitar?"; setTimeout(()=>{ if(b.isConnected){ b.classList.remove("confirm"); b.textContent="Quitar acceso"; } },3000); return; }
+  b.disabled = true;
+  const { error } = await sb.from("accesos").delete().eq("id", b.dataset.quitar);
+  if(error){ toast(traducir(error)); b.disabled=false; return; }
+  toast("Acceso quitado"); renderCompartir();
+});
+document.addEventListener("change", async e => {
+  const c = e.target.closest("[data-permiso]"); if(!c) return;
+  const { error } = await sb.from("accesos").update({ puede_registrar:c.checked }).eq("id", c.dataset.permiso);
+  if(error){ toast(traducir(error)); c.checked = !c.checked; return; }
+  toast(c.checked ? "Ahora puede registrar movimientos" : "Ahora solo puede ver");
+});
+
+/* ---------- Cuentas (administrador) ---------- */
+const PLANTILLA_URL = "https://docs.google.com/spreadsheets/d/1KnIdiUA9m_fbymhJFYSKzbd32V4LFjciD0KLdYtvCdw/copy";
+const APP_URL = "https://fabricioonpoint-bot.github.io/caja-personal/";
+let cuentas = [];
+async function adminApi(accion, datos={}){
+  const { data, error } = await sb.functions.invoke("admin", { body:{ accion, ...datos } });
+  if(error){ let m = error.message; try{ const j = await error.context.json(); m = j.error || m; }catch(_){} throw new Error(m); }
+  if(data && data.error) throw new Error(data.error);
+  return data;
+}
+function cMsg(t, err){ const el=$("#c-msg"); el.textContent=t; el.className="msg"+(err?" err":" ok"); el.hidden=!t; }
+function genPass(){
+  const L="abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ", D="23456789", A=L+D+"!#%*";
+  const r = n => { const a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]%n; };
+  let p = L[r(L.length)] + D[r(D.length)]; while(p.length<10) p += A[r(A.length)];
+  return p.split("").sort(()=>r(3)-1).join("");
+}
+function checkCPass(){ const r = passRules($("#c-pass").value); $$("#c-rules li").forEach(li=> li.classList.toggle("ok", r[li.dataset.r])); return r.len && r.let && r.dig; }
+$("#c-pass").addEventListener("input", checkCPass);
+$("#c-gen").onclick = () => { $("#c-pass").value = genPass(); checkCPass(); };
+
+async function renderCuentas(){
+  if(!state.admin) return;
+  const pl = $("#c-plantilla"); pl.href = PLANTILLA_URL; pl.hidden = false;
+  try{ cuentas = (await adminApi("listar")).cuentas || []; }
+  catch(err){ $("#c-body").innerHTML = `<tr><td colspan="7" class="empty">${esc(err.message)}</td></tr>`; return; }
+  const hoja = c => c.hoja_pista ? (c.hoja_ultimo_uso ? `<span class="chip in">Conectada</span>` : `<span class="chip">Clave creada</span>`) : `<span class="chip out">Sin hoja</span>`;
+  const btns = c => `<button class="btn small ghost" data-clave="${c.user_id}">Clave de hoja</button> <button class="btn small ghost" data-pass="${c.user_id}">Contraseña</button>`;
+  $("#c-body").innerHTML = cuentas.length ? cuentas.map(c=>`<tr>
+    <td class="desc">${esc(c.nombre||"—")}${c.es_admin?` <span class="chip">admin</span>`:""}</td><td>${esc(c.correo)}</td>
+    <td class="meta" style="white-space:nowrap">${fHora(c.creada)}</td><td class="r num">${c.movimientos}</td>
+    <td class="r num" style="white-space:nowrap">${fmt(c.saldo)}</td><td>${hoja(c)}</td>
+    <td class="r" style="white-space:nowrap">${btns(c)}</td></tr>`).join("") : `<tr><td colspan="7" class="empty">Aún no hay cuentas</td></tr>`;
+  $("#c-list").innerHTML = cuentas.map(c=>`<div class="m-item">
+    <span class="desc">${esc(c.nombre||"—")}${c.es_admin?` <span class="chip">admin</span>`:""}</span><span class="num">${fmt(c.saldo)}</span>
+    <span class="meta">${esc(c.correo)} · ${c.movimientos} movimientos</span><span>${hoja(c)}</span>
+    <div style="grid-column:1/-1;display:flex;gap:8px;margin-top:6px">${btns(c)}</div></div>`).join("") || `<div class="empty">Aún no hay cuentas</div>`;
+}
+
+$("#c-form").addEventListener("submit", async e => {
+  e.preventDefault(); cMsg("");
+  const nombre=$("#c-nombre").value.trim(), correo=$("#c-correo").value.trim().toLowerCase(), password=$("#c-pass").value;
+  if(!nombre){ cMsg("Escribe el nombre.", true); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)){ cMsg("Escribe un correo válido.", true); return; }
+  if(!checkCPass()){ cMsg("La contraseña necesita 8 caracteres o más, con letras y números.", true); return; }
+  const b=$("#c-submit"); b.disabled=true;
+  try{
+    await adminApi("crear", { nombre, correo, password });
+    const texto = `Hola ${nombre}, ya tienes tu cuenta en Caja Personal.\nEntra aquí: ${APP_URL}\nCorreo: ${correo}\nContraseña: ${password}`;
+    $("#c-entrega-datos").innerHTML = copyRow("Enlace", APP_URL) + copyRow("Correo", correo) + copyRow("Contraseña", password, true);
+    $("#c-copiar-todo").onclick = () => copiar(texto);
+    $("#c-entrega").hidden = false;
+    $("#c-form").reset(); checkCPass();
+    cMsg(`Cuenta de ${nombre} creada.`);
+    renderCuentas();
+  } catch(err){ cMsg(err.message, true); }
+  finally{ b.disabled=false; }
+});
+
+document.addEventListener("click", async e => {
+  const bc = e.target.closest("[data-clave]"), bp = e.target.closest("[data-pass]");
+  if(!bc && !bp) return;
+  const c = cuentas.find(x=>x.user_id===(bc||bp).dataset[bc?"clave":"pass"]); if(!c) return;
+  const box = $("#c-clave");
+  if(bc){
+    if(c.hoja_pista && !confirm(`${c.nombre||c.correo} ya tiene una clave de hoja. Si creas otra, su hoja actual deja de sincronizar hasta que pegues la nueva. ¿Continuar?`)) return;
+    try{
+      const { clave } = await adminApi("clave_hoja", { user_id:c.user_id });
+      box.innerHTML = `<h3>Clave de hoja de ${esc(c.nombre||c.correo)}</h3><p class="meta" style="margin:0;font-size:14px">Pégala en su hoja: menú <b>Caja Personal → Conectar con la plataforma</b>. No se vuelve a mostrar.</p>` + copyRow("Clave de hoja", clave, true);
+      box.hidden = false; box.scrollIntoView({behavior:"smooth", block:"center"}); renderCuentas();
+    } catch(err){ toast(err.message); }
+  } else {
+    const nueva = genPass();
+    box.innerHTML = `<h3>Nueva contraseña para ${esc(c.nombre||c.correo)}</h3>
+      <div class="field"><div class="pass-wrap"><input id="np-val" type="text" value="${esc(nueva)}"><button type="button" id="np-gen">Generar</button></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" id="np-ok">Guardar contraseña</button><button class="btn small ghost" id="np-cancel">Cancelar</button></div>`;
+    box.hidden = false; box.scrollIntoView({behavior:"smooth", block:"center"});
+    $("#np-gen").onclick = () => $("#np-val").value = genPass();
+    $("#np-cancel").onclick = () => box.hidden = true;
+    $("#np-ok").onclick = async () => {
+      const pw = $("#np-val").value; const r = passRules(pw);
+      if(!(r.len&&r.let&&r.dig)){ toast("Necesita 8 caracteres o más, con letras y números"); return; }
+      try{ await adminApi("password", { user_id:c.user_id, password:pw });
+        box.innerHTML = `<h3>Contraseña cambiada</h3>` + copyRow("Correo", c.correo) + copyRow("Nueva contraseña", pw, true);
+      } catch(err){ toast(err.message); }
+    };
+  }
+});
+
+/* ---------- Inicio ---------- */
+(async function init(){
+  if(!sb) return;
+  // Solo el administrador crea cuentas: "Crear cuenta" aparece únicamente mientras no exista administrador.
+  try{ const { data } = await sb.rpc("hay_admin"); if(data === true){ $(".tabs").hidden = true; setMode("login"); } } catch(e){}
+  try{
+    const { data } = await sb.auth.getSession();
+    if(data && data.session) await enter(data.session.user);
+  } catch(e){}
+})();
+</script>
+
+</body>
+</html>
