@@ -198,6 +198,13 @@ tbody tr:hover td{background:var(--surface-2)}
 td.r,th.r{text-align:right}
 .chip{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface-2);white-space:nowrap}
 .chip.in{background:var(--in-soft);color:var(--in)} .chip.out{background:var(--out-soft);color:var(--out)}
+.chip.off{color:var(--muted)}
+.fuera{color:var(--muted)}
+.cg-rows{display:grid;gap:0}
+.cg-rows>div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-weight:600;font-size:14.5px}
+.cg-rows>div span:first-child{color:var(--muted)}
+.cg-rows>div.total{border-bottom:0;font-size:16px;padding-top:14px}
+.cg-rows>div.total span:first-child{color:var(--fg)}
 .desc{font-weight:600}
 .meta{font-size:12.5px;color:var(--muted)}
 .del{border:0;background:none;color:var(--muted);font-size:13px;padding:2px 4px;font-weight:600}
@@ -408,14 +415,19 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
         </div>
       </div>
       <div class="hero">
-        <div class="main"><div class="label">Saldo disponible (a cuenta)</div><div class="big" id="k-saldo">S/ 0.00</div><div class="note" id="k-saldo-note"></div></div>
-        <div class="kpi"><div class="label">Entradas</div><div class="val in" id="k-in"></div></div>
-        <div class="kpi"><div class="label">Salidas</div><div class="val out" id="k-out"></div></div>
-        <div class="kpi real"><div class="label">Gasto real</div><div class="val" id="k-real"></div><div class="note">Sin transferencias ni efectivo para ti</div></div>
+        <div class="main"><div class="label" id="k-saldo-label">Saldo disponible (a cuenta)</div><div class="big" id="k-saldo">S/ 0.00</div><div class="note" id="k-saldo-note"></div></div>
+        <div class="kpi"><div class="label" id="k-in-label">Entradas</div><div class="val in" id="k-in"></div></div>
+        <div class="kpi"><div class="label" id="k-out-label">Salidas</div><div class="val out" id="k-out"></div></div>
+        <div class="kpi real"><div class="label" id="k-real-label">Gasto real</div><div class="val" id="k-real"></div><div class="note" id="k-real-note">Sin transferencias ni efectivo para ti</div></div>
+      </div>
+      <div class="panel" id="cg-panel" hidden>
+        <div class="panel-head"><h3>Cómo se forma la caja personal</h3><span class="meta" id="cg-sync"></span></div>
+        <div class="cg-rows" id="cg-rows"></div>
+        <p class="meta" style="margin:0;font-size:13px">Caja personal = auto (ingresos − gastos) + utilidad de ventas + otros ingresos − gastos personales. Los abonos a tarjetas, las cuotas de deuda y los préstamos recibidos se registran, pero no suman ni restan.</p>
       </div>
       <div class="grid2">
         <div class="panel">
-          <div class="panel-head"><h3>Gastos por categoría</h3><span class="meta" id="cat-total"></span></div>
+          <div class="panel-head"><h3 id="cat-title">Gastos por categoría</h3><span class="meta" id="cat-total"></span></div>
           <div class="cats" id="cats-out"></div>
         </div>
         <div class="panel">
@@ -426,7 +438,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
       </div>
       <div class="grid2">
         <div class="panel">
-          <div class="panel-head"><h3>Entradas por origen (FAB)</h3></div>
+          <div class="panel-head"><h3 id="in-title">Entradas por origen (FAB)</h3></div>
           <div class="cats" id="cats-in"></div>
         </div>
         <div class="panel">
@@ -443,15 +455,16 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
         <button class="btn small new-desk" data-new>+ Nuevo movimiento</button>
       </div>
       <div class="controls">
-        <select id="f-tipo" aria-label="Tipo"><option value="">Todos los tipos</option><option>Ingreso</option><option>Gasto</option></select>
+        <select id="f-tipo" aria-label="Tipo"></select>
+        <select id="f-amb" aria-label="Ámbito" hidden></select>
         <select id="f-cat" aria-label="Categoría"><option value="">Todas las categorías</option></select>
         <select id="f-mes" aria-label="Mes"></select>
-        <input id="f-q" type="search" placeholder="Buscar descripción o persona" aria-label="Buscar">
+        <input id="f-q" type="search" placeholder="Buscar descripción, persona o ID" aria-label="Buscar">
       </div>
       <div class="totals" id="f-totals"></div>
       <div class="panel" style="padding:8px 16px">
         <div class="table-wrap"><table>
-          <thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Descripción</th><th>Persona</th><th>Medio</th><th>Registró</th><th class="r">Monto</th><th></th></tr></thead>
+          <thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Descripción</th><th id="th-persona">Persona</th><th>Medio</th><th>Registró</th><th class="r">Monto</th><th></th></tr></thead>
           <tbody id="t-body"></tbody>
         </table></div>
         <div class="list-mobile" id="m-list"></div>
@@ -601,12 +614,23 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
 
 <dialog id="dlg">
   <form id="mov-form" class="sheet">
-    <h3 style="font-size:20px">Nuevo movimiento</h3>
-    <div class="seg" role="group" aria-label="Tipo">
+    <h3 style="font-size:20px" id="mov-title">Nuevo movimiento</h3>
+    <div class="row2" id="cg-top" hidden>
+      <div class="field"><label for="m-mov">Movimiento</label><select id="m-mov"></select></div>
+      <div class="field"><label for="m-amb">Ámbito</label><select id="m-amb"></select></div>
+    </div>
+    <div class="seg" id="m-seg" role="group" aria-label="Tipo">
       <button type="button" data-t="Ingreso" aria-pressed="false">Ingreso</button>
       <button type="button" data-t="Gasto" aria-pressed="true">Gasto</button>
     </div>
     <div class="field amount"><label for="m-monto">Monto (S/)</label><input id="m-monto" type="number" inputmode="decimal" step="0.01" min="0.01" required placeholder="0.00"></div>
+    <div id="cg-venta" hidden style="display:grid;gap:8px">
+      <div class="row2">
+        <div class="field"><label for="m-costo">Costo del producto (S/)</label><input id="m-costo" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+        <div class="field"><label for="m-envio">Envío / gasto de venta (S/)</label><input id="m-envio" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+      </div>
+      <p class="meta" style="margin:0;font-size:13px">A la caja entra la utilidad (venta − costo − envío). El stock se descuenta en la hoja, en REGISTRAR VENTA.</p>
+    </div>
     <div class="row2">
       <div class="field"><label for="m-cat">Categoría</label><select id="m-cat" required></select></div>
       <div class="field"><label for="m-sub">Subcategoría</label><input id="m-sub" list="subs" placeholder="Opcional"></div>
@@ -614,10 +638,18 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
     <datalist id="subs"></datalist>
     <div class="field"><label for="m-desc">Descripción</label><input id="m-desc" required placeholder="Ej. Cena con amigos"></div>
     <div class="row2">
-      <div class="field"><label for="m-persona">Persona</label><input id="m-persona" placeholder="A quién o de quién"></div>
+      <div class="field" id="fld-persona"><label for="m-persona">Persona</label><input id="m-persona" placeholder="A quién o de quién"></div>
+      <div class="field" id="fld-tg" hidden><label for="m-tg">Tipo de gasto</label><select id="m-tg"></select></div>
       <div class="field"><label for="m-medio">Medio</label><select id="m-medio"><option value="">—</option><option>Efectivo</option><option>Yape</option><option>Depósito</option><option>Transferencia</option><option>Cajero</option><option>Tarjeta</option></select></div>
     </div>
     <div class="field"><label for="m-fecha">Fecha</label><input id="m-fecha" type="date" required></div>
+    <div id="cg-bottom" hidden style="display:grid;gap:14px">
+      <div class="row2">
+        <div class="field"><label for="m-estado">Estado</label><select id="m-estado"></select></div>
+        <div class="field"><label for="m-cuenta">Cuenta</label><select id="m-cuenta"></select></div>
+      </div>
+      <div class="field"><label for="m-nota">Nota</label><input id="m-nota" placeholder="Opcional"></div>
+    </div>
     <div id="mov-msg" class="msg err" hidden></div>
     <div class="actions"><button type="button" class="btn ghost" id="m-cancel">Cancelar</button><button class="btn" id="m-save">Guardar</button></div>
   </form>
@@ -626,7 +658,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
   <div class="sheet">
     <h3 style="font-size:20px">Detalle del movimiento</h3>
     <dl class="det-grid" id="det-body"></dl>
-    <button type="button" class="link danger" id="det-open-del" style="justify-self:start">Eliminar…</button>
+    <div style="display:flex;gap:18px;flex-wrap:wrap"><button type="button" class="link" id="det-edit">Editar</button><button type="button" class="link danger" id="det-open-del">Eliminar…</button></div>
     <div class="del-zone" id="det-del" hidden>
       <h4>¿Eliminar este movimiento?</h4>
       <p>Para confirmar, escribe el monto exacto: <b class="num" id="det-monto"></b></p>
@@ -651,6 +683,40 @@ const DEFAULT_CATS = {
 const SUBS = {"Alimentos":["Cena","Almuerzo","Desayuno","Comida","Mercado"],"Compras personales":["Ropa","Calzado","Accesorios","Tecnología"],"Transferencia a mi cuenta":["Cuenta BCP"],"Material de trabajo":["Herramientas","Materiales"]};
 // Pases a tu propia cuenta: no cuentan como gasto real
 const PROPIA = ["Transferencia a mi cuenta","Efectivo para mí"];
+
+// Cuentas de "control general" (sincronizadas con la hoja Control general de gastos personales)
+const VALIDOS = ["Pagado","Cobrado","Registrado","Histórico"];
+const CG = {
+  movs:["Gasto","Ingreso","Venta","Pago tarjeta","Pago deuda","Préstamo recibido","Ahorro","Compra mercadería","Cambio USD"],
+  ambitos:["Personal","Negocio","Auto","Ventas","Financiación","Cambio"],
+  estados:["Pagado","Pendiente","Cobrado","Registrado","Histórico","Fecha por confirmar","Anulado"],
+  medios:["Efectivo","Yape/Plin","Transferencia","Tarjeta débito","Tarjeta crédito","Débito automático","Otro"],
+  cuentas:["Efectivo","BCP","Interbank","Yape","Plin","SIP","Otra cuenta"],
+  tiposGasto:["Variable","Fijo","Suscripción","Deuda","No aplica"],
+  cats:{
+    "Gasto":{ Auto:["Combustible","Cochera","Lavado de carro","Cambio de Aceite","Mecánico","ARREGLOS","Seguro","SOAT","Otros"],
+              _:["Alimentacion","Hogar","Servicios básicos","Educación","Personal","Salud","Entretenimiento","Herramientas IA","Herramientas de trabajo","Transporte","Regalos y familia","Negocio","Otros"] },
+    "Ingreso":{ Auto:["Trabajo","ID","UBER","CAB","Otros ingresos"], _:["Aportes y donaciones","Otros ingresos","Trabajo","Ingresos"] },
+    "Venta":{ _:["Venta directa","En línea","Feria"] }, "Préstamo recibido":{ _:["Préstamo recibido"] }, "Cambio USD":{ _:["Cambio de moneda"] },
+    "Pago tarjeta":{ _:["Tarjetas"] }, "Pago deuda":{ _:["Deudas"] }, "Ahorro":{ _:["Ahorro e inversión"] }, "Compra mercadería":{ _:["Negocio"] }
+  },
+  ambitoDe:{ "Venta":"Ventas", "Préstamo recibido":"Financiación", "Cambio USD":"Cambio", "Compra mercadería":"Negocio" },
+  entra:["Ingreso","Venta","Préstamo recibido","Cambio USD"]
+};
+const mov = m => m.movimiento || m.tipo;
+// Efecto en la caja: lo calcula la base de datos (efecto_caja). Este respaldo aplica la misma regla a lo que aún no pasó por ella.
+function efecto(m){
+  if(m.efecto_caja != null) return Number(m.efecto_caja);
+  const mv = mov(m);
+  if(m.es_prueba) return 0;
+  if(m.movimiento && !VALIDOS.includes(m.estado)) return 0;
+  if(mv==="Pago tarjeta" || mv==="Pago deuda" || m.tipo_gasto==="Deuda") return 0;
+  if(mv==="Ingreso") return m.monto;
+  if(mv==="Venta") return m.monto - (Number(m.costo)||0) - (Number(m.envio)||0);
+  if(mv==="Gasto") return -m.monto;
+  return 0;
+}
+const sumE = arr => arr.reduce((a,m)=>a+efecto(m),0);
 
 // Datos de ejemplo inventados (no corresponden a ninguna persona real)
 const HOJA = [
@@ -683,7 +749,7 @@ const HOJA = [
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const fmt = n => "S/ " + Number(n||0).toLocaleString("es-PE",{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt = n => (Number(n)<0 ? "−" : "") + "S/ " + Math.abs(Number(n||0)).toLocaleString("es-PE",{minimumFractionDigits:2,maximumFractionDigits:2});
 const fDate = d => { const [y,m,dd] = d.split("-"); return `${dd}/${m}/${y}`; };
 const today = () => new Date().toLocaleDateString("en-CA",{timeZone:"America/Lima"});
 const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
@@ -696,26 +762,45 @@ function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clea
 let sb = null;
 try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { sb = null; }
 
-const state = { demo:false, user:null, cuenta:null, compartidas:[], movs:[], cats:{...DEFAULT_CATS}, view:"resumen", rMes:"todo", f:{tipo:"",cat:"",mes:"todo",q:""} };
+const state = { demo:false, cg:false, user:null, cuenta:null, compartidas:[], movs:[], cats:{...DEFAULT_CATS}, view:"resumen", rMes:"todo", f:{tipo:"",amb:"",cat:"",mes:"todo",q:""} };
+const norm = x => ({...x, monto:Number(x.monto)});
 
 const api = {
   async load(){
     if(state.demo){ return; }
     // Solo los movimientos de la cuenta elegida (la propia o una compartida contigo)
     const uid = state.cuenta.id;
-    const [m, c] = await Promise.all([
-      sb.from("movimientos").select("*").eq("user_id", uid).order("fecha",{ascending:false}).order("created_at",{ascending:false}),
-      sb.from("categorias").select("tipo,nombre").eq("user_id", uid).order("id")
-    ]);
-    if(m.error) throw m.error; if(c.error) throw c.error;
-    state.movs = m.data.map(x=>({...x, monto:Number(x.monto)}));
+    const c = await sb.from("categorias").select("tipo,nombre").eq("user_id", uid).order("id");
+    if(c.error) throw c.error;
+    // De 1000 en 1000: es el máximo que la base entrega por consulta
+    const todos = [];
+    for(let desde=0; ; desde+=1000){
+      const m = await sb.from("movimientos").select("*").eq("user_id", uid).order("fecha",{ascending:false}).order("created_at",{ascending:false}).order("id").range(desde, desde+999);
+      if(m.error) throw m.error;
+      todos.push(...m.data); if(m.data.length < 1000) break;
+    }
+    const eraCG = state.cg;
+    state.movs = todos.map(norm);
+    state.cg = state.movs.some(x=>x.movimiento);
+    if(state.cg && !eraCG){ const ym = today().slice(0,7); if(state.movs.some(x=>x.fecha.startsWith(ym))) state.rMes = ym; }
+    state.f.tipo = ""; state.f.amb = ""; state.f.cat = "";
     state.cats = {...DEFAULT_CATS};
     if(c.data.length){ state.cats = {Ingreso:[],Gasto:[]}; c.data.forEach(r=>state.cats[r.tipo].push(r.nombre)); }
   },
   async add(mov){
     if(state.demo){ state.movs.unshift({...mov, id:crypto.randomUUID(), created_at:new Date().toISOString()}); sortMovs(); return; }
     const { data, error } = await sb.from("movimientos").insert({...mov, user_id: state.cuenta.id}).select().single();
-    if(error) throw error; state.movs.unshift({...data, monto:Number(data.monto)}); sortMovs();
+    if(error) throw error; state.movs.unshift(norm(data)); sortMovs();
+  },
+  async update(id, cambios){
+    const i = state.movs.findIndex(m=>m.id===id); if(i<0) throw new Error("Ese movimiento ya no está en la lista.");
+    if(state.demo){ state.movs[i] = {...state.movs[i], ...cambios}; delete state.movs[i].efecto_caja; }
+    else {
+      const { data, error } = await sb.from("movimientos").update(cambios).eq("id",id).select();
+      if(error) throw error; if(!data.length) throw new Error("No tienes permiso para cambiar este movimiento.");
+      state.movs[i] = norm(data[0]);
+    }
+    sortMovs();
   },
   async del(id){
     if(!state.demo){ const { data, error } = await sb.from("movimientos").delete().eq("id",id).select("id"); if(error) throw error; if(!data.length) throw new Error("No tienes permiso para eliminar este movimiento."); }
@@ -838,7 +923,7 @@ function showApp(label){
   $("#demo-band").hidden = !state.demo;
   renderAcct(); render();
 }
-async function logout(){ if(!state.demo && sb) await sb.auth.signOut(); claveNueva=null; state.admin=false; $("#nav-cuentas").hidden=true; if(state.view==="cuentas") go("resumen"); state.demo=false; state.user=null; state.cuenta=null; state.compartidas=[]; state.movs=[]; showAuth(); }
+async function logout(){ if(!state.demo && sb) await sb.auth.signOut(); claveNueva=null; state.admin=false; state.cg=false; state.rMes="todo"; $("#nav-cuentas").hidden=true; if(state.view==="cuentas") go("resumen"); state.demo=false; state.user=null; state.cuenta=null; state.compartidas=[]; state.movs=[]; showAuth(); }
 $("#logout").onclick = logout; $("#logout-m").onclick = logout;
 
 
@@ -922,23 +1007,53 @@ function catBars(list, tipo){
 function renderResumen(){
   fillMesSelect($("#r-mes"), state.rMes); state.rMes = $("#r-mes").value;
   const list = state.rMes==="todo" ? state.movs : state.movs.filter(m=>m.fecha.startsWith(state.rMes));
-  const ins = list.filter(m=>m.tipo==="Ingreso"), outs = list.filter(m=>m.tipo==="Gasto");
+  // Entradas y salidas según su efecto en la caja (en cuentas simples: ingreso suma, gasto resta)
+  const cg = state.cg;
+  const ins = list.filter(m=>efecto(m)>0).map(m=>({...m, monto:efecto(m)})), outs = list.filter(m=>efecto(m)<0).map(m=>({...m, monto:-efecto(m)}));
   const tin=sum(ins), tout=sum(outs), propia=sum(outs.filter(m=>PROPIA.includes(m.categoria)));
-  const saldoTotal = sum(state.movs.filter(m=>m.tipo==="Ingreso")) - sum(state.movs.filter(m=>m.tipo==="Gasto"));
+  const saldoTotal = sumE(state.movs);
   $("#k-saldo").textContent = fmt(state.rMes==="todo" ? saldoTotal : tin-tout);
-  $("#k-saldo-note").textContent = state.rMes==="todo" ? `${state.movs.length} movimientos registrados` : `Saldo de ${mesLabel(state.rMes).toLowerCase()} · acumulado total ${fmt(saldoTotal)}`;
-  $("#k-in").textContent = fmt(tin); $("#k-out").textContent = fmt(tout); $("#k-real").textContent = fmt(tout-propia);
+  $("#k-saldo-label").textContent = cg ? (state.rMes==="todo" ? "Caja personal acumulada" : "Caja personal del mes") : "Saldo disponible (a cuenta)";
+  $("#k-saldo-note").textContent = state.rMes==="todo" ? `${state.movs.length} movimientos registrados` : `${cg?"Caja":"Saldo"} de ${mesLabel(state.rMes).toLowerCase()} · acumulado total ${fmt(saldoTotal)}`;
+  $("#k-in").textContent = fmt(tin); $("#k-out").textContent = fmt(tout);
+  $("#k-in-label").textContent = cg ? "Entra a la caja" : "Entradas"; $("#k-out-label").textContent = cg ? "Sale de la caja" : "Salidas";
   $("#r-sub").textContent = state.rMes==="todo" ? "Todo el historial" : mesLabel(state.rMes);
-  $("#cats-out").innerHTML = catBars(outs,"Gasto"); $("#cats-in").innerHTML = catBars(ins,"Ingreso");
-  $("#cat-total").textContent = fmt(tout);
+  $("#cg-panel").hidden = !cg;
+  if(cg){
+    const fuera = list.filter(m=>efecto(m)===0 && !m.es_prueba && VALIDOS.includes(m.estado));
+    $("#k-real-label").textContent = "Fuera de la caja"; $("#k-real").textContent = fmt(sum(fuera));
+    $("#k-real-note").textContent = "Tarjetas, deudas y préstamos";
+    const de = f => sumE(list.filter(f));
+    const filas = [
+      ["Ingresos del auto", de(m=>m.ambito==="Auto" && mov(m)==="Ingreso")],
+      ["Gastos del auto", de(m=>m.ambito==="Auto" && mov(m)==="Gasto")],
+      ["Utilidad de ventas", de(m=>mov(m)==="Venta")],
+      ["Otros ingresos", de(m=>m.ambito!=="Auto" && mov(m)==="Ingreso")],
+      ["Gastos personales", de(m=>m.ambito!=="Auto" && mov(m)==="Gasto")]
+    ];
+    const signo = v => fmt(v);
+    $("#cg-rows").innerHTML = filas.map(([k,v])=>`<div><span>${k}</span><span class="num ${v<0?"out":v>0?"in":""}">${signo(v)}</span></div>`).join("") +
+      `<div class="total"><span>${state.rMes==="todo"?"Caja personal acumulada":"Caja personal del mes"}</span><span class="num ${tin-tout<0?"out":"in"}">${signo(tin-tout)}</span></div>`;
+    const hoja = state.movs.filter(m=>m.cambio_via==="hoja").length;
+    $("#cg-sync").textContent = hoja ? "Sincronizada con tu hoja de Google" : "";
+    const pers = outs.filter(m=>m.ambito!=="Auto");
+    $("#cat-title").textContent = "Gastos personales por categoría"; $("#in-title").textContent = "Entradas por categoría";
+    $("#cats-out").innerHTML = catBars(pers,"Gasto"); $("#cat-total").textContent = fmt(sum(pers));
+  } else {
+    $("#k-real-label").textContent = "Gasto real"; $("#k-real").textContent = fmt(tout-propia);
+    $("#k-real-note").textContent = "Sin transferencias ni efectivo para ti";
+    $("#cat-title").textContent = "Gastos por categoría"; $("#in-title").textContent = "Entradas por origen (FAB)";
+    $("#cats-out").innerHTML = catBars(outs,"Gasto"); $("#cat-total").textContent = fmt(tout);
+  }
+  $("#cats-in").innerHTML = catBars(ins,"Ingreso");
 
   const meses = mesesDisponibles().slice(0,6).reverse();
-  const data = meses.map(ym=>{ const l=state.movs.filter(m=>m.fecha.startsWith(ym)); return {ym, i:sum(l.filter(m=>m.tipo==="Ingreso")), o:sum(l.filter(m=>m.tipo==="Gasto"))}; });
+  const data = meses.map(ym=>{ const l=state.movs.filter(m=>m.fecha.startsWith(ym)); return {ym, i:sumE(l.filter(m=>efecto(m)>0)), o:-sumE(l.filter(m=>efecto(m)<0))}; });
   const max = Math.max(1,...data.flatMap(d=>[d.i,d.o]));
   $("#months").innerHTML = data.length ? data.map(d=>`<div class="month" title="${mesLabel(d.ym)}: entradas ${fmt(d.i)}, salidas ${fmt(d.o)}"><div class="pair"><i class="a" style="height:${d.i/max*100}%"></i><i class="b" style="height:${d.o/max*100}%"></i></div><span>${mesCorto(d.ym)}</span></div>`).join("") : `<div class="empty" style="grid-column:1/-1">Aún no hay meses registrados</div>`;
 
   const rec = state.movs.slice(0,6);
-  $("#recent").innerHTML = rec.length ? rec.map(m=>`<div class="m-item" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:10px 0;border-bottom:1px solid var(--line)"><span class="desc">${esc(m.descripcion||m.categoria)}</span><span class="num ${m.tipo==="Ingreso"?"in":"out"}" style="text-align:right">${m.tipo==="Ingreso"?"+":"−"}${fmt(m.monto)}</span><span class="meta">${fDate(m.fecha)} · ${esc(m.categoria)}</span></div>`).join("") : `<div class="empty">Registra tu primer movimiento con el botón +</div>`;
+  $("#recent").innerHTML = rec.length ? rec.map(m=>`<div class="m-item" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:10px 0;border-bottom:1px solid var(--line)"><span class="desc">${esc(m.descripcion||m.categoria)}</span><span class="num ${clase(m)}" style="text-align:right">${sign(m)}${fmt(m.monto)}</span><span class="meta">${fDate(m.fecha)} · ${esc(m.categoria)}${state.cg&&m.ambito?" · "+esc(m.ambito):""}</span></div>`).join("") : `<div class="empty">Registra tu primer movimiento con el botón +</div>`;
 }
 
 const ORIGEN = {web:"web", atajo:"atajo iPhone", hoja:"hoja", importado:"importado", foto:"foto"};
@@ -950,36 +1065,49 @@ function registro(m){
 }
 function puedeBorrar(m){ return state.demo || !state.cuenta || state.cuenta.propia || (state.cuenta.registrar && m.registrado_por===state.user.id); }
 
+// Color y signo de un monto: verde si entra, rojo si sale, gris si no toca la caja
+const clase = m => efecto(m)===0 && state.cg ? "fuera" : (m.tipo==="Ingreso" ? "in" : "out");
+const sign = m => efecto(m)===0 && state.cg ? "" : (m.tipo==="Ingreso" ? "+" : "−");
+function aviso(m){
+  if(!state.cg || efecto(m)!==0) return "";
+  const t = m.es_prueba ? "prueba" : (m.movimiento && !VALIDOS.includes(m.estado)) ? (m.estado||"sin estado").toLowerCase() : "fuera de caja";
+  return ` <span class="chip off">${esc(t)}</span>`;
+}
 function renderMovs(){
-  const f = state.f;
+  const f = state.f, cg = state.cg;
+  const tipos = cg ? CG.movs.filter(t=>state.movs.some(m=>mov(m)===t)) : ["Ingreso","Gasto"];
+  $("#f-tipo").innerHTML = '<option value="">Todos los tipos</option>' + tipos.map(t=>`<option>${esc(t)}</option>`).join("");
+  $("#f-amb").hidden = !cg;
+  $("#f-amb").innerHTML = '<option value="">Todos los ámbitos</option>' + [...new Set(state.movs.map(m=>m.ambito).filter(Boolean))].map(a=>`<option>${esc(a)}</option>`).join("");
+  $("#f-amb").value = f.amb; $("#th-persona").textContent = cg ? "Ámbito" : "Persona";
   const allCats = [...state.cats.Ingreso, ...state.cats.Gasto, ...state.movs.map(m=>m.categoria)];
   const cats = [...new Set(allCats)];
   $("#f-cat").innerHTML = '<option value="">Todas las categorías</option>' + cats.map(c=>`<option>${esc(c)}</option>`).join("");
   $("#f-cat").value = f.cat; $("#f-tipo").value = f.tipo;
   fillMesSelect($("#f-mes"), f.mes); f.mes = $("#f-mes").value;
   const q = f.q.toLowerCase();
-  const list = state.movs.filter(m=> (!f.tipo||m.tipo===f.tipo) && (!f.cat||m.categoria===f.cat) && (f.mes==="todo"||m.fecha.startsWith(f.mes)) && (!q || `${m.descripcion} ${m.persona} ${m.subcategoria}`.toLowerCase().includes(q)));
-  const tin=sum(list.filter(m=>m.tipo==="Ingreso")), tout=sum(list.filter(m=>m.tipo==="Gasto"));
-  $("#f-totals").innerHTML = `<span>${list.length} movimientos</span><span>Entradas <b class="num in">${fmt(tin)}</b></span><span>Salidas <b class="num out">${fmt(tout)}</b></span><span>Neto <b class="num">${fmt(tin-tout)}</b></span>`;
-  const sign = m => m.tipo==="Ingreso" ? "+" : "−";
+  const list = state.movs.filter(m=> (!f.tipo||mov(m)===f.tipo) && (!f.amb||m.ambito===f.amb) && (!f.cat||m.categoria===f.cat) && (f.mes==="todo"||m.fecha.startsWith(f.mes)) && (!q || `${m.descripcion} ${m.persona} ${m.subcategoria} ${m.categoria} ${m.ref_hoja||""} ${(m.extra&&m.extra.Nota)||""}`.toLowerCase().includes(q)));
+  const tin=sumE(list.filter(m=>efecto(m)>0)), tout=-sumE(list.filter(m=>efecto(m)<0));
+  $("#f-totals").innerHTML = `<span>${list.length} movimientos</span><span>${cg?"Entra a la caja":"Entradas"} <b class="num in">${fmt(tin)}</b></span><span>${cg?"Sale de la caja":"Salidas"} <b class="num out">${fmt(tout)}</b></span><span>Neto <b class="num">${fmt(tin-tout)}</b></span>`;
   $("#t-body").innerHTML = list.length ? list.map(m=>`<tr>
     <td class="num" style="white-space:nowrap">${fDate(m.fecha)}</td>
-    <td><span class="chip ${m.tipo==="Ingreso"?"in":"out"}">${m.tipo}</span></td>
+    <td><span class="chip ${clase(m)==="fuera"?"off":clase(m)}">${esc(mov(m))}</span></td>
     <td>${esc(m.categoria)}${m.subcategoria?`<div class="meta">${esc(m.subcategoria)}</div>`:""}</td>
-    <td class="desc">${esc(m.descripcion)}</td>
-    <td>${esc(m.persona)}</td><td>${esc(m.medio)}</td>
+    <td class="desc">${esc(m.descripcion)}${aviso(m)}${mov(m)==="Venta"?`<div class="meta">Utilidad ${fmt(m.monto-(Number(m.costo)||0)-(Number(m.envio)||0))}</div>`:""}</td>
+    <td>${esc(cg ? m.ambito : m.persona)}</td><td>${esc(m.medio)}</td>
     <td>${registro(m)}</td>
-    <td class="r num ${m.tipo==="Ingreso"?"in":"out"}" style="white-space:nowrap">${sign(m)}${fmt(m.monto)}</td>
+    <td class="r num ${clase(m)}" style="white-space:nowrap">${sign(m)}${fmt(m.monto)}</td>
     <td class="r"><button class="del" data-ver="${m.id}">Detalle</button></td></tr>`).join("") : `<tr><td colspan="9" class="empty">No hay movimientos con estos filtros</td></tr>`;
   $("#m-list").innerHTML = list.length ? list.map(m=>`<div class="m-item">
     <span class="desc">${esc(m.descripcion||m.categoria)}${m.origen==="atajo"?` <span class="chip">atajo</span>`:""}</span>
-    <span class="num ${m.tipo==="Ingreso"?"in":"out"}">${sign(m)}${fmt(m.monto)}</span>
-    <span class="meta">${fDate(m.fecha)} · ${esc(m.categoria)}${m.subcategoria?" · "+esc(m.subcategoria):""}${m.persona?" · "+esc(m.persona):""}</span>
+    <span class="num ${clase(m)}">${sign(m)}${fmt(m.monto)}</span>
+    <span class="meta">${fDate(m.fecha)} · ${cg?esc(mov(m))+" · ":""}${esc(m.categoria)}${m.subcategoria?" · "+esc(m.subcategoria):""}${m.persona?" · "+esc(m.persona):""}${cg&&m.ambito?" · "+esc(m.ambito):""}${aviso(m)}</span>
     <span class="meta" style="grid-column:1/-1">Registró: ${registro(m)}</span>
     <button class="del" data-ver="${m.id}" style="justify-self:end">Detalle</button></div>`).join("") : `<div class="empty">No hay movimientos con estos filtros</div>`;
 }
 $("#r-mes").onchange = e => { state.rMes = e.target.value; renderResumen(); };
 $("#f-tipo").onchange = e => { state.f.tipo = e.target.value; renderMovs(); };
+$("#f-amb").onchange = e => { state.f.amb = e.target.value; renderMovs(); };
 $("#f-cat").onchange = e => { state.f.cat = e.target.value; renderMovs(); };
 $("#f-mes").onchange = e => { state.f.mes = e.target.value; renderMovs(); };
 $("#f-q").oninput = e => { state.f.q = e.target.value; renderMovs(); };
@@ -992,17 +1120,26 @@ document.addEventListener("click", e => {
   const m = state.movs.find(x=>x.id===b.dataset.ver); if(!m) return;
   detMov = m;
   $("#det-body").innerHTML = [
-    ["Fecha", fDate(m.fecha)], ["Tipo", esc(m.tipo==="Ingreso"?"Entrada":"Salida")],
+    ["Fecha", fDate(m.fecha)], ["Tipo", esc(state.cg ? mov(m) : (m.tipo==="Ingreso"?"Entrada":"Salida"))],
     ["Categoría", esc(m.categoria)+(m.subcategoria?` · ${esc(m.subcategoria)}`:"")],
-    ["Descripción", esc(m.descripcion||"—")], ["Persona", esc(m.persona||"—")], ["Medio", esc(m.medio||"—")],
-    ["Monto", `<b class="num ${m.tipo==="Ingreso"?"in":"out"}">${fmt(m.monto)}</b>`], ["Registró", registro(m)]
+    ["Descripción", esc(m.descripcion||"—")],
+    ...(state.cg ? [["Ámbito", esc(m.ambito||"—")], ["Estado", esc(m.estado||"—")], ["Medio", esc(m.medio||"—")], ["Cuenta", esc(m.cuenta||"—")]] : [["Persona", esc(m.persona||"—")], ["Medio", esc(m.medio||"—")]]),
+    ["Monto", `<b class="num ${clase(m)}">${fmt(m.monto)}</b>`],
+    ...(state.cg && mov(m)==="Venta" ? [["Costo y envío", `${fmt(m.costo)} · ${fmt(m.envio)}`]] : []),
+    ...(state.cg ? [["En la caja", efecto(m)===0 ? `No cuenta${aviso(m)}` : `<b class="num ${efecto(m)<0?"out":"in"}">${efecto(m)>0?"+":""}${fmt(efecto(m))}</b>`]] : []),
+    ...(state.cg && m.extra && m.extra.Nota ? [["Nota", esc(m.extra.Nota)]] : []),
+    ...(state.cg && m.ref_hoja ? [["ID en la hoja", `<span class="num">${esc(m.ref_hoja)}</span>`]] : []),
+    ["Registró", registro(m)],
+    ...(m.modificado_nombre && m.updated_at ? [["Último cambio", `${esc(m.cambio_via==="hoja"?"Hoja de cálculo":m.modificado_nombre)}<div class="meta">${fHora(m.updated_at)}</div>`]] : [])
   ].map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("");
   $("#det-open-del").hidden = !puedeBorrar(m);
+  $("#det-edit").hidden = !(state.demo || (state.cuenta && state.cuenta.propia));
   $("#det-del").hidden = true; $("#det-check").value = ""; $("#det-del-btn").disabled = true; $("#det-msg").hidden = true;
   $("#det-monto").textContent = Number(m.monto).toFixed(2);
   $("#det").showModal();
 });
 $("#det-close").onclick = () => $("#det").close();
+$("#det-edit").onclick = () => { const m = detMov; $("#det").close(); openForm(m); };
 $("#det-open-del").onclick = () => { $("#det-open-del").hidden = true; $("#det-del").hidden = false; setTimeout(()=>$("#det-check").focus(),50); };
 $("#det-check").oninput = e => {
   const v = parseFloat(String(e.target.value).replace(",", "."));
@@ -1014,33 +1151,110 @@ $("#det-del-btn").onclick = async () => {
   catch(err){ const el=$("#det-msg"); el.textContent = traducir(err); el.hidden = false; b.disabled = false; }
 };
 
-/* ---------- Nuevo movimiento ---------- */
-let tipoSel = "Gasto";
+/* ---------- Nuevo movimiento / editar ---------- */
+let tipoSel = "Gasto", editMov = null;
+const opts = (lista, vacio) => (vacio?'<option value="">—</option>':'') + lista.map(c=>`<option>${esc(c)}</option>`).join("");
+const conValor = (sel, v) => { if(v && ![...sel.options].some(o=>o.value===v)) sel.insertAdjacentHTML("beforeend", `<option>${esc(v)}</option>`); sel.value = v || ""; };
 function setTipo(t){
   tipoSel = t;
   $$(".seg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.t===t));
-  $("#m-cat").innerHTML = state.cats[t].map(c=>`<option>${esc(c)}</option>`).join("");
+  $("#m-cat").innerHTML = opts(state.cats[t]);
   updSubs();
 }
-function updSubs(){ $("#subs").innerHTML = (SUBS[$("#m-cat").value]||[]).map(s=>`<option value="${esc(s)}">`).join(""); }
+function updSubs(){
+  const cat = $("#m-cat").value;
+  const lista = state.cg ? [...new Set(state.movs.filter(m=>m.categoria===cat && m.subcategoria).map(m=>m.subcategoria))] : (SUBS[cat]||[]);
+  $("#subs").innerHTML = lista.map(s=>`<option value="${esc(s)}">`).join("");
+}
+// Categorías de una cuenta de control general: las de la hoja para ese movimiento y ámbito, más las ya usadas
+function catsCG(){
+  const mv = $("#m-mov").value, amb = $("#m-amb").value, c = CG.cats[mv] || {_:[]};
+  const base = c[amb] || c._;
+  const usadas = state.movs.filter(m=>mov(m)===mv && (m.ambito||"")===amb).map(m=>m.categoria);
+  return [...new Set([...base, ...usadas])];
+}
+function updCG(porMovimiento){
+  const mv = $("#m-mov").value;
+  if(porMovimiento && !editMov){
+    const amb = CG.ambitoDe[mv] || (["Personal","Negocio","Auto"].includes($("#m-amb").value) ? $("#m-amb").value : "Personal");
+    $("#m-amb").value = amb;
+    $("#m-estado").value = (mv==="Ingreso" || mv==="Venta") ? "Cobrado" : "Pagado";
+    $("#m-tg").value = mv==="Gasto" ? "Variable" : (mv==="Pago tarjeta" || mv==="Pago deuda") ? "Deuda" : "No aplica";
+  }
+  const actual = $("#m-cat").value;
+  $("#m-cat").innerHTML = opts(catsCG());
+  if(actual && [...$("#m-cat").options].some(o=>o.value===actual)) $("#m-cat").value = actual;
+  $("#cg-venta").hidden = mv!=="Venta";
+  $("#fld-tg").hidden = mv!=="Gasto";
+  updSubs();
+}
 $$(".seg button").forEach(b=> b.onclick = () => setTipo(b.dataset.t));
 $("#m-cat").onchange = updSubs;
-function openNew(){
+$("#m-mov").onchange = () => updCG(true);
+$("#m-amb").onchange = () => updCG(false);
+function openForm(m){
+  editMov = m || null;
+  const cg = state.cg;
   $("#mov-form").reset(); $("#mov-msg").hidden = true;
-  setTipo("Gasto"); $("#m-fecha").value = today();
-  $("#dlg").showModal(); setTimeout(()=>$("#m-monto").focus(),50);
+  $("#mov-title").textContent = m ? "Editar movimiento" : "Nuevo movimiento";
+  $("#m-save").textContent = m ? "Guardar cambios" : "Guardar";
+  $("#cg-top").hidden = !cg; $("#cg-bottom").hidden = !cg; $("#m-seg").hidden = cg;
+  $("#fld-persona").hidden = cg; $("#fld-tg").hidden = true; $("#cg-venta").hidden = true;
+  $("#m-medio").innerHTML = opts(cg ? CG.medios : ["Efectivo","Yape","Depósito","Transferencia","Cajero","Tarjeta"], true);
+  const monto = $("#m-monto");
+  if(cg){ monto.removeAttribute("min"); } else { monto.min = "0.01"; }
+  if(cg){
+    $("#m-mov").innerHTML = opts(CG.movs); $("#m-amb").innerHTML = opts(CG.ambitos);
+    $("#m-estado").innerHTML = opts(CG.estados); $("#m-cuenta").innerHTML = opts(CG.cuentas, true); $("#m-tg").innerHTML = opts(CG.tiposGasto);
+    if(m){
+      $("#m-mov").value = mov(m); conValor($("#m-amb"), m.ambito || "Personal");
+      updCG(false);
+      conValor($("#m-cat"), m.categoria); conValor($("#m-estado"), m.estado); conValor($("#m-cuenta"), m.cuenta);
+      conValor($("#m-tg"), m.tipo_gasto || "No aplica");
+      $("#m-costo").value = m.costo ?? ""; $("#m-envio").value = m.envio ?? ""; $("#m-nota").value = (m.extra && m.extra.Nota) || "";
+      updSubs();
+    } else { $("#m-mov").value = "Gasto"; $("#m-amb").value = "Personal"; updCG(true); }
+  } else {
+    setTipo(m ? m.tipo : "Gasto");
+    if(m) conValor($("#m-cat"), m.categoria);
+  }
+  if(m){
+    monto.value = m.monto; $("#m-sub").value = m.subcategoria || ""; $("#m-desc").value = m.descripcion || "";
+    $("#m-persona").value = m.persona || ""; conValor($("#m-medio"), m.medio); $("#m-fecha").value = m.fecha;
+  } else $("#m-fecha").value = today();
+  $("#dlg").showModal(); if(!m) setTimeout(()=>monto.focus(),50);
 }
+const openNew = () => openForm(null);
 document.addEventListener("click", e => { if(e.target.closest("[data-new]")) openNew(); });
 $("#m-cancel").onclick = () => $("#dlg").close();
 $("#mov-form").addEventListener("submit", async e => {
   e.preventDefault();
-  const monto = parseFloat($("#m-monto").value);
-  if(!(monto>0)){ const el=$("#mov-msg"); el.textContent="Escribe un monto mayor que 0."; el.hidden=false; return; }
-  const mov = { fecha:$("#m-fecha").value, tipo:tipoSel, categoria:$("#m-cat").value, subcategoria:$("#m-sub").value.trim()||null,
-    descripcion:$("#m-desc").value.trim(), persona:$("#m-persona").value.trim()||null, medio:$("#m-medio").value||null, monto, origen:"web" };
+  const cg = state.cg, err = t => { const el=$("#mov-msg"); el.textContent=t; el.hidden=false; };
+  const monto = parseFloat($("#m-monto").value), num = id => { const v = parseFloat($(id).value); return isNaN(v) ? null : v; };
+  let datos = { fecha:$("#m-fecha").value, categoria:$("#m-cat").value, subcategoria:$("#m-sub").value.trim()||null,
+    descripcion:$("#m-desc").value.trim(), medio:$("#m-medio").value||null, monto };
+  if(cg){
+    const mv = $("#m-mov").value, estado = $("#m-estado").value;
+    if(isNaN(monto) || (monto===0 && estado!=="Anulado")){ err("Escribe el monto."); return; }
+    if(monto<0 && !(editMov && editMov.monto<0)){ err("Escribe un monto mayor que 0."); return; }
+    datos = { ...datos, movimiento:mv, tipo:CG.entra.includes(mv)?"Ingreso":"Gasto", ambito:$("#m-amb").value, estado, cuenta:$("#m-cuenta").value||null,
+      tipo_gasto: mv==="Gasto" ? $("#m-tg").value : (mv==="Pago tarjeta"||mv==="Pago deuda") ? "Deuda" : "No aplica",
+      costo: mv==="Venta" ? (num("#m-costo") ?? 0) : (editMov ? editMov.costo : null), envio: mv==="Venta" ? (num("#m-envio") ?? 0) : (editMov ? editMov.envio : null) };
+    const nota = $("#m-nota").value.trim(), extra = { ...((editMov && editMov.extra) || {}) };
+    if(nota || "Nota" in extra) extra.Nota = nota;
+    if(!editMov){ extra.Origen = "Caja Personal · web"; extra["Precisión fecha"] = "Día"; datos.necesidad = "No aplica"; }
+    datos.extra = extra;
+  } else {
+    if(!(monto>0)){ err("Escribe un monto mayor que 0."); return; }
+    datos = { ...datos, tipo:tipoSel, persona:$("#m-persona").value.trim()||null };
+  }
   const btn=$("#m-save"); btn.disabled=true;
-  try{ await api.add(mov); $("#dlg").close(); toast(`${tipoSel} de ${fmt(monto)} guardado`); render(); }
-  catch(err){ const el=$("#mov-msg"); el.textContent=traducir(err); el.hidden=false; }
+  try{
+    if(editMov){ await api.update(editMov.id, datos); toast("Cambios guardados"); }
+    else { await api.add({ ...datos, origen:"web" }); toast(`${cg ? datos.movimiento : tipoSel} de ${fmt(monto)} guardado`); }
+    $("#dlg").close(); render();
+  }
+  catch(e2){ err(traducir(e2)); }
   finally{ btn.disabled=false; }
 });
 

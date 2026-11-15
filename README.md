@@ -14,6 +14,7 @@ Control de ingresos y gastos personales, con cuenta propia para cada usuario. Fu
 - **Nuevo movimiento:** tipo, monto, categoría, subcategoría, descripción, persona, medio y fecha (automática).
 - **Modelo administrado:** el administrador crea cada cuenta desde la sección **Cuentas** con el nombre, correo y contraseña que le entrega a la persona. No hay registro público.
 - **Hoja de Google por persona, en doble vía:** se copia la "Caja Personal – Plantilla", se conecta con la clave de hoja de esa persona, y lo que se escribe o corrige en la hoja pasa al instante a la plataforma, y lo que se registra, borra o cambia en la plataforma aparece en la hoja en menos de un minuto. La hoja muestra también **Registrado por**, **Registrado el** y **Última modificación** (fecha y quién: una persona o "Hoja de cálculo"). El script está en `google-sheets/CajaPersonal.gs`; en una hoja ya conectada, se actualiza con el menú **Caja Personal → Actualizar la conexión a la versión nueva**.
+- **Control general (hoja completa de finanzas):** una cuenta puede sincronizar en doble vía con la pestaña MOVIMIENTOS de la hoja "Control general de gastos personales" (auto, ventas, gastos personales, tarjetas, préstamos). La plataforma muestra la **caja personal** con la misma regla de la hoja: auto (ingresos − gastos) + utilidad de ventas + otros ingresos − gastos personales; los abonos a tarjetas, cuotas de deuda y préstamos se registran pero no cuentan. Desde la plataforma se puede registrar, **editar** y eliminar cualquier movimiento, con su ámbito, estado, cuenta, costo y nota. El script está en `google-sheets/ControlGeneral.gs` (ver "Conectar la hoja de control general").
 - **Atajo iPhone:** cada usuario genera una clave personal y arma el atajo "Gastos e Ingresos" siguiendo los pasos de la pantalla. El atajo guarda directo en su cuenta (origen `atajo`) y responde con el saldo.
 
 ## Estructura
@@ -24,6 +25,7 @@ supabase/migrations/*.sql           Tablas, seguridad por usuario, atajo, hojas 
 supabase/functions/admin            Crear cuentas, cambiar contraseñas, claves de hoja (solo administrador)
 supabase/functions/cuentas-hoja     Registro de cuentas en CSV para Google Sheets
 google-sheets/CajaPersonal.gs       Script de la hoja plantilla (sincronización en doble vía)
+google-sheets/ControlGeneral.gs     Script para la hoja "Control general de gastos personales" (pestaña MOVIMIENTOS)
 ```
 
 ## Base de datos (Supabase)
@@ -51,6 +53,24 @@ Las tablas tienen Row Level Security: cada usuario solo puede leer y modificar s
 Las dos últimas se pueden llamar sin iniciar sesión (`POST /rest/v1/rpc/...` con el encabezado `apikey`), pero solo funcionan con una clave válida y solo escriben en la cuenta de su dueño. El aviso de Supabase "Public Can Execute SECURITY DEFINER Function" sobre ellas es esperado.
 
 La clave que aparece en `index.html` es la clave pública (anon) de Supabase. Es seguro publicarla porque el acceso a los datos lo controla Row Level Security.
+
+## Conectar la hoja de control general
+
+1. En la hoja: **Extensiones → Apps Script**, crea un archivo `ControlGeneral` y pega `google-sheets/ControlGeneral.gs`. Las funciones empiezan con `cp` para no chocar con los otros scripts de la hoja.
+2. Ejecuta una vez `cpInstalar` y acepta los permisos. Recarga la hoja: aparece el menú **Caja Personal**.
+3. En la plataforma, como administrador: **Cuentas → Clave de hoja** de la persona. Cópiala.
+4. En la hoja: **Caja Personal → Conectar con la plataforma…** y pega la clave.
+
+Cómo funciona:
+
+- Cada movimiento se empareja por su **ID** (columna A). Los creados en la plataforma llevan `CP-…`; las filas escritas a mano sin ID reciben `HOJA-…`.
+- El script solo escribe en las columnas de datos de MOVIMIENTOS. No toca las columnas con fórmulas ni las demás pestañas (inventario, ventas, tarjetas siguen en la hoja).
+- Hoja → plataforma: al editar, y cada minuto. Plataforma → hoja: cada minuto. Si una fila queda incompleta, el motivo aparece como nota en la celda del ID.
+- Primera conexión: gana la hoja, salvo lo que se cambió o eliminó directamente en la plataforma.
+- Borrar una fila en la hoja la elimina en la plataforma (queda copia en `movimientos_eliminados`). Si desaparecen más de 20 filas de golpe, no se borra nada.
+- La pestaña oculta `_CP_SYNC` guarda la huella de lo ya sincronizado; no hay que tocarla.
+
+Campos de `movimientos` para estas cuentas: `movimiento`, `tipo_gasto`, `ambito`, `estado`, `cuenta`, `necesidad`, `costo`, `envio`, `es_prueba`, `ref_hoja` (ID de la hoja), `extra` (columnas de apoyo), `cambio_via` y `efecto_caja` (calculado). Funciones de la hoja: `cg_identidad`, `cg_todo`, `cg_cambios`, `cg_guardar`.
 
 ## Publicar
 
