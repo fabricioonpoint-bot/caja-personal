@@ -259,7 +259,8 @@ function cpGuardarSnapshot_(m) {
 /* ---------- Sincronización ---------- */
 function cpSync_(op) {
   const clave = cpClave_(); if (!clave) return null;
-  const lock = LockService.getScriptLock();
+  // El mismo candado que usan los demás scripts de la hoja al escribir en MOVIMIENTOS
+  const lock = LockService.getDocumentLock() || LockService.getScriptLock();
   if (!lock.tryLock(op.primera ? 60000 : 20000)) return null;
   try {
     const sh = cpHoja_(), cols = cpColumnas_();
