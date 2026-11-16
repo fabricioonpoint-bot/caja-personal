@@ -57,8 +57,8 @@ function cpInstalar() {
   ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'cpMenu').forEach(t => ScriptApp.deleteTrigger(t));
   ScriptApp.newTrigger('cpMenu').forSpreadsheet(ss).onOpen().create();
   UrlFetchApp.fetch(CP_URL + '/rest/v1/', { muteHttpExceptions: true, headers: { apikey: CP_KEY } });
-  cpMenu();
-  ss.toast('Listo. Usa el menú Caja Personal → Conectar con la plataforma.', 'Caja Personal', 6);
+  try { cpMenu(); } catch (e) { /* desde el editor no hay interfaz de la hoja: el menú aparece al recargarla */ }
+  ss.toast('Listo. Recarga la hoja y usa el menú Caja Personal → Conectar con la plataforma.', 'Caja Personal', 8);
 }
 
 function cpConectar() {
