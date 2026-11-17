@@ -15,7 +15,14 @@
  * menú  Caja Personal → Conectar con la plataforma…  y pega la clave de hoja.
  *
  * Todas las funciones empiezan con "cp" para no chocar con otros scripts de la hoja.
+ *
+ * Versión 2 (17/11/2026)
+ * - También envía a la plataforma el PRESUPUESTO (límites por grupo y mes) y los PAGOS FIJOS,
+ *   para que la web muestre el semáforo del presupuesto y qué fijos faltan pagar.
+ * - Si los disparadores se pierden, se reinstalan solos al abrir la hoja.
+ * - La web muestra cuándo fue la última sincronización y si alguna fila tiene error.
  */
+const CP_VERSION = 2;
 const CP_URL = 'https://uzukftcciyvvyukplqrp.supabase.co';
 const CP_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6dWtmdGNjaXl2dnl1a3BscXJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NDc2NDMsImV4cCI6MjEwOTQyMzY0M30.0taUv7gNulC9KeYek0w31012HIG4T8gBZ4RSIrlPIQI';
 const CP_HOJA = 'MOVIMIENTOS';
@@ -42,6 +49,13 @@ const CP_EXTRA = [
 
 /* ---------- Menú, instalación y conexión ---------- */
 function cpMenu() {
+  // Si la hoja está conectada pero perdió sus disparadores (por ejemplo, tras copiar la hoja), se reinstalan.
+  try {
+    if (cpClave_()) {
+      const h = ScriptApp.getProjectTriggers().map(t => t.getHandlerFunction());
+      if (h.indexOf('cpTick') < 0 || h.indexOf('cpAlEditar') < 0) cpInstalarDisparadores_();
+    }
+  } catch (e) { /* sin permisos todavía: se pide al usar el menú */ }
   SpreadsheetApp.getUi().createMenu('Caja Personal')
     .addItem('Conectar con la plataforma…', 'cpConectar')
     .addItem('Sincronizar ahora', 'cpSincronizarAhora')
@@ -75,6 +89,7 @@ function cpConectar() {
     props.deleteProperty('CP_DESDE');
     cpInstalarDisparadores_();
     const res = cpSync_({ primera: true });
+    if (res) cpEnviarConfig_(res, true);
     ui.alert('Hoja conectada con la cuenta de ' + (info.nombre || info.correo) + '.\n\n' + cpResumen_(res));
   } catch (e) {
     props.deleteProperty('CP_CLAVE');
@@ -85,6 +100,7 @@ function cpConectar() {
 function cpDesconectar() {
   PropertiesService.getDocumentProperties().deleteProperty('CP_CLAVE');
   PropertiesService.getDocumentProperties().deleteProperty('CP_DESDE');
+  PropertiesService.getDocumentProperties().deleteProperty('CP_CONFIG');
   cpGuardarSnapshot_({});
   ScriptApp.getProjectTriggers().filter(t => ['cpTick', 'cpAlEditar'].indexOf(t.getHandlerFunction()) >= 0).forEach(t => ScriptApp.deleteTrigger(t));
   SpreadsheetApp.getUi().alert('Hoja desconectada. Los datos que ya están aquí se conservan.');
@@ -108,10 +124,11 @@ function cpEstado() {
 }
 
 /* ---------- Disparadores ---------- */
-function cpTick() { cpSync_({}); }
+function cpTick() { const r = cpSync_({}); if (r) cpEnviarConfig_(r, false); }
 function cpSincronizarAhora() {
   if (!cpClave_()) { SpreadsheetApp.getUi().alert('Primero usa "Conectar con la plataforma…".'); return; }
   const res = cpSync_({});
+  if (res) cpEnviarConfig_(res, true);
   SpreadsheetApp.getActive().toast(cpResumen_(res), 'Caja Personal', 6);
 }
 function cpAlEditar(e) {
@@ -406,4 +423,75 @@ function cpLimpiarFila_(sh, cols, fila) {
   const idx = [cols['ID']].concat(CP_BASE.map(c => cols[c[0]])).concat(CP_EXTRA.map(h => cols[h]));
   cpBloques_(idx, (c0, grupo) => sh.getRange(fila, c0 + 1, 1, grupo.length).clearContent());
   sh.getRange(fila, cols['ID'] + 1).clearNote();
+}
+
+/* ---------- Presupuesto y pagos fijos → plataforma ---------- */
+const CP_MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+function cpTxt_(v) { return String(v === null || v === undefined ? '' : v).trim(); }
+function cpNumO_(v) { const n = cpNum_(v); return n === '' ? null : n; }
+
+/**
+ * Lee la pestaña PRESUPUESTO (valores de la hoja como matriz). Devuelve
+ * { anio, grupos:[{grupo, limites:[12 números o null]}], mapa:{categoría del registro: grupo}, verde, amarillo }.
+ * Solo usa la primera tabla de límites y la tabla "Categoría del registro · Grupo presupuestario".
+ */
+function cpLeerPresupuesto_(v) {
+  const out = { anio: null, grupos: [], mapa: {}, verde: 0.8, amarillo: 1 };
+  const t = cpTxt_(v[0] && v[0][0]).match(/(\d{4})/); if (t) out.anio = +t[1];
+  let i = v.findIndex(r => cpTxt_(r[0]) === 'Categoría' && cpTxt_(r[1]).toLowerCase() === 'enero');
+  if (i >= 0) {
+    for (i = i + 1; i < v.length; i++) {
+      const g = cpTxt_(v[i][0]);
+      if (!g || /^presupuesto definido|^total|^gasto/i.test(g)) break;
+      out.grupos.push({ grupo: g, limites: CP_MESES.map((_, m) => cpNumO_(v[i][1 + m])) });
+    }
+  }
+  let j = v.findIndex(r => cpTxt_(r[0]) === 'Categoría del registro' && /grupo/i.test(cpTxt_(r[1])));
+  if (j >= 0) for (j = j + 1; j < v.length; j++) {
+    const c = cpTxt_(v[j][0]), g = cpTxt_(v[j][1]);
+    if (!c || !g) break;
+    out.mapa[c] = g;
+  }
+  v.forEach(r => r.forEach((x, k) => {
+    if (cpTxt_(x) === 'Verde hasta' && typeof r[k + 1] === 'number') out.verde = r[k + 1];
+    if (cpTxt_(x) === 'Amarillo hasta' && typeof r[k + 1] === 'number') out.amarillo = r[k + 1];
+  }));
+  return out;
+}
+
+/** Lee el cuadro de servicios de PAGOS FIJOS (filas FIJO-…). */
+function cpLeerFijos_(v) {
+  const i = v.findIndex(r => cpTxt_(r[0]) === 'ID recurrente' && cpTxt_(r[1]) === 'Servicio');
+  if (i < 0) return [];
+  const h = {}; v[i].forEach((x, k) => { if (cpTxt_(x)) h[cpTxt_(x)] = k; });
+  const col = (r, n) => h[n] === undefined ? '' : r[h[n]];
+  const out = [];
+  for (let k = i + 1; k < v.length; k++) {
+    const id = cpTxt_(v[k][0]);
+    if (!/^FIJO-/i.test(id)) break;
+    out.push({
+      id: id, servicio: cpTxt_(col(v[k], 'Servicio')), categoria: cpTxt_(col(v[k], 'Categoría')),
+      proveedor: cpTxt_(col(v[k], 'Proveedor')), previsto: cpNumO_(col(v[k], 'Previsto S/')),
+      frecuencia: cpTxt_(col(v[k], 'Frecuencia')) || 'Mensual', dia: cpNumO_(col(v[k], 'Día previsto')),
+      activo: !/^no$/i.test(cpTxt_(col(v[k], 'Activo base'))),
+    });
+  }
+  return out;
+}
+
+/** Envía presupuesto, fijos y el estado de la hoja solo cuando cambiaron (o si se pide). */
+function cpEnviarConfig_(res, forzar) {
+  try {
+    const ss = SpreadsheetApp.getActive(), cfg = { hoja: { version: CP_VERSION, errores: res.errores || 0, aviso: res.aviso || '' } };
+    const p = ss.getSheetByName('PRESUPUESTO'), f = ss.getSheetByName('PAGOS FIJOS');
+    if (p) cfg.presupuesto = cpLeerPresupuesto_(p.getDataRange().getValues());
+    if (f) cfg.fijos = cpLeerFijos_(f.getDataRange().getValues());
+    const huella = Utilities.base64Encode(Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, JSON.stringify(cfg), Utilities.Charset.UTF_8));
+    const props = PropertiesService.getDocumentProperties();
+    if (!forzar && props.getProperty('CP_CONFIG') === huella) return;
+    cpApi_('cg_config', { p_clave: cpClave_(), p_config: cfg });
+    props.setProperty('CP_CONFIG', huella);
+  } catch (e) {
+    console.warn('Caja Personal · configuración: ' + e.message);
+  }
 }
