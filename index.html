@@ -275,9 +275,34 @@ dialog::backdrop{background:rgb(14 12 26/.6);backdrop-filter:blur(3px);-webkit-b
 .seg button{border:0;background:none;border-radius:10px;padding:11px;font-weight:700;color:var(--muted)}
 .seg button[aria-pressed="true"][data-t="Ingreso"]{background:var(--in);color:#fff}
 .seg button[aria-pressed="true"][data-t="Gasto"]{background:var(--out);color:#fff}
+.seg-big{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}
+.seg-big button{padding:13px 6px;font-size:15px}
+.seg button[aria-pressed="true"][data-t="Venta"]{background:linear-gradient(135deg,#EC4899,#BE185D);color:#fff}
+.seg button[aria-pressed="true"][data-t="Mas"]{background:var(--accent);color:#fff}
+.q-block{display:grid;gap:8px}
+.q-lab{font-size:13px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip-btn{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:9px 14px;font-weight:600;font-size:14px;line-height:1.1;display:inline-flex;align-items:center;gap:6px}
+.chips.sm .chip-btn{padding:6px 11px;font-size:13px}
+.chip-btn small{color:var(--muted);font-weight:600;font-size:11.5px}
+.chip-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip-btn[aria-pressed="true"] small{color:#E9DDFF}
+.chip-btn.dash{border-style:dashed;color:var(--muted)}
+.chip-btn .mod-ic{width:22px;height:22px;border-radius:7px}
+.chip-btn .mod-ic svg.i{width:13px;height:13px}
+.fecha-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fecha-row input{flex:1;min-width:150px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+details#m-more{border-top:1px solid var(--line);padding-top:12px}
+details#m-more summary{cursor:pointer;font-weight:700;font-size:14px;list-style:none;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+details#m-more summary::before{content:"＋";color:var(--accent)}
+details#m-more[open] summary::before{content:"−"}
+details#m-more.simple summary{display:none}
+details#m-more.simple{border:0;padding:0}
+details#m-more.simple > div{padding-top:0}
 .amount input{font-family:var(--display);font-weight:700;font-size:30px;padding:12px 14px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.actions{display:flex;gap:10px;justify-content:flex-end}
+.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:#1E1B4B;color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:600;z-index:50;box-shadow:0 10px 30px -10px rgb(0 0 0/.5)}
 
 /* atajo */
@@ -676,43 +701,65 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
 <dialog id="dlg">
   <form id="mov-form" class="sheet">
     <h3 style="font-size:20px" id="mov-title">Nuevo movimiento</h3>
-    <div class="row2" id="cg-top" hidden>
-      <div class="field"><label for="m-mov">Movimiento</label><select id="m-mov"></select></div>
-      <div class="field"><label for="m-amb">Ámbito</label><select id="m-amb"></select></div>
+    <!-- Control general: tipo → actividad → monto → categoría (botones; lo más usado primero) -->
+    <div id="cg-quick" hidden style="display:grid;gap:14px">
+      <div class="seg seg-big" id="q-tipo" role="group" aria-label="Qué vas a registrar"></div>
+      <div class="field" id="q-mas" hidden><label for="m-mov">¿Qué movimiento?</label><select id="m-mov"></select></div>
+      <div class="q-block" id="q-act-wrap"><span class="q-lab">¿De qué actividad?</span><div class="chips" id="q-act" role="group" aria-label="Actividad"></div></div>
     </div>
     <div class="seg" id="m-seg" role="group" aria-label="Tipo">
       <button type="button" data-t="Ingreso" aria-pressed="false">Ingreso</button>
       <button type="button" data-t="Gasto" aria-pressed="true">Gasto</button>
     </div>
-    <div class="field amount"><label for="m-monto">Monto (S/)</label><input id="m-monto" type="number" inputmode="decimal" step="0.01" min="0.01" required placeholder="0.00"></div>
-    <div id="cg-venta" hidden style="display:grid;gap:8px">
-      <div class="row2">
-        <div class="field"><label for="m-costo">Costo del producto (S/)</label><input id="m-costo" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
-        <div class="field"><label for="m-envio">Envío / gasto de venta (S/)</label><input id="m-envio" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
-      </div>
-      <p class="meta" style="margin:0;font-size:13px">A la caja entra la utilidad (venta − costo − envío). El stock se descuenta en la hoja, en REGISTRAR VENTA.</p>
+    <div class="field amount"><label for="m-monto" id="m-monto-lab">Monto (S/)</label><input id="m-monto" type="number" inputmode="decimal" step="0.01" min="0.01" required placeholder="0.00"></div>
+    <div class="q-block" id="q-cat-wrap" hidden>
+      <span class="q-lab">Categoría</span>
+      <div class="chips" id="q-cat" role="group" aria-label="Categoría"></div>
+      <div class="chips sm" id="q-sub" role="group" aria-label="Subcategoría"></div>
     </div>
-    <div class="row2">
+    <div id="cg-venta" hidden style="display:grid;gap:8px">
+      <div class="row3">
+        <div class="field"><label for="m-costo">Costo (S/)</label><input id="m-costo" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+        <div class="field"><label for="m-envio">Envío (S/)</label><input id="m-envio" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+        <div class="field"><label for="m-und">Unidades</label><input id="m-und" type="number" inputmode="numeric" step="1" min="0" placeholder="1"></div>
+      </div>
+      <p class="meta" style="margin:0;font-size:13px" id="venta-util">A la caja entra la utilidad (venta − costo − envío). El stock se descuenta en la hoja, en REGISTRAR VENTA.</p>
+    </div>
+    <div class="row2" id="q-taxi" hidden>
+      <div class="field"><label for="m-km">Km recorridos</label><input id="m-km" type="number" inputmode="decimal" step="0.1" min="0" placeholder="Opcional"></div>
+      <div class="field"><label for="m-horas">Horas</label><input id="m-horas" type="number" inputmode="decimal" step="0.25" min="0" placeholder="Opcional"></div>
+    </div>
+    <div class="row2" id="row-cat">
       <div class="field"><label for="m-cat">Categoría</label><select id="m-cat" required></select></div>
       <div class="field"><label for="m-sub">Subcategoría</label><input id="m-sub" list="subs" placeholder="Opcional"></div>
     </div>
     <datalist id="subs"></datalist>
-    <div class="field"><label for="m-desc">Descripción</label><input id="m-desc" required placeholder="Ej. Cena con amigos"></div>
-    <div class="row2">
-      <div class="field" id="fld-persona"><label for="m-persona">Persona</label><input id="m-persona" placeholder="A quién o de quién"></div>
-      <div class="field" id="fld-tg" hidden><label for="m-tg">Tipo de gasto</label><select id="m-tg"></select></div>
-      <div class="field"><label for="m-medio">Medio</label><select id="m-medio"><option value="">—</option><option>Efectivo</option><option>Yape</option><option>Depósito</option><option>Transferencia</option><option>Cajero</option><option>Tarjeta</option></select></div>
+    <div class="field"><label for="m-fecha">Fecha</label>
+      <div class="fecha-row"><div class="chips" id="q-fecha"><button type="button" class="chip-btn" data-d="0">Hoy</button><button type="button" class="chip-btn" data-d="1">Ayer</button></div><input id="m-fecha" type="date" required></div>
     </div>
-    <div class="field"><label for="m-fecha">Fecha</label><input id="m-fecha" type="date" required></div>
-    <div id="cg-bottom" hidden style="display:grid;gap:14px">
-      <div class="row2">
-        <div class="field"><label for="m-estado">Estado</label><select id="m-estado"></select></div>
-        <div class="field"><label for="m-cuenta">Cuenta</label><select id="m-cuenta"></select></div>
+    <details id="m-more">
+      <summary>Más detalles <span class="meta" id="more-res"></span></summary>
+      <div style="display:grid;gap:14px;padding-top:12px">
+        <div class="field"><label for="m-desc">Descripción</label><input id="m-desc" required placeholder="Ej. Cena con amigos"></div>
+        <div class="row2">
+          <div class="field" id="fld-persona"><label for="m-persona">Persona</label><input id="m-persona" placeholder="A quién o de quién"></div>
+          <div class="field" id="fld-tg" hidden><label for="m-tg">Tipo de gasto</label><select id="m-tg"></select></div>
+          <div class="field"><label for="m-medio">Medio</label><select id="m-medio"><option value="">—</option><option>Efectivo</option><option>Yape</option><option>Depósito</option><option>Transferencia</option><option>Cajero</option><option>Tarjeta</option></select></div>
+        </div>
+        <div id="cg-bottom" hidden style="display:grid;gap:14px">
+          <div class="row2">
+            <div class="field"><label for="m-estado">Estado</label><select id="m-estado"></select></div>
+            <div class="field"><label for="m-cuenta">Cuenta</label><select id="m-cuenta"></select></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="m-amb">Ámbito</label><select id="m-amb"></select></div>
+            <div class="field"><label for="m-nota">Nota</label><input id="m-nota" placeholder="Opcional"></div>
+          </div>
+        </div>
       </div>
-      <div class="field"><label for="m-nota">Nota</label><input id="m-nota" placeholder="Opcional"></div>
-    </div>
+    </details>
     <div id="mov-msg" class="msg err" hidden></div>
-    <div class="actions"><button type="button" class="btn ghost" id="m-cancel">Cancelar</button><button class="btn" id="m-save">Guardar</button></div>
+    <div class="actions"><button type="button" class="btn ghost" id="m-cancel">Cancelar</button><button type="button" class="btn ghost" id="m-otro" hidden>Guardar y otro</button><button class="btn" id="m-save">Guardar</button></div>
   </form>
 </dialog>
 <dialog id="det">
@@ -1413,118 +1460,256 @@ $("#det-del-btn").onclick = async () => {
 };
 
 /* ---------- Nuevo movimiento / editar ---------- */
-let tipoSel = "Gasto", editMov = null;
+// Cuentas simples: Ingreso/Gasto + categoría. Cuentas de control general: tipo → actividad → monto → categoría
+// con botones (lo más usado primero) y el resto en "Más detalles". "Guardar y otro" deja tipo, actividad y fecha.
+let tipoSel = "Gasto", editMov = null, qTipo = "Gasto";
 const opts = (lista, vacio) => (vacio?'<option value="">—</option>':'') + lista.map(c=>`<option>${esc(c)}</option>`).join("");
 const conValor = (sel, v) => { if(v && ![...sel.options].some(o=>o.value===v)) sel.insertAdjacentHTML("beforeend", `<option>${esc(v)}</option>`); sel.value = v || ""; };
+const MAS_MOVS = ["Pago tarjeta","Pago deuda","Préstamo recibido","Ahorro","Compra mercadería","Cambio USD"];
+const T_TXT = { Gasto:"Gasto", Ingreso:"Ingreso", Venta:"Venta", Mas:"Otro…" };
+const recordar = (k, v) => { try{ localStorage.setItem("cp-"+k, v); }catch(e){} };
+const recordado = k => { try{ return localStorage.getItem("cp-"+k); }catch(e){ return null; } };
+
 function setTipo(t){
   tipoSel = t;
-  $$(".seg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.t===t));
+  $$("#m-seg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.t===t));
   $("#m-cat").innerHTML = opts(state.cats[t]);
   updSubs();
 }
-function updSubs(){
-  const cat = $("#m-cat").value;
+function subsDe(cat){
   const def = state.catsFull.filter(c=>c.nombre===cat).flatMap(c=>c.subcategorias||[]);
-  const lista = state.cg ? [...new Set([...def, ...state.movs.filter(m=>m.categoria===cat && m.subcategoria).map(m=>m.subcategoria)])] : (SUBS[cat]||[]);
-  $("#subs").innerHTML = lista.map(s=>`<option value="${esc(s)}">`).join("");
+  if(!state.cg) return SUBS[cat] || [];
+  const usos = {}; state.movs.forEach(m=>{ if(m.categoria===cat && m.subcategoria) usos[m.subcategoria] = (usos[m.subcategoria]||0) + 1; });
+  return [...new Set([...Object.keys(usos).sort((a,b)=>usos[b]-usos[a]), ...def])];
 }
-// Categorías de una cuenta de control general: las de la hoja para ese movimiento y ámbito, más las ya usadas
+function updSubs(){
+  $("#subs").innerHTML = subsDe($("#m-cat").value).map(x=>`<option value="${esc(x)}">`).join("");
+  if(state.cg) pintarSubs();
+}
+// Categorías de una cuenta de control general para el movimiento y ámbito elegidos; las más usadas primero
 function catsCG(){
   const mv = $("#m-mov").value, amb = $("#m-amb").value, c = CG.cats[mv] || {_:[]};
-  // Primero las categorías de la cuenta (con su ámbito); si no hay, las de la hoja de control general
-  // Las más usadas primero (así en Auto aparece primero la plataforma con más carreras)
-  const usos = {}; state.movs.forEach(m=>{ if(mov(m)===mv && m.ambito===amb) usos[m.categoria] = (usos[m.categoria]||0) + 1; });
-  let base = state.catsFull.filter(x=>x.ambito===amb && (x.movimiento||x.tipo)===mv)
-    .sort((a,b)=>(usos[b.nombre]||0)-(usos[a.nombre]||0) || (a.orden??999)-(b.orden??999)).map(x=>x.nombre);
+  // Peso: lo usado en los últimos 60 días manda; el historial completo desempata
+  const desde = new Date(today()+"T12:00:00"); desde.setDate(desde.getDate()-60); const corte = desde.toLocaleDateString("en-CA");
+  const usos = {}; state.movs.forEach(m=>{ if(mov(m)===mv && (m.ambito||"")===amb) usos[m.categoria] = (usos[m.categoria]||0) + (m.fecha >= corte ? 1000 : 1); });
+  let base = state.catsFull.filter(x=>x.ambito===amb && (x.movimiento||x.tipo)===mv).map(x=>x.nombre);
   if(!base.length) base = c[amb] || c._;
-  const usadas = state.movs.filter(m=>mov(m)===mv && (m.ambito||"")===amb).map(m=>m.categoria);
-  return [...new Set([...base, ...usadas])];
+  const todas = [...new Set([...Object.keys(usos), ...base])];
+  return todas.sort((x,y)=>(usos[y]||0)-(usos[x]||0) || base.indexOf(x)-base.indexOf(y));
 }
-function updCG(porMovimiento){
-  const mv = $("#m-mov").value;
-  if(porMovimiento && !editMov){
-    const amb = CG.ambitoDe[mv] || (["Personal","Negocio","Auto","Obra","Ventas"].includes($("#m-amb").value) ? $("#m-amb").value : "Personal");
-    $("#m-amb").value = amb;
+// Ámbito que corresponde a una actividad para este movimiento (el que más se usa; Ventas o Negocio en ventas)
+function ambDeMod(k, mv){
+  const c = MODS[k].ambitos;
+  if(c.length === 1) return c[0];
+  const peso = a => state.movs.filter(m=>m.ambito===a && mov(m)===mv).length + state.catsFull.filter(x=>x.ambito===a && (x.movimiento||x.tipo)===mv).length;
+  return [...c].sort((x,y)=>peso(y)-peso(x))[0];
+}
+function actividadPorDefecto(mv){
+  const r = recordado("act-"+mv); if(r && modsActivos().includes(r)) return r;
+  const ult = state.movs.filter(m=>mov(m)===mv).slice(0,40), n = {};
+  ult.forEach(m=>{ const k = modDe(m); n[k] = (n[k]||0) + 1; });
+  return Object.keys(n).sort((a,b)=>n[b]-n[a])[0] || (mv==="Ingreso" && modsActivos().includes("taxista") ? "taxista" : "personal");
+}
+
+function pintarTipos(){
+  const t = ["Gasto","Ingreso"];
+  if(modsActivos().includes("vendedor") || state.movs.some(m=>mov(m)==="Venta")) t.push("Venta");
+  t.push("Mas");
+  $("#q-tipo").innerHTML = t.map(x=>`<button type="button" data-t="${x}" aria-pressed="${x===qTipo}">${T_TXT[x]}</button>`).join("");
+}
+function pintarActividades(){
+  const mv = $("#m-mov").value, fijo = CG.ambitoDe[mv], amb = $("#m-amb").value;
+  $("#q-act-wrap").hidden = !!fijo || modsActivos().length < 2;
+  $("#q-act").innerHTML = modsActivos().map(k=>`<button type="button" class="chip-btn" data-act="${k}" aria-pressed="${MODS[k].ambitos.includes(amb)}">
+    <span class="mod-ic ${k}"><svg class="i" viewBox="0 0 24 24">${MODS[k].icon}</svg></span>${MODS[k].nombre}</button>`).join("");
+}
+function pintarCats(){
+  const lista = catsCG(), actual = $("#m-cat").value, max = 8;
+  let vis = lista.slice(0, max);
+  if(actual && !vis.includes(actual)) vis = [...vis.slice(0, max-1), actual];
+  $("#q-cat").innerHTML = vis.map(c=>`<button type="button" class="chip-btn" data-cat="${esc(c)}" aria-pressed="${c===actual}">${esc(c)}</button>`).join("") +
+    `<button type="button" class="chip-btn dash" data-cat-otra>${lista.length > vis.length ? `Ver todas (${lista.length})` : "Otra / nueva"}</button>`;
+}
+function pintarSubs(){
+  if(!state.cg) return;
+  const subs = subsDe($("#m-cat").value).slice(0, 8), sub = $("#m-sub").value;
+  $("#q-sub").innerHTML = subs.map(x=>`<button type="button" class="chip-btn" data-sub="${esc(x)}" aria-pressed="${x===sub}">${esc(x)}</button>`).join("");
+  $("#q-sub").hidden = !subs.length;
+}
+function pintarFecha(){
+  const v = $("#m-fecha").value, d = new Date(today()+"T12:00:00"); d.setDate(d.getDate()-1);
+  const ayer = d.toLocaleDateString("en-CA");
+  $$("#q-fecha button").forEach(b=>b.setAttribute("aria-pressed", (b.dataset.d==="0" && v===today()) || (b.dataset.d==="1" && v===ayer)));
+}
+function resumenMas(){
+  if(!state.cg) return;
+  const partes = [$("#m-medio").value, $("#m-estado").value, $("#m-cuenta").value, $("#m-nota").value && "con nota"].filter(Boolean);
+  $("#more-res").textContent = partes.length ? "· " + partes.join(" · ") : "";
+}
+function utilVenta(){
+  const v = parseFloat($("#m-monto").value)||0, c = parseFloat($("#m-costo").value)||0, e = parseFloat($("#m-envio").value)||0;
+  $("#venta-util").textContent = v ? `Utilidad que entra a la caja: ${fmt(v-c-e)} (venta − costo − envío). El stock se descuenta en la hoja, en REGISTRAR VENTA.` : "A la caja entra la utilidad (venta − costo − envío). El stock se descuenta en la hoja, en REGISTRAR VENTA.";
+}
+// Redibuja todo lo que depende del movimiento y del ámbito
+function refrescarCG(){
+  const mv = $("#m-mov").value, amb = $("#m-amb").value;
+  pintarTipos(); pintarActividades();
+  const lista = catsCG();
+  $("#m-cat").innerHTML = opts(lista);
+  const actual = $("#m-cat").dataset.v;
+  conValor($("#m-cat"), actual && (lista.includes(actual) || editMov) ? actual : lista[0]);
+  $("#m-cat").dataset.v = $("#m-cat").value;
+  pintarCats(); updSubs();
+  $("#cg-venta").hidden = mv!=="Venta";
+  $("#q-taxi").hidden = !(mv==="Ingreso" && amb==="Auto");
+  $("#fld-tg").hidden = mv!=="Gasto";
+  $("#q-mas").hidden = qTipo!=="Mas";
+  $("#m-monto-lab").textContent = { Gasto:"¿Cuánto gastaste? (S/)", Ingreso:"¿Cuánto entró? (S/)", Venta:"Precio de venta (S/)" }[mv] || "Monto (S/)";
+  utilVenta(); pintarFecha(); resumenMas();
+}
+// Cambia el movimiento y pone los valores por defecto (salvo al editar)
+function setMov(mv){
+  $("#m-mov").value = mv;
+  if(!editMov){
+    const amb = CG.ambitoDe[mv] || ambDeMod(actividadPorDefecto(mv), mv);
+    conValor($("#m-amb"), amb);
     $("#m-estado").value = (mv==="Ingreso" || mv==="Venta") ? "Cobrado" : "Pagado";
     $("#m-tg").value = mv==="Gasto" ? "Variable" : (mv==="Pago tarjeta" || mv==="Pago deuda") ? "Deuda" : "No aplica";
+    $("#m-cat").dataset.v = ""; $("#m-sub").value = "";
   }
-  const actual = $("#m-cat").value;
-  $("#m-cat").innerHTML = opts(catsCG());
-  if(actual && [...$("#m-cat").options].some(o=>o.value===actual)) $("#m-cat").value = actual;
-  $("#cg-venta").hidden = mv!=="Venta";
-  $("#fld-tg").hidden = mv!=="Gasto";
-  updSubs();
+  refrescarCG();
 }
-$$(".seg button").forEach(b=> b.onclick = () => setTipo(b.dataset.t));
-$("#m-cat").onchange = updSubs;
-$("#m-mov").onchange = () => updCG(true);
-$("#m-amb").onchange = () => updCG(false);
+$$("#m-seg button").forEach(b=> b.onclick = () => setTipo(b.dataset.t));
+$("#q-tipo").addEventListener("click", e => {
+  const b = e.target.closest("[data-t]"); if(!b) return;
+  qTipo = b.dataset.t;
+  setMov(qTipo==="Mas" ? (MAS_MOVS.includes($("#m-mov").value) ? $("#m-mov").value : MAS_MOVS[0]) : qTipo);
+});
+$("#q-act").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if(!b) return;
+  const mv = $("#m-mov").value; conValor($("#m-amb"), ambDeMod(b.dataset.act, mv));
+  if(!editMov) recordar("act-"+mv, b.dataset.act);
+  $("#m-cat").dataset.v = ""; $("#m-sub").value = ""; refrescarCG();
+});
+$("#q-cat").addEventListener("click", e => {
+  if(e.target.closest("[data-cat-otra]")){ $("#row-cat").hidden = false; $("#m-cat").focus(); return; }
+  const b = e.target.closest("[data-cat]"); if(!b) return;
+  conValor($("#m-cat"), b.dataset.cat); $("#m-cat").dataset.v = b.dataset.cat; $("#m-sub").value = "";
+  pintarCats(); updSubs();
+});
+$("#q-sub").addEventListener("click", e => {
+  const b = e.target.closest("[data-sub]"); if(!b) return;
+  $("#m-sub").value = $("#m-sub").value === b.dataset.sub ? "" : b.dataset.sub; pintarSubs();
+});
+$("#q-fecha").addEventListener("click", e => {
+  const b = e.target.closest("[data-d]"); if(!b) return;
+  const d = new Date(today()+"T12:00:00"); d.setDate(d.getDate() - Number(b.dataset.d));
+  $("#m-fecha").value = d.toLocaleDateString("en-CA"); pintarFecha();
+});
+$("#m-fecha").onchange = pintarFecha;
+$("#m-cat").onchange = () => { $("#m-cat").dataset.v = $("#m-cat").value; if(state.cg){ pintarCats(); } updSubs(); };
+$("#m-sub").oninput = () => { if(state.cg) pintarSubs(); };
+$("#m-mov").onchange = () => setMov($("#m-mov").value);
+$("#m-amb").onchange = () => { $("#m-cat").dataset.v = ""; refrescarCG(); };
+["#m-medio","#m-estado","#m-cuenta","#m-nota"].forEach(id=>$(id).addEventListener("input", resumenMas));
+["#m-monto","#m-costo","#m-envio"].forEach(id=>$(id).addEventListener("input", utilVenta));
+
 function openForm(m){
   editMov = m || null;
   const cg = state.cg;
   $("#mov-form").reset(); $("#mov-msg").hidden = true;
   $("#mov-title").textContent = m ? "Editar movimiento" : "Nuevo movimiento";
   $("#m-save").textContent = m ? "Guardar cambios" : "Guardar";
-  $("#cg-top").hidden = !cg; $("#cg-bottom").hidden = !cg; $("#m-seg").hidden = cg;
+  $("#m-otro").hidden = !!m;
+  $("#cg-quick").hidden = !cg; $("#q-cat-wrap").hidden = !cg; $("#cg-bottom").hidden = !cg; $("#m-seg").hidden = cg;
+  $("#row-cat").hidden = cg; $("#q-taxi").hidden = true;
   $("#fld-persona").hidden = cg; $("#fld-tg").hidden = true; $("#cg-venta").hidden = true;
+  // En control general la descripción es opcional: si queda vacía se usa la categoría
+  $("#m-desc").required = !cg; $("#m-desc").placeholder = cg ? "Opcional · si la dejas vacía se usa la categoría" : "Ej. Cena con amigos";
+  const more = $("#m-more"); more.classList.toggle("simple", !cg); more.open = !cg;
   $("#m-medio").innerHTML = opts(cg ? CG.medios : ["Efectivo","Yape","Depósito","Transferencia","Cajero","Tarjeta"], true);
   const monto = $("#m-monto");
   if(cg){ monto.removeAttribute("min"); } else { monto.min = "0.01"; }
+  if(m) $("#m-fecha").value = m.fecha; else $("#m-fecha").value = today();
   if(cg){
     const ambs = [...new Set([...modsActivos().flatMap(k=>MODS[k].ambitos), ...state.movs.map(x=>x.ambito).filter(Boolean)])];
     $("#m-mov").innerHTML = opts(CG.movs); $("#m-amb").innerHTML = opts(ambs);
     $("#m-estado").innerHTML = opts(CG.estados); $("#m-cuenta").innerHTML = opts(CG.cuentas, true); $("#m-tg").innerHTML = opts(CG.tiposGasto);
     if(m){
-      $("#m-mov").value = mov(m); conValor($("#m-amb"), m.ambito || "Personal");
-      updCG(false);
-      conValor($("#m-cat"), m.categoria); conValor($("#m-estado"), m.estado); conValor($("#m-cuenta"), m.cuenta);
-      conValor($("#m-tg"), m.tipo_gasto || "No aplica");
-      $("#m-costo").value = m.costo ?? ""; $("#m-envio").value = m.envio ?? ""; $("#m-nota").value = (m.extra && m.extra.Nota) || "";
-      updSubs();
-    } else { $("#m-mov").value = "Gasto"; $("#m-amb").value = "Personal"; updCG(true); }
+      const mv = mov(m); qTipo = ["Gasto","Ingreso","Venta"].includes(mv) ? mv : "Mas";
+      $("#m-mov").value = mv; conValor($("#m-amb"), m.ambito || "Personal");
+      $("#m-cat").dataset.v = m.categoria; $("#m-sub").value = m.subcategoria || "";
+      conValor($("#m-estado"), m.estado); conValor($("#m-cuenta"), m.cuenta); conValor($("#m-tg"), m.tipo_gasto || "No aplica");
+      const x = m.extra || {};
+      $("#m-costo").value = m.costo ?? ""; $("#m-envio").value = m.envio ?? ""; $("#m-und").value = x.Unidades ?? "";
+      $("#m-km").value = x["Km recorridos"] ?? ""; $("#m-horas").value = x.Horas ?? ""; $("#m-nota").value = x.Nota || "";
+      conValor($("#m-medio"), m.medio);
+      refrescarCG();
+    } else {
+      qTipo = "Gasto"; $("#m-cat").dataset.v = ""; setMov("Gasto");
+    }
   } else {
     setTipo(m ? m.tipo : "Gasto");
     if(m) conValor($("#m-cat"), m.categoria);
   }
   if(m){
     monto.value = m.monto; $("#m-sub").value = m.subcategoria || ""; $("#m-desc").value = m.descripcion || "";
-    $("#m-persona").value = m.persona || ""; conValor($("#m-medio"), m.medio); $("#m-fecha").value = m.fecha;
-  } else $("#m-fecha").value = today();
+    $("#m-persona").value = m.persona || ""; if(!cg) conValor($("#m-medio"), m.medio);
+    if(cg){ pintarSubs(); resumenMas(); }
+  }
+  pintarFecha();
   $("#dlg").showModal(); if(!m) setTimeout(()=>monto.focus(),50);
 }
 const openNew = () => openForm(null);
 document.addEventListener("click", e => { if(e.target.closest("[data-new]")) openNew(); });
 $("#m-cancel").onclick = () => $("#dlg").close();
-$("#mov-form").addEventListener("submit", async e => {
-  e.preventDefault();
+$("#m-otro").onclick = () => guardarMov(true);
+$("#mov-form").addEventListener("submit", e => { e.preventDefault(); guardarMov(false); });
+async function guardarMov(otro){
+  const form = $("#mov-form");
+  if(!form.reportValidity()) return;
   const cg = state.cg, err = t => { const el=$("#mov-msg"); el.textContent=t; el.hidden=false; };
+  $("#mov-msg").hidden = true;
   const monto = parseFloat($("#m-monto").value), num = id => { const v = parseFloat($(id).value); return isNaN(v) ? null : v; };
-  let datos = { fecha:$("#m-fecha").value, categoria:$("#m-cat").value, subcategoria:$("#m-sub").value.trim()||null,
+  const cat = $("#m-cat").value, sub = $("#m-sub").value.trim();
+  let datos = { fecha:$("#m-fecha").value, categoria:cat, subcategoria:sub||null,
     descripcion:$("#m-desc").value.trim(), medio:$("#m-medio").value||null, monto };
   if(cg){
     const mv = $("#m-mov").value, estado = $("#m-estado").value;
-    if(isNaN(monto) || (monto===0 && estado!=="Anulado")){ err("Escribe el monto."); return; }
+    if(!cat){ err("Elige una categoría."); return; }
+    if(isNaN(monto) || (monto===0 && estado!=="Anulado")){ err("Escribe el monto."); $("#m-monto").focus(); return; }
     if(monto<0 && !(editMov && editMov.monto<0)){ err("Escribe un monto mayor que 0."); return; }
+    if(!datos.descripcion) datos.descripcion = sub ? `${cat} · ${sub}` : cat;
     datos = { ...datos, movimiento:mv, tipo:CG.entra.includes(mv)?"Ingreso":"Gasto", ambito:$("#m-amb").value, estado, cuenta:$("#m-cuenta").value||null,
       tipo_gasto: mv==="Gasto" ? $("#m-tg").value : (mv==="Pago tarjeta"||mv==="Pago deuda") ? "Deuda" : "No aplica",
       costo: mv==="Venta" ? (num("#m-costo") ?? 0) : (editMov ? editMov.costo : null), envio: mv==="Venta" ? (num("#m-envio") ?? 0) : (editMov ? editMov.envio : null) };
-    const nota = $("#m-nota").value.trim(), extra = { ...((editMov && editMov.extra) || {}) };
-    if(nota || "Nota" in extra) extra.Nota = nota;
+    const extra = { ...((editMov && editMov.extra) || {}) };
+    const pon = (k, v) => { if(v !== null && v !== "") extra[k] = v; else if(k in extra) extra[k] = ""; };
+    pon("Nota", $("#m-nota").value.trim());
+    if(mv==="Venta") pon("Unidades", num("#m-und") ?? (editMov ? null : 1));
+    if(mv==="Ingreso" && datos.ambito==="Auto"){ pon("Km recorridos", num("#m-km")); pon("Horas", num("#m-horas")); }
     if(!editMov){ extra.Origen = "Caja Personal · web"; extra["Precisión fecha"] = "Día"; datos.necesidad = "No aplica"; }
     datos.extra = extra;
   } else {
     if(!(monto>0)){ err("Escribe un monto mayor que 0."); return; }
     datos = { ...datos, tipo:tipoSel, persona:$("#m-persona").value.trim()||null };
   }
-  const btn=$("#m-save"); btn.disabled=true;
+  const btns = [$("#m-save"), $("#m-otro")]; btns.forEach(b=>b.disabled=true);
   try{
     if(editMov){ await api.update(editMov.id, datos); toast("Cambios guardados"); }
-    else { await api.add({ ...datos, origen:"web" }); toast(`${cg ? datos.movimiento : tipoSel} de ${fmt(monto)} guardado`); }
-    $("#dlg").close(); render();
+    else { await api.add({ ...datos, origen:"web" }); toast(`${cg ? datos.movimiento : tipoSel} de ${fmt(monto)} guardado · ${datos.categoria}`); }
+    render();
+    if(otro && cg){
+      // Deja tipo, actividad y fecha; limpia lo demás para anotar el siguiente
+      ["#m-monto","#m-desc","#m-nota","#m-costo","#m-envio","#m-und","#m-km","#m-horas","#m-sub"].forEach(id=>$(id).value="");
+      refrescarCG(); $("#m-monto").focus();
+    } else if(otro){
+      ["#m-monto","#m-desc","#m-sub","#m-persona"].forEach(id=>$(id).value=""); $("#m-monto").focus();
+    } else $("#dlg").close();
   }
   catch(e2){ err(traducir(e2)); }
-  finally{ btn.disabled=false; }
-});
+  finally{ btns.forEach(b=>b.disabled=false); }
+}
 
 /* ---------- Compartir mi cuenta ---------- */
 function sMsg(t, err){ const el=$("#s-msg"); el.textContent=t; el.className="msg"+(err?" err":" ok"); el.hidden=!t; }
