@@ -124,12 +124,27 @@ function cpEstado() {
 }
 
 /* ---------- Disparadores ---------- */
-function cpTick() { const r = cpSync_({}); if (r) cpEnviarConfig_(r, false); }
+function cpTick() { const r = cpSync_({}); if (r) cpEnviarConfig_(r, false); cpDespues_(r); }
 function cpSincronizarAhora() {
   if (!cpClave_()) { SpreadsheetApp.getUi().alert('Primero usa "Conectar con la plataforma…".'); return; }
   const res = cpSync_({});
   if (res) cpEnviarConfig_(res, true);
+  cpDespues_(res);
   SpreadsheetApp.getActive().toast(cpResumen_(res), 'Caja Personal', 6);
+}
+/*
+ * Ganchos opcionales para otros scripts de la misma hoja (por ejemplo, los apuntes del auto):
+ *   cpAlRecibir(tipo, ref)   por cada fila que llega de la plataforma ('cambio') o que se quita ('quitado')
+ *   cpDespuesDeRecibir(res)  al terminar, si llegó o se quitó algo (ya sin el candado tomado)
+ * Si no existen, no pasa nada.
+ */
+function cpAvisar_(tipo, ref) {
+  if (typeof cpAlRecibir !== 'function') return;
+  try { cpAlRecibir(tipo, ref); } catch (e) { console.log('cpAlRecibir: ' + e.message); }
+}
+function cpDespues_(res) {
+  if (!res || !(res.recibidos || res.quitados) || typeof cpDespuesDeRecibir !== 'function') return;
+  try { cpDespuesDeRecibir(res); } catch (e) { console.log('cpDespuesDeRecibir: ' + e.message); }
 }
 function cpAlEditar(e) {
   if (!cpClave_() || !e || !e.range) return;
@@ -377,11 +392,13 @@ function cpSync_(op) {
         // La hoja conserva columnas de apoyo que la plataforma no tenía: se le devuelve la fila completa
         if (hl !== hp) reenviar.push({ rec: leido, hash: hl, row: fila });
         res.recibidos++;
+        cpAvisar_('cambio', rec.ref);
       });
       quitar.forEach(ref => {
         if (!enHoja[ref]) return;
         cpLimpiarFila_(sh, cols, enHoja[ref].row);
         delete snap[ref]; delete enHoja[ref]; res.quitados++;
+        cpAvisar_('quitado', ref);
       });
       const env0 = res.enviados; mandar(reenviar); res.enviados = env0;
       props.setProperty('CP_DESDE', new Date(new Date(ahora).getTime() - 5000).toISOString());   // 5 s de traslape

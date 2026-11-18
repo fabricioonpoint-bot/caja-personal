@@ -75,6 +75,16 @@ Cómo funciona:
 
 Versión 2 del conector: además envía PRESUPUESTO y PAGOS FIJOS (`cg_config`) cuando cambian, y al abrir la hoja reinstala sus disparadores si se perdieron. Para actualizar una hoja ya conectada basta con reemplazar el código de `ControlGeneral` y recargar la hoja.
 
+El conector tiene dos ganchos opcionales para otros scripts de la misma hoja: `cpAlRecibir(tipo, ref)` por cada fila que llega o se quita desde la plataforma, y `cpDespuesDeRecibir(res)` al terminar si llegó algo. Si no existen, no pasa nada.
+
+### Apuntes del auto en doble vía (hoja de Fabricio)
+
+`google-sheets/AutoDobleVia.gs` va en el proyecto de la hoja de control general de Fabricio, junto a su `Código.gs` (que ya llevaba "Apuntes de ingresos y gastos de Auto" → MOVIMIENTOS como filas `AP-AUTO-2026MMDD-I1…I4 / G1…G7`, una por celda). Agrega el camino de vuelta:
+
+- Un ingreso o gasto del taxi registrado en la plataforma (o escrito a mano en MOVIMIENTOS con ámbito Auto, agosto–diciembre 2026) se suma en su celda de la pestaña del mes en los apuntes: ID/InDrive → ID, UBER, CAB/Cabify, el resto → Otros ingresos (con el nombre en Notas); Combustible → Gasolina, Mecánico, Arreglos → Mantenimiento, Lavado, Cochera → Parqueo, Seguro, el resto → Otros gastos. Km y horas se suman al día. La fila original se quita y `sincronizarAuto` la vuelve a crear como `AP-AUTO-…`, así no se cuenta dos veces. RESUMEN AUTO y BASE ANUAL AUTO se actualizan con sus fórmulas.
+- Si en la plataforma se cambia el monto de una fila `AP-AUTO-…` o se borra, la celda toma ese monto o se vacía.
+- Corre dentro de `sincronizarAuto` (cada 5 minutos y al editar los apuntes) y también apenas el conector recibe algo de la plataforma.
+
 Lo que entra por el atajo en una cuenta de control general toma el ámbito de su categoría (categorías de la cuenta o, si no, el ámbito más usado con esa categoría): un ingreso "UBER" va a Auto, no a Personal.
 
 Campos de `movimientos` para estas cuentas: `movimiento`, `tipo_gasto`, `ambito`, `estado`, `cuenta`, `necesidad`, `costo`, `envio`, `es_prueba`, `ref_hoja` (ID de la hoja), `extra` (columnas de apoyo), `cambio_via` y `efecto_caja` (calculado). Funciones de la hoja: `cg_identidad`, `cg_todo`, `cg_cambios`, `cg_guardar`.
