@@ -301,6 +301,17 @@ details#m-more.simple summary{display:none}
 details#m-more.simple{border:0;padding:0}
 details#m-more.simple > div{padding-top:0}
 .amount input{font-family:var(--display);font-weight:700;font-size:30px;padding:12px 14px}
+.multi-list{display:grid;gap:8px;margin-top:4px}
+.multi-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,160px) auto;gap:10px;align-items:center;padding:7px 6px 7px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.multi-row label{font-weight:700;font-size:15px;overflow-wrap:anywhere}
+.multi-inp{display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:0 10px;transition:border-color .15s,box-shadow .15s}
+.multi-inp:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.multi-inp span{color:var(--muted);font-weight:700;font-size:14px}
+.multi-inp input{border:0;background:none;padding:9px 0;font-family:var(--display);font-weight:700;font-size:20px;width:100%;min-width:0;outline:0}
+.multi-x{border:0;background:none;color:var(--muted);font-size:22px;line-height:1;padding:6px 9px;border-radius:8px}
+.multi-x:hover{background:var(--surface);color:var(--fg)}
+.multi-total{display:flex;justify-content:space-between;gap:10px;font-weight:700;font-size:14px;padding:4px 6px 0}
+.multi-hint{margin:0;font-size:13px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:#1E1B4B;color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:600;z-index:50;box-shadow:0 10px 30px -10px rgb(0 0 0/.5)}
@@ -713,9 +724,11 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
     </div>
     <div class="field amount"><label for="m-monto" id="m-monto-lab">Monto (S/)</label><input id="m-monto" type="number" inputmode="decimal" step="0.01" min="0.01" required placeholder="0.00"></div>
     <div class="q-block" id="q-cat-wrap" hidden>
-      <span class="q-lab">Categoría</span>
+      <span class="q-lab" id="q-cat-lab">Categoría</span>
       <div class="chips" id="q-cat" role="group" aria-label="Categoría"></div>
       <div class="chips sm" id="q-sub" role="group" aria-label="Subcategoría"></div>
+      <!-- Ingresos del taxi: varias categorías a la vez, cada una con su monto -->
+      <div class="multi-list" id="q-multi" hidden></div>
     </div>
     <div id="cg-venta" hidden style="display:grid;gap:8px">
       <div class="row3">
@@ -1470,6 +1483,36 @@ const T_TXT = { Gasto:"Gasto", Ingreso:"Ingreso", Venta:"Venta", Mas:"Otro…" }
 const recordar = (k, v) => { try{ localStorage.setItem("cp-"+k, v); }catch(e){} };
 const recordado = k => { try{ return localStorage.getItem("cp-"+k); }catch(e){ return null; } };
 
+// Ingresos del taxi (nuevo, no al editar): se eligen varias categorías y cada una lleva su propio monto.
+// Al guardar se crea un movimiento por categoría.
+let multiSel = [], multiMontos = {};
+const esMulti = () => state.cg && !editMov && $("#m-mov").value==="Ingreso" && $("#m-amb").value==="Auto";
+const limpiarMulti = () => { multiSel = []; multiMontos = {}; };
+const inputMulti = c => $$("#q-multi [data-mcat]").find(i=>i.dataset.mcat===c);
+function totalMulti(){
+  const el = $("#multi-total"); if(!el) return;
+  const n = multiSel.length, t = multiSel.reduce((a,c)=>a+(parseFloat(multiMontos[c])||0), 0);
+  el.innerHTML = `<span>${n} ingreso${n===1?"":"s"}</span><span>Total ${fmt(t)}</span>`;
+}
+function pintarMulti(){
+  const box = $("#q-multi"), on = esMulti();
+  box.hidden = !on;
+  if(!on){ box.innerHTML = ""; return; }
+  if(!multiSel.length){ box.innerHTML = `<p class="meta multi-hint">Toca una o varias categorías y escribe cuánto entró en cada una.</p>`; return; }
+  box.innerHTML = multiSel.map((c,i)=>`<div class="multi-row">
+      <label for="mm-${i}">${esc(c)}</label>
+      <div class="multi-inp"><span>S/</span><input id="mm-${i}" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" data-mcat="${esc(c)}" value="${esc(multiMontos[c]||"")}"></div>
+      <button type="button" class="multi-x" data-mquitar="${esc(c)}" aria-label="Quitar ${esc(c)}">×</button>
+    </div>`).join("") + `<div class="multi-total" id="multi-total"></div>`;
+  totalMulti();
+}
+function alternarMulti(c){
+  const i = multiSel.indexOf(c);
+  if(i>=0){ multiSel.splice(i,1); delete multiMontos[c]; } else multiSel.push(c);
+  pintarCats(); pintarMulti();
+  if(i<0){ const inp = inputMulti(c); if(inp) inp.focus(); }
+}
+
 function setTipo(t){
   tipoSel = t;
   $$("#m-seg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.t===t));
@@ -1524,14 +1567,20 @@ function pintarActividades(){
     <span class="mod-ic ${k}"><svg class="i" viewBox="0 0 24 24">${MODS[k].icon}</svg></span>${MODS[k].nombre}</button>`).join("");
 }
 function pintarCats(){
-  const lista = catsCG(), actual = $("#m-cat").value, max = 8;
+  const lista = catsCG(), actual = $("#m-cat").value, max = 8, multi = esMulti();
   let vis = lista.slice(0, max);
-  if(actual && !vis.includes(actual)) vis = [...vis.slice(0, max-1), actual];
-  $("#q-cat").innerHTML = vis.map(c=>`<button type="button" class="chip-btn" data-cat="${esc(c)}" aria-pressed="${c===actual}">${esc(c)}</button>`).join("") +
+  if(multi){
+    // Las elegidas siempre a la vista, aunque no estén entre las más usadas
+    const fuera = multiSel.filter(c=>!vis.includes(c));
+    if(fuera.length) vis = [...vis.slice(0, Math.max(0, max-fuera.length)), ...fuera];
+  } else if(actual && !vis.includes(actual)) vis = [...vis.slice(0, max-1), actual];
+  const marcada = c => multi ? multiSel.includes(c) : c===actual;
+  $("#q-cat").innerHTML = vis.map(c=>`<button type="button" class="chip-btn" data-cat="${esc(c)}" aria-pressed="${marcada(c)}">${esc(c)}</button>`).join("") +
     `<button type="button" class="chip-btn dash" data-cat-otra>${lista.length > vis.length ? `Ver todas (${lista.length})` : "Otra / nueva"}</button>`;
 }
 function pintarSubs(){
   if(!state.cg) return;
+  if(esMulti()){ $("#q-sub").innerHTML = ""; $("#q-sub").hidden = true; return; }
   const subs = subsDe($("#m-cat").value).slice(0, 8), sub = $("#m-sub").value;
   $("#q-sub").innerHTML = subs.map(x=>`<button type="button" class="chip-btn" data-sub="${esc(x)}" aria-pressed="${x===sub}">${esc(x)}</button>`).join("");
   $("#q-sub").hidden = !subs.length;
@@ -1565,12 +1614,18 @@ function refrescarCG(){
   $("#fld-tg").hidden = mv!=="Gasto";
   $("#q-mas").hidden = qTipo!=="Mas";
   $("#m-monto-lab").textContent = { Gasto:"¿Cuánto gastaste? (S/)", Ingreso:"¿Cuánto entró? (S/)", Venta:"Precio de venta (S/)" }[mv] || "Monto (S/)";
+  // Ingresos del taxi: el monto va en cada categoría, no en el campo general
+  const multi = esMulti();
+  $("#m-monto").required = !multi; $("#m-monto").parentElement.hidden = multi;
+  $("#q-cat-lab").textContent = multi ? "Categorías · puedes elegir varias" : "Categoría";
+  pintarMulti();
   utilVenta(); pintarFecha(); resumenMas();
 }
 // Cambia el movimiento y pone los valores por defecto (salvo al editar)
 function setMov(mv){
   $("#m-mov").value = mv;
   if(!editMov){
+    limpiarMulti();
     const amb = CG.ambitoDe[mv] || ambDeMod(actividadPorDefecto(mv), mv);
     conValor($("#m-amb"), amb);
     $("#m-estado").value = (mv==="Ingreso" || mv==="Venta") ? "Cobrado" : "Pagado";
@@ -1589,11 +1644,13 @@ $("#q-act").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if(!b) return;
   const mv = $("#m-mov").value; conValor($("#m-amb"), ambDeMod(b.dataset.act, mv));
   if(!editMov) recordar("act-"+mv, b.dataset.act);
+  limpiarMulti();
   $("#m-cat").dataset.v = ""; $("#m-sub").value = ""; refrescarCG();
 });
 $("#q-cat").addEventListener("click", e => {
   if(e.target.closest("[data-cat-otra]")){ $("#row-cat").hidden = false; $("#m-cat").focus(); return; }
   const b = e.target.closest("[data-cat]"); if(!b) return;
+  if(esMulti()){ alternarMulti(b.dataset.cat); return; }
   conValor($("#m-cat"), b.dataset.cat); $("#m-cat").dataset.v = b.dataset.cat; $("#m-sub").value = "";
   pintarCats(); updSubs();
 });
@@ -1607,15 +1664,27 @@ $("#q-fecha").addEventListener("click", e => {
   $("#m-fecha").value = d.toLocaleDateString("en-CA"); pintarFecha();
 });
 $("#m-fecha").onchange = pintarFecha;
-$("#m-cat").onchange = () => { $("#m-cat").dataset.v = $("#m-cat").value; if(state.cg){ pintarCats(); } updSubs(); };
+$("#m-cat").onchange = () => {
+  // En ingresos del taxi, elegir en la lista completa suma esa categoría a las elegidas
+  if(esMulti()){ const c = $("#m-cat").value; if(c && !multiSel.includes(c)) alternarMulti(c); return; }
+  $("#m-cat").dataset.v = $("#m-cat").value; if(state.cg){ pintarCats(); } updSubs();
+};
+$("#q-multi").addEventListener("input", e => {
+  const i = e.target.closest("[data-mcat]"); if(!i) return;
+  multiMontos[i.dataset.mcat] = i.value; totalMulti();
+});
+$("#q-multi").addEventListener("click", e => {
+  const b = e.target.closest("[data-mquitar]"); if(b) alternarMulti(b.dataset.mquitar);
+});
 $("#m-sub").oninput = () => { if(state.cg) pintarSubs(); };
 $("#m-mov").onchange = () => setMov($("#m-mov").value);
-$("#m-amb").onchange = () => { $("#m-cat").dataset.v = ""; refrescarCG(); };
+$("#m-amb").onchange = () => { $("#m-cat").dataset.v = ""; limpiarMulti(); refrescarCG(); };
 ["#m-medio","#m-estado","#m-cuenta","#m-nota"].forEach(id=>$(id).addEventListener("input", resumenMas));
 ["#m-monto","#m-costo","#m-envio"].forEach(id=>$(id).addEventListener("input", utilVenta));
 
 function openForm(m){
   editMov = m || null;
+  limpiarMulti();
   const cg = state.cg;
   $("#mov-form").reset(); $("#mov-msg").hidden = true;
   $("#mov-title").textContent = m ? "Editar movimiento" : "Nuevo movimiento";
@@ -1629,6 +1698,7 @@ function openForm(m){
   const more = $("#m-more"); more.classList.toggle("simple", !cg); more.open = !cg;
   $("#m-medio").innerHTML = opts(cg ? CG.medios : ["Efectivo","Yape","Depósito","Transferencia","Cajero","Tarjeta"], true);
   const monto = $("#m-monto");
+  monto.required = true; monto.parentElement.hidden = false; $("#q-multi").hidden = true;
   if(cg){ monto.removeAttribute("min"); } else { monto.min = "0.01"; }
   if(m) $("#m-fecha").value = m.fecha; else $("#m-fecha").value = today();
   if(cg){
@@ -1670,6 +1740,7 @@ async function guardarMov(otro){
   if(!form.reportValidity()) return;
   const cg = state.cg, err = t => { const el=$("#mov-msg"); el.textContent=t; el.hidden=false; };
   $("#mov-msg").hidden = true;
+  if(esMulti()) return guardarMulti(otro, err);
   const monto = parseFloat($("#m-monto").value), num = id => { const v = parseFloat($(id).value); return isNaN(v) ? null : v; };
   const cat = $("#m-cat").value, sub = $("#m-sub").value.trim();
   let datos = { fecha:$("#m-fecha").value, categoria:cat, subcategoria:sub||null,
@@ -1709,6 +1780,44 @@ async function guardarMov(otro){
   }
   catch(e2){ err(traducir(e2)); }
   finally{ btns.forEach(b=>b.disabled=false); }
+}
+
+// Ingresos del taxi con varias categorías: un movimiento por categoría, con su propio monto.
+// Km y horas son del día: van solo en el primero para no contarlos dos veces.
+async function guardarMulti(otro, err){
+  if(!multiSel.length){ err("Toca al menos una categoría."); return; }
+  const items = [];
+  for(const c of multiSel){
+    const v = Math.round((parseFloat(multiMontos[c])||0)*100)/100;
+    if(!(v>0)){ err(`Escribe cuánto entró por ${c}.`); const i = inputMulti(c); if(i) i.focus(); return; }
+    items.push({ c, v });
+  }
+  const num = id => { const v = parseFloat($(id).value); return isNaN(v) ? null : v; };
+  const desc = $("#m-desc").value.trim(), nota = $("#m-nota").value.trim(), km = num("#m-km"), horas = num("#m-horas");
+  const base = { fecha:$("#m-fecha").value, medio:$("#m-medio").value||null, movimiento:"Ingreso", tipo:"Ingreso",
+    ambito:$("#m-amb").value, estado:$("#m-estado").value, cuenta:$("#m-cuenta").value||null, tipo_gasto:"No aplica",
+    costo:null, envio:null, necesidad:"No aplica", subcategoria:null, origen:"web" };
+  const btns = [$("#m-save"), $("#m-otro")]; btns.forEach(b=>b.disabled=true);
+  let hechos = 0, total = 0;
+  try{
+    for(const [i, it] of items.entries()){
+      const extra = { Origen:"Caja Personal · web", "Precisión fecha":"Día" };
+      if(nota) extra.Nota = nota;
+      if(i===0){ if(km!==null) extra["Km recorridos"] = km; if(horas!==null) extra.Horas = horas; }
+      await api.add({ ...base, categoria:it.c, monto:it.v, descripcion: desc || it.c, extra });
+      hechos++; total += it.v;
+      multiSel = multiSel.filter(x=>x!==it.c); delete multiMontos[it.c];   // si algo falla después, no se repite
+    }
+    toast(hechos===1 ? `Ingreso de ${fmt(total)} guardado · ${items[0].c}` : `${hechos} ingresos guardados · ${fmt(total)}`);
+    render();
+    if(otro){
+      ["#m-desc","#m-nota","#m-km","#m-horas"].forEach(id=>$(id).value="");
+      limpiarMulti(); refrescarCG();
+    } else $("#dlg").close();
+  } catch(e2){
+    if(hechos){ render(); pintarCats(); pintarMulti(); }
+    err((hechos ? `Se guardaron ${hechos} de ${items.length}; faltan los que siguen en la lista. ` : "") + traducir(e2));
+  } finally{ btns.forEach(b=>b.disabled=false); }
 }
 
 /* ---------- Compartir mi cuenta ---------- */
