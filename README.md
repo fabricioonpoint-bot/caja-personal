@@ -112,3 +112,20 @@ Al entrar por primera vez, la web aplica esas plantillas con `aplicar_plantilla`
 Después, en **Resumen → Mis actividades**, la persona agrega o quita actividades. Quitar una usa `quitar_plantilla`: desactiva la actividad y deja sus movimientos y categorías.
 
 El administrador sigue pudiendo crear cuentas en **Cuentas**. Migración: `supabase/migrations/20261123120000_registro_con_uso.sql`.
+
+## Paneles de Taxista y Maestro de obra (23/11/2026)
+
+**Taxi** (menú Taxi, visible si la cuenta tiene la actividad Taxista)
+- *Registrar jornada*: un monto por aplicativo, km, horas, combustible y otro gasto del carro. Crea un ingreso por app; km y horas van en el primero (`extra["Km recorridos"]`, `extra.Horas`), igual que los apuntes que ya existían.
+- Panel del mes: utilidad, ingresos, gastos del carro, días trabajados, horas (S/ por hora) y km (S/ por km), ingresos por app (ID/UBER/CAB se agrupan como InDrive/Uber/Cabify), gastos por categoría y tabla de jornadas.
+- Calendario con semáforo por día: verde si entró la meta (por defecto S/ 230, se cambia en la misma pantalla), ámbar desde el 70 %, rojo por debajo.
+
+**Obras** (menú Obras, visible con la actividad Maestro de obra)
+- Tablero de todas las obras: contratado, cobrado, por cobrar, gastado, utilidad proyectada y horas.
+- Cada obra: precio final, cobros y gastos (movimientos con ámbito Obra y `extra.obra_id`), "te queda" = precio − gastado y utilidad proyectada = precio − gastado − lo que falta gastar según presupuesto; tiempo en días y horas.
+- Presupuesto por metrado con la calculadora de la hoja "Calculadora maestro de obra": mano de obra (jornal × cuadrilla ÷ rendimiento + comida, pasaje y otros), gastos operativos, materiales con desperdicio, gastos generales, utilidad, IGV opcional y anticipo. Modalidad solo mano de obra o con materiales; partida libre con precio propio.
+- Mis precios: jornales, tarifa propia por partida, precio de cada material y datos para el PDF.
+- PDF A4: presupuesto con condiciones y firmas, requerimiento de materiales y, opcional, análisis de costos.
+- Bitácora: jornadas y avances con horas y personas, notas y preguntas (pendiente o resuelta).
+
+Tablas: `obras`, `obra_registros`, `precios_maestro` (migración `20261123170000_obras_y_presupuestos.sql`).

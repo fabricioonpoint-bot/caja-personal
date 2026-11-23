@@ -138,6 +138,114 @@ form{display:grid;gap:14px}
 .secure-note{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin:0}
 .secure-note svg.i{width:16px;height:16px;margin-top:2px;color:var(--in)}
 
+/* ---------- Paneles Taxi y Obras ---------- */
+.kp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kp{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
+.kp-v{font-family:var(--display);font-weight:700;font-size:22px;margin-top:6px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kp-n{font-size:12.5px;color:var(--muted);margin-top:4px}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;max-width:100%}
+.tw table{min-width:560px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal-h{font-size:11px;font-weight:700;color:var(--muted);text-align:center;text-transform:uppercase;letter-spacing:.05em}
+.cal-d{aspect-ratio:1/1;min-height:44px;border:1px solid var(--line);background:var(--surface-2);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:2px;color:var(--muted);font-size:13px}
+.cal-d b{font-size:13px;color:var(--fg)}
+.cal-d span{font-size:10.5px;font-weight:700}
+.cal-d.verde{background:var(--in-soft);border-color:color-mix(in srgb,var(--in) 45%,transparent);color:var(--in)}
+.cal-d.ambar{background:#FEF3C7;border-color:#F59E0B;color:#92400E}
+.cal-d.rojo{background:var(--out-soft);border-color:color-mix(in srgb,var(--out) 45%,transparent);color:var(--out)}
+.cal-d.gasto{background:var(--surface);border-style:dashed}
+.cal-d.hoy{box-shadow:0 0 0 2px var(--accent)}
+.cal-d.fut{opacity:.45;cursor:default}
+.cal-ley{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.cal-ley i,.dot-s{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--surface-2);border:1px solid var(--line);margin-right:6px;vertical-align:-1px}
+.cal-ley i.verde,.dot-s.verde{background:var(--in);border:0} .cal-ley i.ambar,.dot-s.ambar{background:#F59E0B;border:0} .cal-ley i.rojo,.dot-s.rojo{background:var(--out);border:0}
+.meta-in{width:84px;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface)}
+.jr-apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.jr-app{display:grid;gap:4px;font-size:13px;font-weight:700}
+.jr-app input,.mp-row input{border:0;background:none;padding:10px 0;width:100%;min-width:0;outline:none}
+.jr-total{display:flex;flex-wrap:wrap;gap:6px 16px;background:var(--surface-2);border-radius:12px;padding:10px 14px;font-size:14px}
+.jr-total b{font-family:var(--display)}
+.ob-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.ob-card{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:16px;display:grid;gap:10px;box-shadow:var(--shadow);transition:border-color .15s,transform .15s}
+.ob-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.ob-card-h{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.ob-card-h b{font-family:var(--display);font-size:17px;line-height:1.25}
+.ob-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.ob-nums div{background:var(--surface-2);border-radius:10px;padding:7px 8px;min-width:0}
+.ob-nums span{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.ob-nums b{font-family:var(--display);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.ob-prog{display:grid;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
+.pbar{height:8px;border-radius:6px;background:var(--surface-2);overflow:hidden;margin-bottom:4px}
+.pbar i{display:block;height:100%;border-radius:6px;background:var(--accent)}
+.pbar.in i{background:linear-gradient(90deg,#2DD4BF,#059669)} .pbar.warn i{background:linear-gradient(90deg,#FCD34D,#F59E0B)} .pbar.out i{background:linear-gradient(90deg,#FB7185,#E11D48)}
+.ob-tabs{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;background:var(--surface-2);border-radius:14px;padding:5px;justify-self:start;max-width:100%;min-width:0}
+#v-obras>*,#ob-detalle>*,#ob-lista>*,#v-taxi>*{min-width:0}
+.ob-tabs button{white-space:nowrap;flex:none;border:0;background:none;padding:9px 14px;border-radius:10px;font-weight:700;color:var(--muted)}
+.ob-tabs button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+.bit{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:6px}
+.bit.abierta{border-color:#F59E0B;background:color-mix(in srgb,#FEF3C7 40%,var(--surface))}
+.bit-h{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.bit p{margin:0;font-size:14px}
+.bit-acc{display:flex;gap:14px;font-size:13px}
+.bit-mini{font-size:13.5px;padding:6px 0;border-top:1px solid var(--line)}
+.mp-row{display:grid;grid-template-columns:minmax(0,1fr) 140px;gap:10px;align-items:center;font-size:14px;font-weight:600;padding:4px 0}
+.mp-sec{display:grid;gap:6px}
+.mp-sec h4{margin:6px 0 0;font-family:var(--display);font-size:15px}
+.x-btn{border:0;background:var(--surface-2);border-radius:8px;width:30px;height:30px;font-size:18px;line-height:1;color:var(--muted)}
+.pr-t td{vertical-align:middle;padding:8px 6px}
+.pr-t input,.pr-t select,.pr-params input,.pr-params select{width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);min-width:0}
+.pr-part{display:grid;gap:6px;min-width:220px}
+.pr-num{max-width:110px;text-align:right}
+.pr-und{max-width:70px}
+.pr-desc{font-size:12.5px}
+.pr-params{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end}
+.pr-params label{display:grid;gap:4px;font-size:12.5px;font-weight:700}
+.pr-params .check{display:flex;align-items:center;gap:8px;padding-bottom:9px}
+.pr-params .check input{width:auto}
+tr.tot td{font-weight:700;border-bottom:0}
+.sticky-acc{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+@media (max-width:820px){
+  .kp-v{font-size:19px}
+  .ob-nums{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pr-t thead{display:none}
+  .pr-t,.pr-t tbody,.pr-t tr,.pr-t td{display:block;width:100%}
+  .pr-t tr{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:10px}
+  .pr-t td{border:0;padding:0}
+  .pr-t td.pr-part{grid-column:1/-1;min-width:0}
+  .pr-t td[data-l]::before{content:attr(data-l);display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .pr-num{max-width:none}
+  .cal{gap:4px} .cal-d{min-height:38px;border-radius:9px} .cal-d span{font-size:9.5px}
+}
+/* ---------- PDF (impresión A4) ---------- */
+#print-area{display:none}
+@page{size:A4;margin:12mm}
+@media print{
+  body.imprimir{background:#fff!important}
+  body.imprimir>*:not(#print-area){display:none!important}
+  body.imprimir #print-area{display:block}
+  .a4{break-after:page;color:#111;font:10.5pt/1.4 var(--body)}
+  .a4:last-child{break-after:auto}
+  .a4-cab{display:flex;justify-content:space-between;gap:16px;border-bottom:2.5px solid #4C1D95;padding-bottom:8px;margin-bottom:10px}
+  .a4-emp{font-family:var(--display);font-weight:800;font-size:15pt;color:#1E1B4B}
+  .a4-tit{text-align:right;display:grid}
+  .a4-tit b{font-family:var(--display);font-size:13pt;color:#4C1D95}
+  .a4-tit span,.a4-meta{color:#555;font-size:8.5pt}
+  .a4 table{width:100%;border-collapse:collapse;margin:8px 0}
+  .a4 th{background:#EFE7FE;color:#1E1B4B;font-size:8pt;letter-spacing:.04em;padding:5px 6px;border:1px solid #D8CCF5;white-space:normal}
+  .a4 td{padding:5px 6px;border:1px solid #E3DEEF;font-size:9.5pt;vertical-align:top}
+  .a4 td.r,.a4 th.r{text-align:right;white-space:nowrap}
+  .a4-datos td:nth-child(odd){font-weight:700;width:14%;background:#F7F5FC}
+  .a4-tot{width:48%!important;margin-left:auto!important}
+  .a4-tot td:last-child{text-align:right}
+  .a4 tr.g td{font-weight:800;background:#EFE7FE}
+  .a4-cond td:first-child{font-weight:700;width:22%;background:#F7F5FC}
+  .a4 h4{font-family:var(--display);font-size:10.5pt;margin:12px 0 2px;color:#1E1B4B}
+  .a4-nota{font-size:8.5pt;color:#555;margin:6px 0}
+  .a4-firmas{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:46px;text-align:center;font-weight:700;font-size:9.5pt}
+  .a4-firmas div{border-top:1px solid #333;padding-top:6px}
+  .a4-firmas span{font-weight:400;color:#555;font-size:8.5pt}
+}
+
 /* ---------- Uso de la cuenta: tarjetas para elegir a qué se dedica ---------- */
 .paso{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:var(--muted)}
 .paso i{display:block;flex:1;height:4px;border-radius:4px;background:var(--surface-2);overflow:hidden;max-width:120px}
@@ -521,6 +629,8 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
     <nav>
       <button data-view="resumen" aria-current="page"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Resumen</button>
       <button data-view="movimientos"><svg class="i" viewBox="0 0 24 24"><path d="M7 4v16M7 4L3 8M7 4l4 4M17 20V4M17 20l-4-4M17 20l4-4"/></svg>Movimientos</button>
+      <button data-view="taxi" id="nav-taxi" hidden><svg class="i" viewBox="0 0 24 24"><path d="M4 16h16M5.5 16l1.6-5.2A2 2 0 019 9.4h6a2 2 0 011.9 1.4l1.6 5.2"/><circle cx="8" cy="17.5" r="1.6"/><circle cx="16" cy="17.5" r="1.6"/></svg>Taxi</button>
+      <button data-view="obras" id="nav-obras" hidden><svg class="i" viewBox="0 0 24 24"><path d="M3 20h18M5 20v-9l7-5 7 5v9"/><path d="M10 20v-5h4v5"/></svg>Obras</button>
       <button data-view="atajo"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Atajo iPhone</button>
       <button data-view="compartir" id="nav-compartir"><svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="17" cy="7" r="2.5"/><path d="M2.5 19c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6"/><path d="M14.5 13.2c.7-.4 1.6-.6 2.5-.6 2.3 0 4.1 1.3 4.6 3.9"/></svg>Compartir</button>
       <button data-view="cuentas" id="nav-cuentas" hidden><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M17 8v6M14 11h6"/></svg>Cuentas</button>
@@ -528,7 +638,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
     <div class="who"><span id="who-email"></span><button id="logout">Cerrar sesión</button></div>
   </aside>
   <main>
-    <div id="demo-band" class="demo-band" hidden><span>Ejemplo inventado: una persona taxista que también vende ropa. Nada se guarda.</span><button class="btn small ghost" id="exit-demo">Salir del ejemplo</button></div>
+    <div id="demo-band" class="demo-band" hidden><span>Ejemplo inventado: una persona que hace taxi, vende ropa y tiene una obra. Nada se guarda.</span><button class="btn small ghost" id="exit-demo">Salir del ejemplo</button></div>
 
     <div id="acct-band" class="acct-band" hidden>
       <span><label for="acct-sel">Viendo la cuenta de</label> <select id="acct-sel"></select></span>
@@ -694,6 +804,118 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
       <div id="c-clave" class="panel" hidden></div>
     </section>
 
+    <!-- TAXI -->
+    <section id="v-taxi" hidden style="display:grid;gap:18px">
+      <div class="top">
+        <div><h2>Taxi</h2><div class="sub">Cuánto trabajas, cuánto gasta el carro y cuánto te queda</div></div>
+        <div class="controls"><label class="label" for="tx-mes">Mes</label><select id="tx-mes"></select><button class="btn small" id="tx-jornada" type="button">+ Registrar jornada</button></div>
+      </div>
+      <div class="kp-grid" id="tx-kpis"></div>
+      <div class="grid2">
+        <div class="panel">
+          <div class="panel-head"><h3 id="tx-cal-t">Calendario</h3><label class="meta" style="display:flex;gap:6px;align-items:center">Meta del día S/ <input id="tx-meta" class="meta-in" type="number" min="1" step="1" inputmode="numeric"></label></div>
+          <div class="cal" id="tx-cal"></div>
+          <div class="cal-ley" id="tx-ley"></div>
+          <p class="meta" style="margin:0;font-size:12.5px">Verde: ese día entró la meta o más. Ámbar: entre 70 % y la meta. Rojo: menos del 70 %. Toca un día para anotar su jornada.</p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Ingresos por aplicativo</h3></div><div class="cats" id="tx-apps"></div>
+          <div class="panel-head" style="margin-top:8px"><h3>Gastos del carro</h3></div><div class="cats" id="tx-gastos"></div>
+        </div>
+      </div>
+      <div class="panel" style="padding:8px 16px">
+        <div class="panel-head" style="padding-top:10px"><h3>Jornadas del mes</h3></div>
+        <div class="tw"><table><thead><tr><th>Día</th><th>Apps</th><th class="r">Horas</th><th class="r">Km</th><th class="r">Entró</th><th class="r">Gastos</th><th class="r">Quedó</th><th class="r">Por hora</th></tr></thead><tbody id="tx-body"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- OBRAS -->
+    <section id="v-obras" hidden style="display:grid;gap:18px">
+      <div id="ob-aviso" class="msg err" hidden></div>
+      <div id="ob-lista" style="display:grid;gap:18px">
+        <div class="top">
+          <div><h2>Obras</h2><div class="sub">Lo cobrado, lo gastado y lo que te queda en cada obra</div></div>
+          <div class="controls sticky-acc">
+            <button class="btn small ghost" id="ob-calc" type="button" data-solo-edit="calc">Calculadora</button>
+            <button class="btn small ghost" id="ob-precios" type="button" data-solo-edit="1">Mis precios</button>
+            <button class="btn small" id="ob-nueva" type="button" data-solo-edit="1">+ Nueva obra</button>
+          </div>
+        </div>
+        <div class="kp-grid" id="ob-kpis"></div>
+        <div class="ob-cards" id="ob-cards"></div>
+      </div>
+      <div id="ob-detalle" hidden style="display:grid;gap:16px">
+        <div><button class="link" id="ob-volver" type="button">← Todas las obras</button></div>
+        <div class="top">
+          <div><h2 id="od-nombre"></h2><div class="sub" id="od-sub" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px"></div></div>
+          <div class="controls sticky-acc" id="od-acciones">
+            <button class="btn small ghost" id="od-editar" type="button" data-obra-acc>Editar</button>
+            <button class="btn small ghost" id="od-registro" type="button" data-obra-acc>+ Bitácora</button>
+            <button class="btn small ghost" id="od-cobro" type="button" data-obra-acc>+ Cobro</button>
+            <button class="btn small" id="od-gasto" type="button" data-obra-acc>+ Gasto</button>
+          </div>
+        </div>
+        <div class="ob-tabs" id="ob-tabs" role="tablist">
+          <button type="button" data-tab="resumen" role="tab">Resumen</button><button type="button" data-tab="presupuesto" role="tab">Presupuesto y materiales</button>
+          <button type="button" data-tab="movs" role="tab">Cobros y gastos</button><button type="button" data-tab="bitacora" role="tab">Bitácora</button>
+        </div>
+        <div id="ot-resumen" style="display:grid;gap:16px">
+          <div class="kp-grid" id="or-kpis"></div>
+          <div class="grid2">
+            <div class="panel"><h3>Del precio final a lo que te queda</h3><div id="or-cascada"></div></div>
+            <div class="panel"><h3>Avance</h3><div id="or-avance" style="display:grid;gap:8px"></div></div>
+          </div>
+        </div>
+        <div id="ot-presupuesto" hidden style="display:grid;gap:16px">
+          <div class="panel">
+            <div class="pr-params">
+              <label>Modalidad<select id="pr-mod"><option value="servicio">Solo mano de obra</option><option value="todo">Con materiales (todo costo)</option></select></label>
+              <label>Gastos generales %<input id="pr-gg" type="number" step="0.5" min="0"></label>
+              <label>Tu utilidad %<input id="pr-ut" type="number" step="0.5" min="0"></label>
+              <label>Anticipo %<input id="pr-ant" type="number" step="5" min="0" max="100"></label>
+              <label>Plazo<input id="pr-plazo" placeholder="Automático"></label>
+              <label class="check"><input id="pr-igv" type="checkbox"> Cobrar IGV 18 %</label>
+            </div>
+          </div>
+          <div class="panel" style="padding:12px 16px">
+            <div class="panel-head"><h3>Partidas y metrados</h3><span class="meta">Tarifa vacía = sugerida. Escribe la tuya para reemplazarla.</span></div>
+            <table class="pr-t"><thead><tr><th>Partida</th><th>Und.</th><th class="r">Metrado</th><th class="r">Costo / und.</th><th class="r">Tarifa / und.</th><th class="r">Importe</th><th></th></tr></thead><tbody id="pr-body"></tbody></table>
+            <div><button class="btn small ghost" id="pr-add" type="button">+ Agregar partida</button></div>
+          </div>
+          <div class="grid2">
+            <div class="panel"><h3>Precio para el cliente</h3><div class="cg-rows" id="pr-tot"></div></div>
+            <div class="panel"><h3>Tu costo y tu utilidad</h3><div class="cg-rows" id="pr-costos"></div></div>
+          </div>
+          <div class="panel" style="padding:12px 16px">
+            <div class="panel-head"><h3>Materiales que necesitas</h3><span class="meta">Con desperdicio incluido</span></div>
+            <div class="tw"><table><thead><tr><th>Material</th><th>Und.</th><th class="r">Cantidad</th><th class="r">Precio ref.</th><th class="r">Costo</th><th>Partidas</th></tr></thead><tbody id="pr-mats"></tbody></table></div>
+          </div>
+          <div class="panel">
+            <div id="pdf-opc" style="display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center">
+              <label class="check"><input type="checkbox" id="pdf-mat" checked> Hoja de materiales</label>
+              <label class="check"><input type="checkbox" id="pdf-ana"> Análisis de costos (solo para ti)</label>
+            </div>
+            <div class="sticky-acc">
+              <span class="chip warn" id="pr-sucio" hidden>Cambios sin guardar</span>
+              <button class="btn small ghost" id="pr-pdf" type="button">Descargar PDF</button>
+              <button class="btn small ghost" id="pr-usar" type="button">Guardar y usar como precio final</button>
+              <button class="btn small" id="pr-guardar" type="button">Guardar presupuesto</button>
+              <button class="btn small" id="pr-nueva" type="button">Guardar como obra nueva</button>
+            </div>
+            <p class="meta" style="margin:0;font-size:12.5px">El PDF se abre en la ventana de impresión: elige <b>Guardar como PDF</b>. Rendimientos y precios de inicio tomados de tu hoja de cálculo; cámbialos en <b>Mis precios</b>.</p>
+          </div>
+        </div>
+        <div id="ot-movs" hidden class="panel" style="padding:8px 16px">
+          <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Descripción</th><th class="r">Monto</th></tr></thead><tbody id="om-body"></tbody></table></div>
+        </div>
+        <div id="ot-bitacora" hidden class="panel">
+          <div class="panel-head"><h3>Bitácora</h3><button class="btn small ghost" id="ob-bit-add" type="button">+ Agregar</button></div>
+          <div class="meta" id="ob-bit-res"></div>
+          <div id="ob-bit" style="display:grid;gap:10px"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- ATAJO IPHONE -->
     <section id="v-atajo" hidden style="display:grid;gap:18px">
       <div class="top">
@@ -763,6 +985,89 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
   </main>
   <button class="fab" data-new aria-label="Nuevo movimiento"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
 </div>
+
+<dialog id="jornada-dlg">
+  <form class="sheet" id="jr-form" novalidate>
+    <div><h3 style="font-size:20px">Registrar jornada</h3><p class="meta" style="margin:4px 0 0;font-size:14px">Cuánto entró por cada app, tus km y horas, y lo que gastó el carro.</p></div>
+    <div class="field"><label for="jr-fecha">Día</label><input id="jr-fecha" type="date"></div>
+    <div id="jr-ya" class="msg" hidden></div>
+    <div class="q-block"><span class="q-lab">Ingresos por aplicativo</span><div class="jr-apps" id="jr-apps"></div></div>
+    <div class="row2">
+      <div class="field"><label for="jr-km">Km recorridos</label><input id="jr-km" type="number" inputmode="decimal" step="0.1" min="0" placeholder="0"></div>
+      <div class="field"><label for="jr-horas">Horas trabajadas</label><input id="jr-horas" type="number" inputmode="decimal" step="0.25" min="0" placeholder="0"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="jr-comb">Combustible S/</label><input id="jr-comb" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+      <div class="field"><label for="jr-comb-tipo">Tipo</label><select id="jr-comb-tipo"><option>GNV</option><option>Gasolina</option><option>GLP</option></select></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="jr-otro-cat">Otro gasto del carro</label><select id="jr-otro-cat"></select></div>
+      <div class="field"><label for="jr-otro">Monto S/</label><input id="jr-otro" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+    </div>
+    <div class="jr-total" id="jr-total"></div>
+    <div id="jr-msg" class="msg err" hidden></div>
+    <div class="actions"><button type="button" class="btn ghost" id="jr-no">Cancelar</button><button type="submit" class="btn" id="jr-ok">Guardar jornada</button></div>
+  </form>
+</dialog>
+
+<dialog id="obra-dlg">
+  <form class="sheet" id="obra-form" novalidate>
+    <h3 style="font-size:20px" id="obra-titulo">Nueva obra</h3>
+    <div class="field"><label for="ob-nombre">Nombre de la obra</label><input id="ob-nombre" placeholder="Ej. Ampliación 2do piso · Los Olivos" maxlength="120"></div>
+    <div class="row2"><div class="field"><label for="ob-cliente">Cliente</label><input id="ob-cliente" placeholder="Nombre del cliente"></div><div class="field"><label for="ob-tel">Teléfono</label><input id="ob-tel" inputmode="tel" placeholder="Opcional"></div></div>
+    <div class="field"><label for="ob-ubic">Ubicación</label><input id="ob-ubic" placeholder="Distrito, dirección"></div>
+    <div class="row2"><div class="field"><label for="ob-estado">Estado</label><select id="ob-estado"></select></div><div class="field"><label for="ob-precio">Precio final acordado S/</label><input id="ob-precio" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Del presupuesto"></div></div>
+    <div class="row2"><div class="field"><label for="ob-ini">Inicio</label><input id="ob-ini" type="date"></div><div class="field"><label for="ob-fin">Fin</label><input id="ob-fin" type="date"></div></div>
+    <div class="field"><label for="ob-desc">Alcance o notas</label><input id="ob-desc" placeholder="Qué incluye el trabajo"></div>
+    <div id="obra-msg" class="msg err" hidden></div>
+    <div class="actions"><button type="button" class="btn danger small" id="ob-borrar" hidden style="margin-right:auto">Eliminar</button><button type="button" class="btn ghost" id="obra-no">Cancelar</button><button type="submit" class="btn" id="obra-ok">Guardar</button></div>
+  </form>
+</dialog>
+
+<dialog id="om-dlg">
+  <form class="sheet" id="om-form" novalidate>
+    <h3 style="font-size:20px" id="om-titulo">Gasto</h3>
+    <div class="seg" id="om-seg"><button type="button" data-t="Ingreso">Cobro</button><button type="button" data-t="Gasto">Gasto</button></div>
+    <div class="row2"><div class="field"><label for="om-monto">Monto S/</label><input id="om-monto" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div><div class="field"><label for="om-fecha">Fecha</label><input id="om-fecha" type="date"></div></div>
+    <div class="row2"><div class="field"><label for="om-cat">Categoría</label><select id="om-cat"></select></div><div class="field"><label for="om-sub">Detalle</label><input id="om-sub" list="om-subs" placeholder="Opcional"><datalist id="om-subs"></datalist></div></div>
+    <div class="field"><label for="om-desc">Descripción</label><input id="om-desc" placeholder="Ej. 20 bolsas de cemento"></div>
+    <div class="row2"><div class="field"><label for="om-medio">Medio</label><select id="om-medio"><option value="">—</option><option>Efectivo</option><option>Yape/Plin</option><option>Transferencia</option><option>Tarjeta débito</option><option>Tarjeta crédito</option></select></div><div class="field"><label for="om-estado">Estado</label><select id="om-estado"></select></div></div>
+    <div id="om-msg" class="msg err" hidden></div>
+    <div class="actions"><button type="button" class="btn ghost" id="om-no">Cancelar</button><button type="submit" class="btn" id="om-ok">Guardar</button></div>
+  </form>
+</dialog>
+
+<dialog id="bit-dlg">
+  <form class="sheet" id="bit-form" novalidate>
+    <h3 style="font-size:20px">Registro de bitácora</h3>
+    <div class="row2"><div class="field"><label for="bit-tipo">Tipo</label><select id="bit-tipo"><option>Jornada</option><option>Avance</option><option>Nota</option><option>Pregunta</option></select></div><div class="field"><label for="bit-fecha">Fecha</label><input id="bit-fecha" type="date"></div></div>
+    <div class="field"><label for="bit-titulo">Título</label><input id="bit-titulo" maxlength="140"></div>
+    <div class="field"><label for="bit-texto">Detalle</label><textarea id="bit-texto" rows="4" style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);font:inherit;resize:vertical" placeholder="Qué se hizo, qué falta, qué hay que preguntar…"></textarea></div>
+    <div class="row2" id="bit-tiempo"><div class="field"><label for="bit-horas">Horas trabajadas</label><input id="bit-horas" type="number" inputmode="decimal" step="0.5" min="0" placeholder="8"></div><div class="field"><label for="bit-personas">Personas en obra</label><input id="bit-personas" type="number" inputmode="numeric" step="1" min="0" placeholder="2"></div></div>
+    <div id="bit-msg" class="msg err" hidden></div>
+    <div class="actions"><button type="button" class="btn ghost" id="bit-no">Cancelar</button><button type="submit" class="btn" id="bit-ok">Guardar</button></div>
+  </form>
+</dialog>
+
+<dialog id="precios-dlg">
+  <div class="sheet">
+    <div><h3 style="font-size:20px">Mis precios</h3><p class="meta" style="margin:4px 0 0;font-size:14px">Lo que dejes vacío usa el valor de tu hoja (el que se ve en gris). Se aplica a todos tus presupuestos.</p></div>
+    <div class="mp-sec"><h4>Para el PDF</h4><div id="mp-emp" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div></div>
+    <div class="mp-sec"><h4>Jornal por día</h4><div id="mp-jor"></div></div>
+    <div class="mp-sec"><h4>Tu tarifa por partida (sin materiales)</h4><div id="mp-tar"></div></div>
+    <div class="mp-sec"><h4>Precios de materiales</h4><div id="mp-mat"></div></div>
+    <div class="mp-sec"><h4>Por defecto en cada presupuesto</h4>
+      <div class="pr-params">
+        <label>Modalidad<select id="mp-mod"><option value="servicio">Solo mano de obra</option><option value="todo">Con materiales</option></select></label>
+        <label>Gastos generales %<input id="mp-gg" type="number" step="0.5" min="0"></label>
+        <label>Tu utilidad %<input id="mp-ut" type="number" step="0.5" min="0"></label>
+        <label>Anticipo %<input id="mp-ant" type="number" step="5" min="0" max="100"></label>
+        <label class="check"><input id="mp-igv" type="checkbox"> Cobrar IGV</label>
+      </div></div>
+    <div id="mp-msg" class="msg err" hidden></div>
+    <div class="actions"><button type="button" class="btn ghost" id="mp-no">Cancelar</button><button type="button" class="btn" id="mp-ok">Guardar mis precios</button></div>
+  </div>
+</dialog>
 
 <dialog id="uso-dlg">
   <div class="sheet">
@@ -961,7 +1266,7 @@ function demoDatos(){
       const f = `${ym}-${String(d).padStart(2,"0")}`; if(f > hoy) break;
       const dow = new Date(f + "T12:00:00").getDay();
       if(dow !== 0 && r() > .12){                                       // jornada de taxi
-        add(f, "Ingreso", "Auto", "Uber", "Carreras del día", entre(70, 150), { medio:"Transferencia" });
+        add(f, "Ingreso", "Auto", "Uber", "Carreras del día", entre(70, 150), { medio:"Transferencia", extra:{ "Km recorridos": entre(120, 210), Horas: entre(8, 11) } });
         add(f, "Ingreso", "Auto", "InDrive", "Carreras del día", entre(30, 110), { medio:"Yape/Plin" });
         if(r() > .6) add(f, "Ingreso", "Auto", "Carreras en la calle", "Efectivo", entre(15, 60), { medio:"Efectivo" });
         add(f, "Gasto", "Auto", "Combustible", "GNV", entre(28, 48), { sub:"GNV", medio:"Efectivo" });
@@ -1041,6 +1346,7 @@ const api = {
     state.f.tipo = ""; state.f.amb = ""; state.f.cat = "";
     state.cats = {...DEFAULT_CATS};
     if(c.data.length){ state.cats = {Ingreso:[],Gasto:[]}; c.data.forEach(r=>state.cats[r.tipo].push(r.nombre)); }
+    try{ await obrasApi.load(); } catch(e){ state.obrasError = e; }
   },
   async add(mov){
     if(state.demo){ state.movs.unshift({...mov, id:crypto.randomUUID(), created_at:new Date().toISOString()}); sortMovs(); return; }
@@ -1162,7 +1468,7 @@ $("#auth-form").addEventListener("submit", async e => {
 
 $("#demo-btn").onclick = () => {
   const d = demoDatos();
-  state.demo = true; state.cg = true; state.movs = d.movs; state.config = d.config; state.plantillas = ["taxista","vendedor","personal"];
+  state.demo = true; state.cg = true; state.movs = d.movs; state.config = d.config; state.plantillas = ["taxista","vendedor","obra","personal"]; state.obrasDemo = false; demoObras();
   state.catsFull = []; state.rMes = today().slice(0,7); sortMovs(); showApp("Ejemplo");
 };
 $("#exit-demo").onclick = () => { state.demo=false; state.cg=false; state.movs=[]; state.config=null; state.plantillas=[]; state.rMes="todo"; showAuth(); };
@@ -1230,8 +1536,8 @@ $("#logout").onclick = logout; $("#logout-m").onclick = logout;
 function go(v){
   state.view = v;
   $$(".side nav button").forEach(b=> b.dataset.view===v ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
-  ["resumen","movimientos","atajo","cuentas","compartir"].forEach(x=> $("#v-"+x).hidden = v!==x);
-  $$(".new-desk,.fab").forEach(b=> b.style.visibility = (v==="atajo"||v==="cuentas"||v==="compartir") ? "hidden" : "");
+  ["resumen","movimientos","taxi","obras","atajo","cuentas","compartir"].forEach(x=> $("#v-"+x).hidden = v!==x);
+  $$(".new-desk,.fab").forEach(b=> b.style.visibility = (v==="atajo"||v==="cuentas"||v==="compartir"||v==="obras") ? "hidden" : "");
   renderAcct(); render(); window.scrollTo(0,0);
 }
 $$(".side nav button").forEach(b=> b.onclick = () => go(b.dataset.view));
@@ -1245,6 +1551,12 @@ function fillMesSelect(sel, val){
 const sum = arr => arr.reduce((a,m)=>a+m.monto,0);
 
 function render(){
+  if((state.view==="taxi" && !modsActivos().includes("taxista")) || (state.view==="obras" && !modsActivos().includes("obra"))) state.view = "resumen";
+  $("#nav-taxi").hidden = !modsActivos().includes("taxista"); $("#nav-obras").hidden = !modsActivos().includes("obra");
+  ["resumen","movimientos","taxi","obras","atajo","cuentas","compartir"].forEach(x=> $("#v-"+x).hidden = state.view!==x);
+  $$(".side nav button").forEach(b=> b.dataset.view===state.view ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
+  if(state.view==="taxi") return renderTaxi();
+  if(state.view==="obras") return renderObras();
   if(state.view==="resumen") renderResumen(); else if(state.view==="movimientos") renderMovs(); else if(state.view==="cuentas") renderCuentas(); else if(state.view==="compartir") renderCompartir(); else renderAtajo();
 }
 
@@ -1334,7 +1646,7 @@ function modCard(k, list){
     filas = fila("Ingresos", fmt(ing), "in") + fila("Gastos", fmt(-gas), "out");
   }
   return `<div class="mod"><div class="mod-head"><span class="mod-ic ${k}"><svg class="i" viewBox="0 0 24 24">${M.icon}</svg></span><div><b>${M.nombre}</b><span>${M.sub}</span></div></div>
-    <div class="mod-big ${res<0?"out":res>0?"in":""}">${fmt(res)}</div><div class="mod-rows">${filas}</div>${extra}</div>`;
+    <div class="mod-big ${res<0?"out":res>0?"in":""}">${fmt(res)}</div><div class="mod-rows">${filas}</div>${extra}${k==="taxista"?`<button type="button" class="link" data-ir="taxi" style="justify-self:start">Ver panel del taxi →</button>`:k==="obra"?`<button type="button" class="link" data-ir="obras" style="justify-self:start">Ver mis obras →</button>`:""}</div>`;
 }
 
 /* Presupuesto: gastos personales del mes agrupados como en la hoja (columna "Grupo presupuestario") */
@@ -1823,7 +2135,8 @@ function openForm(m){
   $("#dlg").showModal(); if(!m) setTimeout(()=>monto.focus(),50);
 }
 const openNew = () => openForm(null);
-document.addEventListener("click", e => { if(e.target.closest("[data-new]")) openNew(); });
+document.addEventListener("click", e => { if(e.target.closest("[data-new]")){ if(state.view==="taxi") abrirJornada(today()); else openNew(); } });
+document.addEventListener("click", e => { const b = e.target.closest("[data-ir]"); if(b){ if(b.dataset.ir==="obras") obraSel = null; go(b.dataset.ir); } });
 $("#m-cancel").onclick = () => $("#dlg").close();
 $("#m-otro").onclick = () => guardarMov(true);
 $("#mov-form").addEventListener("submit", e => { e.preventDefault(); guardarMov(false); });
@@ -2049,6 +2362,652 @@ document.addEventListener("click", async e => {
   }
 });
 
+/* =====================================================================
+   TAXISTA: jornada (apps, km, horas), panel del mes y calendario con semáforo
+   ===================================================================== */
+// Nombres antiguos de apps → nombre que se muestra (los movimientos guardan su nombre original)
+const APP_ALIAS = { "ID":"InDrive", "INDRIVE":"InDrive", "UBER":"Uber", "CAB":"Cabify", "CABIFY":"Cabify", "DIDI":"Didi" };
+const appNom = c => APP_ALIAS[String(c||"").trim().toUpperCase()] || c;
+const numX = (m, k) => { const v = parseFloat(m.extra && m.extra[k]); return isNaN(v) ? 0 : v; };
+const esTaxi = m => modDe(m) === "taxista";
+let txMes = null;
+const metaTaxi = () => { const v = parseFloat(recordado("meta-taxi")); return v > 0 ? v : META_DIA; };
+
+// Días del mes con ingresos, gastos, km y horas del taxi
+function diasTaxi(ym){
+  const dias = {};
+  state.movs.filter(m => esTaxi(m) && m.fecha.startsWith(ym) && cuentaEnCaja(m)).forEach(m => {
+    const d = dias[m.fecha] || (dias[m.fecha] = { fecha:m.fecha, ing:0, gas:0, km:0, horas:0, apps:{} });
+    const e = efecto(m);
+    if(mov(m)==="Ingreso" && e > 0){ d.ing += e; const a = appNom(m.categoria); d.apps[a] = (d.apps[a]||0) + e; }
+    else if(e < 0) d.gas += -e;
+    d.km += numX(m, "Km recorridos"); d.horas += numX(m, "Horas");
+  });
+  Object.values(dias).forEach(d => d.gan = d.ing - d.gas);
+  return dias;
+}
+function colorDia(d){
+  if(!d || d.ing <= 0) return d && d.gas > 0 ? "gasto" : "";
+  const meta = metaTaxi();
+  return d.ing >= meta ? "verde" : d.ing >= meta * .7 ? "ambar" : "rojo";
+}
+function mesesTaxi(){
+  const s = new Set(state.movs.filter(esTaxi).map(m => m.fecha.slice(0,7))); s.add(today().slice(0,7));
+  return [...s].sort().reverse();
+}
+function barras(obj, cls){
+  const arr = Object.entries(obj).filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]);
+  if(!arr.length) return `<div class="empty">Sin datos este mes</div>`;
+  const tot = arr.reduce((a,[,v]) => a+v, 0), max = arr[0][1];
+  return arr.map(([k,v]) => `<div class="cat-row ${cls||""}"><span>${esc(k)}<span class="pct">${Math.round(v/tot*100)} %</span></span><span class="num">${fmt(v)}</span><div class="bar"><i style="width:${(v/max*100).toFixed(1)}%"></i></div></div>`).join("");
+}
+const kpi = (label, val, nota, cls) => `<div class="kp"><div class="label">${label}</div><div class="kp-v ${cls||""}">${val}</div>${nota?`<div class="kp-n">${nota}</div>`:""}</div>`;
+const n1 = v => Number(v).toLocaleString("es-PE", { maximumFractionDigits:1 });
+
+function renderTaxi(){
+  const meses = mesesTaxi();
+  if(!txMes || !meses.includes(txMes)) txMes = meses[0];
+  $("#tx-mes").innerHTML = meses.map(m => `<option value="${m}">${mesLabel(m)}</option>`).join(""); $("#tx-mes").value = txMes;
+  $("#tx-meta").value = metaTaxi();
+  $("#tx-jornada").hidden = !(state.demo || state.cuenta.propia || state.cuenta.registrar);
+  const dias = diasTaxi(txMes), L = Object.values(dias);
+  const ing = L.reduce((a,d)=>a+d.ing,0), gas = L.reduce((a,d)=>a+d.gas,0), gan = ing - gas;
+  const trab = L.filter(d => d.ing > 0), horas = L.reduce((a,d)=>a+d.horas,0), km = L.reduce((a,d)=>a+d.km,0);
+  const verdes = trab.filter(d => colorDia(d)==="verde").length;
+  $("#tx-kpis").innerHTML =
+    kpi("Te quedó (utilidad)", fmt(gan), ing ? `${Math.round(gan/ing*100)} % de lo que entró` : "", gan<0?"out":"in") +
+    kpi("Entró", fmt(ing), trab.length ? `Promedio ${fmt(ing/trab.length)} por día` : "", "in") +
+    kpi("Gastó el carro", fmt(gas), ing ? `${Math.round(gas/ing*100)} % de lo que entró` : "", "out") +
+    kpi("Días trabajados", trab.length, trab.length ? `${verdes} en meta (${fmt(metaTaxi())})` : "") +
+    kpi("Horas", horas ? n1(horas) : "—", horas ? `Ganas ${fmt(gan/horas)} por hora` : "Anota tus horas en la jornada") +
+    kpi("Km recorridos", km ? n1(km) : "—", km ? `Te queda ${fmt(gan/km)} por km · gasto ${fmt(gas/km)}/km` : "Anota tus km en la jornada");
+  // Calendario
+  const [y, mo] = txMes.split("-").map(Number), primero = new Date(y, mo-1, 1), nd = new Date(y, mo, 0).getDate();
+  const off = (primero.getDay() + 6) % 7, hoy = today();
+  let cel = ["Lu","Ma","Mi","Ju","Vi","Sá","Do"].map(d => `<div class="cal-h">${d}</div>`).join("");
+  for(let i=0;i<off;i++) cel += `<div></div>`;
+  for(let d=1; d<=nd; d++){
+    const f = `${txMes}-${String(d).padStart(2,"0")}`, x = dias[f], c = colorDia(x);
+    const tip = x ? `${fDate(f)}: entró ${fmt(x.ing)}, gastos ${fmt(x.gas)}, quedó ${fmt(x.gan)}${x.horas?`, ${n1(x.horas)} h`:""}${x.km?`, ${n1(x.km)} km`:""}` : `${fDate(f)}: sin registro`;
+    cel += `<button type="button" class="cal-d ${c} ${f===hoy?"hoy":""} ${f>hoy?"fut":""}" data-dia="${f}" title="${esc(tip)}" aria-label="${esc(tip)}"><b>${d}</b>${x && x.ing ? `<span>${Math.round(x.ing)}</span>` : ""}</button>`;
+  }
+  $("#tx-cal").innerHTML = cel;
+  $("#tx-cal-t").textContent = mesLabel(txMes);
+  const cnt = k => trab.filter(d => colorDia(d)===k).length;
+  $("#tx-ley").innerHTML = `<span><i class="verde"></i>En meta ${cnt("verde")}</span><span><i class="ambar"></i>Cerca ${cnt("ambar")}</span><span><i class="rojo"></i>Bajo ${cnt("rojo")}</span><span><i></i>No trabajó</span>`;
+  // Apps y gastos
+  const apps = {}; L.forEach(d => Object.entries(d.apps).forEach(([a,v]) => apps[a] = (apps[a]||0) + v));
+  $("#tx-apps").innerHTML = barras(apps, "inc");
+  const gcat = {}; state.movs.filter(m => esTaxi(m) && m.fecha.startsWith(txMes) && cuentaEnCaja(m) && efecto(m) < 0).forEach(m => gcat[m.categoria] = (gcat[m.categoria]||0) - efecto(m));
+  $("#tx-gastos").innerHTML = barras(gcat);
+  // Tabla de jornadas
+  const filas = L.filter(d => d.ing || d.gas).sort((a,b) => a.fecha < b.fecha ? 1 : -1);
+  $("#tx-body").innerHTML = filas.length ? filas.map(d => `<tr>
+      <td><span class="dot-s ${colorDia(d)}"></span>${fDate(d.fecha)}</td><td class="meta">${esc(Object.keys(d.apps).join(", ")||"—")}</td>
+      <td class="r">${d.horas?n1(d.horas):"—"}</td><td class="r">${d.km?n1(d.km):"—"}</td>
+      <td class="r num in">${fmt(d.ing)}</td><td class="r num out">${fmt(-d.gas)}</td><td class="r num ${d.gan<0?"out":""}">${fmt(d.gan)}</td>
+      <td class="r meta">${d.horas?fmt(d.gan/d.horas)+"/h":""}</td></tr>`).join("")
+    : `<tr><td colspan="8" class="empty">Aún no hay jornadas este mes. Toca <b>Registrar jornada</b>.</td></tr>`;
+}
+$("#tx-mes").onchange = e => { txMes = e.target.value; renderTaxi(); };
+$("#tx-meta").onchange = e => { const v = parseFloat(e.target.value); if(v > 0){ recordar("meta-taxi", v); renderTaxi(); } };
+$("#tx-cal").onclick = e => { const b = e.target.closest("[data-dia]"); if(b && b.dataset.dia <= today()) abrirJornada(b.dataset.dia); };
+
+// Registrar jornada: un ingreso por app, km y horas en el primero, combustible y otro gasto opcionales
+function appsTaxi(){
+  const usos = {}; state.movs.filter(m => esTaxi(m) && mov(m)==="Ingreso").slice(0,300).forEach(m => usos[m.categoria] = (usos[m.categoria]||0) + 1);
+  const cat = state.catsFull.filter(c => c.ambito==="Auto" && (c.movimiento||c.tipo)==="Ingreso").map(c => c.nombre);
+  const base = cat.length ? cat : ["Uber","InDrive","Cabify","Didi","Carreras en la calle"];
+  const todas = [...new Set([...Object.keys(usos).sort((a,b)=>usos[b]-usos[a]), ...base])];
+  const vistos = new Set();   // si la cuenta tiene "UBER" y "Uber", se muestra una sola (la más usada)
+  return todas.filter(c => { const n = appNom(c); if(vistos.has(n)) return false; vistos.add(n); return true; });
+}
+function gastosTaxi(){
+  const cat = state.catsFull.filter(c => c.ambito==="Auto" && (c.movimiento||c.tipo)==="Gasto").map(c => c.nombre);
+  const usados = [...new Set(state.movs.filter(m => esTaxi(m) && mov(m)==="Gasto").map(m => m.categoria))];
+  return [...new Set([...usados, ...(cat.length ? cat : ["Combustible","Mantenimiento y arreglos","Cochera","Lavado","Peajes y papeletas","Otros gastos del auto"])])];
+}
+function abrirJornada(fecha){
+  const ya = diasTaxi((fecha||today()).slice(0,7))[fecha||today()];
+  $("#jr-fecha").value = fecha || today();
+  $("#jr-apps").innerHTML = appsTaxi().map((c,i) => `<label class="jr-app"><span>${esc(appNom(c))}</span><span class="multi-inp"><span>S/</span><input type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" data-app="${esc(c)}" ${i===0?'id="jr-app0"':""}></span></label>`).join("");
+  ["#jr-km","#jr-horas","#jr-comb","#jr-otro"].forEach(id => $(id).value = "");
+  const comb = gastosTaxi().find(c => /combust/i.test(c)) || "Combustible";
+  $("#jr-comb").dataset.cat = comb;
+  $("#jr-otro-cat").innerHTML = gastosTaxi().filter(c => c !== comb).map(c => `<option>${esc(c)}</option>`).join("");
+  $("#jr-ya").hidden = !ya; if(ya) $("#jr-ya").textContent = `Ese día ya tiene ${fmt(ya.ing)} de ingresos${ya.horas?`, ${n1(ya.horas)} h`:""}${ya.km?` y ${n1(ya.km)} km`:""}. Lo que anotes aquí se suma.`;
+  $("#jr-msg").hidden = true; jrTotal();
+  $("#jornada-dlg").showModal(); setTimeout(() => { const i = $("#jr-app0"); if(i) i.focus(); }, 50);
+}
+function jrTotal(){
+  const ing = $$("#jr-apps [data-app]").reduce((a,i) => a + (parseFloat(i.value)||0), 0);
+  const gas = (parseFloat($("#jr-comb").value)||0) + (parseFloat($("#jr-otro").value)||0);
+  const h = parseFloat($("#jr-horas").value)||0, km = parseFloat($("#jr-km").value)||0;
+  $("#jr-total").innerHTML = `<span>Entró <b class="in">${fmt(ing)}</b></span><span>Gastos <b class="out">${fmt(gas)}</b></span><span>Te queda <b>${fmt(ing-gas)}</b>${h?` · ${fmt((ing-gas)/h)}/h`:""}${km?` · ${fmt((ing-gas)/km)}/km`:""}</span>`;
+}
+$("#jornada-dlg").addEventListener("input", jrTotal);
+$("#tx-jornada").onclick = () => abrirJornada(today());
+$("#jr-no").onclick = () => $("#jornada-dlg").close();
+$("#jr-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = t => { const m = $("#jr-msg"); m.textContent = t; m.hidden = false; };
+  const fecha = $("#jr-fecha").value, n = id => { const v = parseFloat($(id).value); return isNaN(v) || v < 0 ? null : v; };
+  if(!fecha){ err("Elige la fecha."); return; }
+  if(fecha > today()){ err("La fecha no puede ser futura."); return; }
+  const apps = $$("#jr-apps [data-app]").map(i => ({ c:i.dataset.app, v:Math.round((parseFloat(i.value)||0)*100)/100 })).filter(x => x.v > 0);
+  const km = n("#jr-km"), horas = n("#jr-horas"), comb = n("#jr-comb"), otro = n("#jr-otro");
+  if(!apps.length && !comb && !otro){ err("Escribe al menos cuánto entró por una app o un gasto."); return; }
+  const base = { fecha, ambito:"Auto", cuenta:null, medio:null, costo:null, envio:null, necesidad:"No aplica", origen:"web" };
+  const ex = () => ({ Origen:"Caja Personal · jornada", "Precisión fecha":"Día" });
+  const lista = apps.map((a,i) => { const x = ex(); if(i===0){ if(km) x["Km recorridos"] = km; if(horas) x.Horas = horas; }
+    return { ...base, movimiento:"Ingreso", tipo:"Ingreso", estado:"Cobrado", tipo_gasto:"No aplica", categoria:a.c, subcategoria:null, descripcion:"Jornada · "+appNom(a.c), monto:a.v, extra:x }; });
+  if(comb) lista.push({ ...base, movimiento:"Gasto", tipo:"Gasto", estado:"Pagado", tipo_gasto:"Variable", categoria:$("#jr-comb").dataset.cat, subcategoria:$("#jr-comb-tipo").value||null, descripcion:"Combustible del día", monto:comb, extra:ex() });
+  if(otro) lista.push({ ...base, movimiento:"Gasto", tipo:"Gasto", estado:"Pagado", tipo_gasto:"Variable", categoria:$("#jr-otro-cat").value, subcategoria:null, descripcion:$("#jr-otro-cat").value, monto:otro, extra:ex() });
+  // Si no hubo ingresos pero sí km u horas, van en el primer gasto
+  if(!apps.length && (km || horas)){ if(km) lista[0].extra["Km recorridos"] = km; if(horas) lista[0].extra.Horas = horas; }
+  const b = $("#jr-ok"); b.disabled = true; let hechos = 0;
+  try{
+    for(const it of lista){ await api.add(it); hechos++; }
+    $("#jornada-dlg").close(); txMes = fecha.slice(0,7); render();
+    toast(`Jornada del ${fDate(fecha)} guardada · ${hechos} registro${hechos===1?"":"s"}`);
+  } catch(e2){ err((hechos ? `Se guardaron ${hechos} de ${lista.length}. ` : "") + traducir(e2)); }
+  finally{ b.disabled = false; }
+});
+
+/* =====================================================================
+   MAESTRO DE OBRA: obras, presupuesto por metrado (calculadora), bitácora y PDF
+   Coeficientes, rendimientos y precios de inicio: hoja "Calculadora maestro de obra".
+   ===================================================================== */
+// mo: [trabajador, cuadrilla, rendimiento diario, jornal, comida/día, pasaje/día, otros/día]
+// mat: [material, unidad de compra, cantidad base por unidad, desperdicio, precio]
+// go: [concepto, unidad de control, coeficiente por unidad, costo unitario]
+const PARTIDAS = {
+  MURO:{ n:"Muro de ladrillo", u:"m²",
+    mo:[["Operario",1,8,120,10,0,0],["Maestro / capataz",1,8,120,10,10,0]],
+    mat:[["Ladrillo pandereta","und",40,.05,.9],["Cemento","bolsa",.25,.05,31],["Arena gruesa","m³",.025,.05,60]],
+    go:[["Herramientas menores","día",.25,15],["Flete / envío de materiales","viaje",.015,120],["Herramientas / alquiler","día",.03,35]] },
+  TARR:{ n:"Tarrajeo de muros", u:"m²",
+    mo:[["Operario",1,18,120,0,0,0],["Ayudante",.7,8,80,0,0,0]],
+    mat:[["Cemento","bolsa",.18,.08,31],["Arena fina","m³",.025,.08,65]],
+    go:[["Herramientas menores","día",.206,15],["Flete / envío de materiales","viaje",.01,120],["Herramientas / alquiler","día",.02,35]] },
+  TECH:{ n:"Techado aligerado", u:"m²",
+    mo:[["Operario",1,8/3,120,0,0,0],["Ayudante",1,8/3,80,0,0,0]],
+    mat:[["Cemento","bolsa",.75,.05,31],["Arena gruesa","m³",.05,.05,90],["Piedra chancada","m³",.07,.05,115],["Ladrillo de techo","und",8.33,.05,3.1],["Acero corrugado","kg",8,.05,4.1],["Alambre de amarre","kg",.24,.05,6.5]],
+    go:[["Herramientas menores","día",.75,15],["Flete / envío de materiales","viaje",.04,120],["Herramientas / alquiler","día",.08,35]] },
+  COL:{ n:"Columna de concreto armado", u:"und",
+    mo:[["Operario",1,4/3,120,0,0,0],["Ayudante",1,4/3,80,0,0,0],["Maestro / capataz",.2,1,150,0,0,0]],
+    mat:[["Cemento","bolsa",1.7,.05,31],["Arena gruesa","m³",.1,.05,90],["Piedra chancada","m³",.14,.05,115],["Acero corrugado","kg",22,.05,4.1],["Alambre de amarre","kg",.5,.05,6.5],["Encofrado / madera","und",1,.05,40]],
+    go:[["Herramientas menores","día",1.7,15],["Flete / envío de materiales","viaje",.05,120],["Herramientas / alquiler","día",.15,35]] },
+  PISO:{ n:"Colocación de piso cerámico", u:"m²",
+    mo:[["Operario",1,8,120,0,0,0],["Ayudante",.6,8,80,0,0,0]],
+    mat:[["Cerámico","m²",1,.08,38],["Pegamento para cerámico","bolsa",.25,.05,30],["Fragua","kg",.1,.05,6]],
+    go:[["Herramientas menores","día",.2,15],["Flete / envío de materiales","viaje",.02,120],["Herramientas / corte","día",.03,35]] },
+  ZOC:{ n:"Instalación de zócalo", u:"ml",
+    mo:[["Operario",1,18,120,0,0,0],["Ayudante",.5,18,80,0,0,0]],
+    mat:[["Zócalo cerámico","ml",1,.08,12],["Pegamento para cerámico","bolsa",.04,.05,30],["Fragua","kg",.02,.05,6]],
+    go:[["Herramientas menores","día",.08,15],["Flete / envío de materiales","viaje",.01,120],["Herramientas / corte","día",.015,35]] }
+};
+const TRABAJADORES = ["Operario","Ayudante","Maestro / capataz"];
+const JORNAL_BASE = { "Operario":120, "Ayudante":80, "Maestro / capataz":150 };
+const PARAMS_BASE = { gg:5, utilidad:0, igv:18, aplicarIgv:false, anticipo:50 };
+const COND_BASE = { plazo:"15 días calendario", pago:"Anticipo y saldo según avance o entrega",
+  incluyeServ:"Mano de obra, supervisión y gastos operativos incluidos en la tarifa.", noIncluyeServ:"Materiales, permisos ni trabajos adicionales no descritos.",
+  incluyeTodo:"Materiales, mano de obra, supervisión y gastos operativos.", noIncluyeTodo:"Permisos ni trabajos adicionales no descritos." };
+const MATERIALES = (() => { const s = {}; Object.values(PARTIDAS).forEach(P => P.mat.forEach(([n,u,,,p]) => { if(!s[n]) s[n] = { u, p }; })); return s; })();
+const ESTADOS_OBRA = ["Presupuesto","En curso","Pausada","Terminada"];
+const r2 = v => Math.round((Number(v)||0) * 100) / 100;
+const numOr = (v, d) => { const x = parseFloat(v); return isNaN(x) ? d : x; };
+
+state.obras = []; state.obraRegs = []; state.precios = {}; state.obrasError = null;
+const obrasApi = {
+  async load(){
+    state.obrasError = null;
+    if(!modsActivos().includes("obra")){ state.obras = []; state.obraRegs = []; return; }
+    if(state.demo){ if(!state.obrasDemo) demoObras(); return; }
+    const uid = state.cuenta.id;
+    const [o, r, p] = await Promise.all([
+      sb.from("obras").select("*").eq("user_id", uid).order("created_at", { ascending:false }),
+      sb.from("obra_registros").select("*").eq("user_id", uid).order("fecha", { ascending:false }).order("created_at", { ascending:false }),
+      sb.from("precios_maestro").select("datos").eq("user_id", uid).maybeSingle()
+    ]);
+    if(o.error){ state.obrasError = o.error; state.obras = []; state.obraRegs = []; return; }
+    state.obras = o.data.map(x => ({ ...x, precio_acordado: x.precio_acordado==null ? null : Number(x.precio_acordado), presupuesto: x.presupuesto || {} }));
+    state.obraRegs = r.error ? [] : r.data.map(x => ({ ...x, horas: x.horas==null ? null : Number(x.horas) }));
+    state.precios = (p.data && p.data.datos) || {};
+  },
+  async guardar(datos, id){
+    if(state.demo){ if(id){ Object.assign(state.obras.find(o=>o.id===id), datos); return id; } const n = { id:crypto.randomUUID(), created_at:new Date().toISOString(), presupuesto:{}, ...datos }; state.obras.unshift(n); return n.id; }
+    if(id){ const { data, error } = await sb.from("obras").update(datos).eq("id", id).select().single(); if(error) throw error; Object.assign(state.obras.find(o=>o.id===id), { ...data, precio_acordado: data.precio_acordado==null?null:Number(data.precio_acordado) }); return id; }
+    const { data, error } = await sb.from("obras").insert({ ...datos, user_id: state.cuenta.id }).select().single(); if(error) throw error;
+    state.obras.unshift({ ...data, precio_acordado: data.precio_acordado==null?null:Number(data.precio_acordado), presupuesto: data.presupuesto || {} }); return data.id;
+  },
+  async borrar(id){
+    if(!state.demo){ const { error } = await sb.from("obras").delete().eq("id", id); if(error) throw error; }
+    state.obras = state.obras.filter(o => o.id !== id); state.obraRegs = state.obraRegs.filter(r => r.obra_id !== id);
+  },
+  async addReg(d){
+    if(state.demo){ state.obraRegs.unshift({ id:crypto.randomUUID(), created_at:new Date().toISOString(), resuelta:false, ...d }); return; }
+    const { data, error } = await sb.from("obra_registros").insert({ ...d, user_id: state.cuenta.id }).select().single(); if(error) throw error;
+    state.obraRegs.unshift({ ...data, horas: data.horas==null?null:Number(data.horas) });
+  },
+  async updReg(id, c){
+    if(!state.demo){ const { error } = await sb.from("obra_registros").update(c).eq("id", id); if(error) throw error; }
+    Object.assign(state.obraRegs.find(r => r.id === id), c);
+  },
+  async delReg(id){
+    if(!state.demo){ const { error } = await sb.from("obra_registros").delete().eq("id", id); if(error) throw error; }
+    state.obraRegs = state.obraRegs.filter(r => r.id !== id);
+  },
+  async guardarPrecios(datos){
+    if(!state.demo){ const { error } = await sb.from("precios_maestro").upsert({ user_id: state.cuenta.id, datos }); if(error) throw error; }
+    state.precios = datos;
+  }
+};
+function demoObras(){
+  state.obrasDemo = true;
+  const h = new Date(today()+"T12:00:00"), dia = n => { const d = new Date(h); d.setDate(d.getDate()+n); return d.toLocaleDateString("en-CA"); };
+  state.obras = [{ id:"obra-demo", nombre:"Ampliación 2do piso · Los Olivos", cliente:"Familia Rojas", ubicacion:"Los Olivos, Lima", estado:"En curso",
+    fecha_inicio:dia(-12), fecha_fin:null, precio_acordado:null, created_at:new Date().toISOString(),
+    presupuesto:{ modalidad:"servicio", partidas:[{cod:"MURO",metrado:60},{cod:"TARR",metrado:120},{cod:"COL",metrado:6}], params:{...PARAMS_BASE, utilidad:10} } }];
+  state.obraRegs = [
+    { id:"r1", obra_id:"obra-demo", fecha:dia(-12), tipo:"Avance", titulo:"Inicio de obra", texto:"Trazo y replanteo. Se descargó ladrillo.", horas:8, personas:2, resuelta:false },
+    { id:"r2", obra_id:"obra-demo", fecha:dia(-5), tipo:"Pregunta", titulo:"¿Ventana en el muro del fondo?", texto:"Confirmar medida con la señora Rojas.", horas:null, personas:null, resuelta:false },
+    { id:"r3", obra_id:"obra-demo", fecha:dia(-1), tipo:"Jornada", titulo:"Asentado de muros", texto:"Avance 70 % de muros.", horas:9, personas:3, resuelta:false } ];
+  state.precios = {};
+  const add = (f, mv, cat, desc, monto) => state.movs.push({ id:"o"+Math.random().toString(36).slice(2), created_at:f+"T12:00:00", fecha:f, movimiento:mv, tipo:mv, ambito:"Obra", categoria:cat, descripcion:desc, monto,
+    estado: mv==="Ingreso"?"Cobrado":"Pagado", es_prueba:false, tipo_gasto: mv==="Gasto"?"Variable":"No aplica", extra:{ Obra:"Ampliación 2do piso · Los Olivos", obra_id:"obra-demo" }, registrado_nombre:"Ejemplo" });
+  add(dia(-12), "Ingreso", "Adelanto del cliente", "Adelanto 50 %", 2600);
+  add(dia(-10), "Gasto", "Pago a la cuadrilla", "Semana 1", 1150);
+  add(dia(-9), "Gasto", "Herramientas y equipo", "Alquiler de andamio", 120);
+  add(dia(-3), "Gasto", "Pago a la cuadrilla", "Semana 2", 1240);
+  add(dia(-2), "Gasto", "Fletes y movilidad", "Flete", 80);
+  sortMovs();
+}
+
+// Configuración efectiva: base de la hoja + "Mis precios" + lo propio de la obra
+function cfgObra(pres){
+  const P = state.precios || {};
+  return { params: { ...PARAMS_BASE, ...(P.params||{}), ...((pres && pres.params)||{}) },
+    jornales: { ...(P.jornales||{}) }, materiales: P.materiales || {}, tarifas: P.tarifas || {},
+    modalidad: (pres && pres.modalidad) || P.modalidad || "servicio" };
+}
+function calcPartida(p, cfg){
+  const m = Math.max(0, numOr(p.metrado, 0)), g = cfg.params, f = (1 + g.gg/100) * (1 + g.utilidad/100), todo = cfg.modalidad === "todo";
+  const P = PARTIDAS[p.cod];
+  if(!P){   // trabajo libre: el maestro pone su precio y, si quiere, su costo estimado
+    const t = r2(numOr(p.tarifa, 0)), c = numOr(p.costo, 0);
+    return { nombre:p.nombre || "Otro trabajo", und:p.und || "glb", desc:p.desc || "", m, moU:c, goU:0, matU:0, sugU:t, tarifa:t, importe:r2(t*m), mats:[], cuadrilla:[], dias:0, libre:true };
+  }
+  const cuadrilla = P.mo.map(([t, cu, rend, jor, com, pas, otr]) => {
+    const j = cfg.jornales[t] != null && cfg.jornales[t] !== "" ? Number(cfg.jornales[t]) : jor;
+    return { t, cu, rend, jornal:j, u:(j + com + pas + otr) * cu / rend };
+  });
+  const moU = cuadrilla.reduce((a,x) => a + x.u, 0);
+  const goU = P.go.reduce((a,[, , co, cu]) => a + co*cu, 0);
+  const mats = P.mat.map(([n, u, base, desp, pr]) => { const aj = base * (1 + desp), precio = cfg.materiales[n] != null && cfg.materiales[n] !== "" ? Number(cfg.materiales[n]) : pr; return { n, u, aj, precio, cant: aj*m, costo: aj*m*precio }; });
+  const matU = mats.reduce((a,x) => a + x.aj*x.precio, 0);
+  const miTarifa = cfg.tarifas[p.cod] != null && cfg.tarifas[p.cod] !== "" ? Number(cfg.tarifas[p.cod]) : null;
+  const servU = miTarifa != null ? miTarifa : (moU + goU) * f;
+  const sugU = r2(servU + (todo ? matU * f : 0));
+  const tarifa = p.tarifa != null && p.tarifa !== "" ? r2(p.tarifa) : sugU;
+  const rendMin = Math.min(...P.mo.filter(x => x[0] !== "Maestro / capataz").map(x => x[2]));
+  return { nombre:P.n, und:P.u, desc:p.desc || (todo ? "Suministro de materiales y ejecución." : "Servicio ejecutado sin materiales."), m, moU, goU, matU, sugU, tarifa, importe:r2(tarifa*m), mats, cuadrilla, dias: rendMin ? m / rendMin : 0, miTarifa };
+}
+function calcPresupuesto(pres){
+  const cfg = cfgObra(pres), filas = ((pres && pres.partidas) || []).map(p => ({ p, c: calcPartida(p, cfg) })), todo = cfg.modalidad === "todo";
+  const subtotal = r2(filas.reduce((a,x) => a + x.c.importe, 0));
+  const igv = cfg.params.aplicarIgv ? r2(subtotal * cfg.params.igv/100) : 0, total = r2(subtotal + igv);
+  const anticipo = r2(total * cfg.params.anticipo/100);
+  const mo = filas.reduce((a,x) => a + x.c.moU * x.c.m, 0), go = filas.reduce((a,x) => a + x.c.goU * x.c.m, 0);
+  const matsMap = {};
+  filas.forEach(({c}) => c.mats.forEach(x => { const k = x.n+"|"+x.u; const t = matsMap[k] || (matsMap[k] = { n:x.n, u:x.u, cant:0, precio:x.precio, costo:0, partidas:new Set() }); t.cant += x.cant; t.costo += x.costo; t.partidas.add(c.nombre); }));
+  const mats = Object.values(matsMap).filter(x => x.cant > 0).sort((a,b) => a.n.localeCompare(b.n, "es"));
+  const matTot = mats.reduce((a,x) => a + x.costo, 0);
+  const costo = mo + go + (todo ? matTot : 0);   // lo que te cuesta ejecutarla (cuadrilla con tu jornal, gastos y, si los pones tú, materiales)
+  const dias = filas.reduce((a,x) => a + x.c.dias, 0);
+  return { cfg, filas, subtotal, igv, total, anticipo, saldo: r2(total - anticipo), mo, go, mats, matTot, costo, utilidad: subtotal - costo, dias, todo };
+}
+
+// Movimientos de una obra (por id; las filas que vienen de la hoja se reconocen por el nombre)
+const movsObra = o => state.movs.filter(m => m.extra && (m.extra.obra_id === o.id || (!m.extra.obra_id && m.ambito==="Obra" && m.extra.Obra && m.extra.Obra === o.nombre)));
+function finObra(o){
+  const pr = calcPresupuesto(o.presupuesto), L = movsObra(o);
+  const precio = o.precio_acordado != null ? o.precio_acordado : (pr.filas.length ? pr.total : 0);
+  const cob = L.filter(m => mov(m)==="Ingreso" && cuentaEnCaja(m)).reduce((a,m) => a + m.monto, 0);
+  const pend = L.filter(m => mov(m)==="Ingreso" && m.estado==="Pendiente").reduce((a,m) => a + m.monto, 0);
+  const gas = L.filter(m => mov(m)==="Gasto" && cuentaEnCaja(m)).reduce((a,m) => a + m.monto, 0);
+  const porGastar = Math.max(pr.costo - gas, 0);
+  const regs = state.obraRegs.filter(r => r.obra_id === o.id);
+  const horas = regs.reduce((a,r) => a + (Number(r.horas)||0), 0);
+  const diasReg = new Set(regs.filter(r => r.tipo==="Jornada" || r.horas).map(r => r.fecha)).size;
+  const fin = o.fecha_fin || today(), dias = o.fecha_inicio ? Math.max(0, Math.round((new Date(fin+"T12:00:00") - new Date(o.fecha_inicio+"T12:00:00")) / 864e5) + 1) : 0;
+  return { pr, L, precio, cob, pend, porCobrar: Math.max(precio - cob, 0), gas, porGastar, queda: precio - gas, proy: precio - gas - porGastar, actual: cob - gas,
+    pctCob: precio ? cob/precio : 0, pctGas: pr.costo ? gas/pr.costo : 0, horas, diasReg, dias, preguntas: regs.filter(r => r.tipo==="Pregunta" && !r.resuelta).length, regs };
+}
+
+let obraSel = null, obraTab = "resumen", presEdit = null, presSucio = false;
+const puedeEditarObras = () => state.demo || state.cuenta.propia || state.cuenta.registrar;
+const chipEstado = e => `<span class="chip ${e==="En curso"?"in":e==="Terminada"?"":e==="Pausada"?"warn":"off"}">${esc(e)}</span>`;
+const pbar = (v, cls) => `<div class="pbar ${cls||""}"><i style="width:${Math.min(100, Math.max(0, v*100)).toFixed(1)}%"></i></div>`;
+
+function renderObras(){
+  $("#ob-aviso").hidden = !state.obrasError;
+  if(state.obrasError) $("#ob-aviso").textContent = "Las obras todavía no están activadas en la base de datos, así que aún no se pueden guardar. La calculadora sí funciona.";
+  $$("#v-obras [data-solo-edit]").forEach(b => b.hidden = !puedeEditarObras() || (!!state.obrasError && b.dataset.soloEdit !== "calc"));
+  if(obraSel && !state.obras.some(o => o.id === obraSel) && obraSel !== "calc") obraSel = null;
+  $("#ob-lista").hidden = !!obraSel; $("#ob-detalle").hidden = !obraSel;
+  if(obraSel) return renderObraDetalle();
+  const F = state.obras.map(o => ({ o, f: finObra(o) }));
+  const act = F.filter(x => x.o.estado === "En curso");
+  const s = k => F.filter(x => x.o.estado !== "Presupuesto").reduce((a,x) => a + x.f[k], 0);
+  $("#ob-kpis").innerHTML =
+    kpi("Obras en curso", act.length, `${F.length} en total`) +
+    kpi("Contratado", fmt(s("precio")), "Precio de las obras aceptadas") +
+    kpi("Cobrado", fmt(s("cob")), `Por cobrar ${fmt(s("porCobrar"))}`, "in") +
+    kpi("Gastado", fmt(s("gas")), "Cuadrilla, materiales y gastos", "out") +
+    kpi("Utilidad proyectada", fmt(s("proy")), "Precio − gastado − lo que falta gastar", s("proy")<0?"out":"in") +
+    kpi("Horas registradas", n1(F.reduce((a,x) => a + x.f.horas, 0)), "En la bitácora de todas las obras");
+  $("#ob-cards").innerHTML = F.length ? F.map(({o, f}) => `<button type="button" class="ob-card" data-obra="${o.id}">
+      <div class="ob-card-h"><b>${esc(o.nombre)}</b>${chipEstado(o.estado)}</div>
+      <div class="meta">${esc([o.cliente, o.ubicacion].filter(Boolean).join(" · ") || "Sin cliente")}${o.fecha_inicio?` · desde ${fDate(o.fecha_inicio)}`:""}</div>
+      <div class="ob-nums"><div><span>Precio</span><b>${fmt(f.precio)}</b></div><div><span>Cobrado</span><b class="in">${fmt(f.cob)}</b></div><div><span>Gastado</span><b class="out">${fmt(f.gas)}</b></div><div><span>Te queda</span><b class="${f.queda<0?"out":""}">${fmt(f.queda)}</b></div></div>
+      <div class="ob-prog"><span>Cobrado ${Math.round(f.pctCob*100)} %</span>${pbar(f.pctCob, "in")}<span>Costo usado ${Math.round(f.pctGas*100)} %${f.pctGas>1?" · se pasó del presupuesto":""}</span>${pbar(f.pctGas, f.pctGas>1?"out":"warn")}</div>
+      <div class="meta">${f.dias?`${f.dias} días`:"Sin fecha de inicio"}${f.horas?` · ${n1(f.horas)} h registradas`:""}${f.preguntas?` · <b>${f.preguntas} pregunta${f.preguntas>1?"s":""} pendiente${f.preguntas>1?"s":""}</b>`:""}</div>
+    </button>`).join("")
+    : `<div class="panel empty" style="grid-column:1/-1">Aún no tienes obras. Crea la primera con <b>+ Nueva obra</b> o prueba la <b>Calculadora</b> con un metrado.</div>`;
+}
+$("#ob-cards").onclick = e => { const b = e.target.closest("[data-obra]"); if(b){ obraSel = b.dataset.obra; obraTab = "resumen"; presEdit = null; renderObras(); window.scrollTo(0,0); } };
+$("#ob-volver").onclick = () => { if(presSucio && !confirm("Tienes cambios sin guardar en el presupuesto. ¿Salir igual?")) return; obraSel = null; presEdit = null; presSucio = false; renderObras(); };
+$("#ob-calc").onclick = () => { obraSel = "calc"; obraTab = "presupuesto"; presEdit = { modalidad: cfgObra({}).modalidad, partidas:[{ cod:"MURO", metrado:10 }] }; presSucio = false; renderObras(); window.scrollTo(0,0); };
+$$("#ob-tabs [data-tab]").forEach(b => b.onclick = () => { obraTab = b.dataset.tab; renderObraDetalle(); });
+
+function renderObraDetalle(){
+  const calc = obraSel === "calc", o = calc ? { id:"calc", nombre:"Calculadora rápida", estado:"Presupuesto", presupuesto: presEdit } : state.obras.find(x => x.id === obraSel);
+  if(!presEdit) presEdit = JSON.parse(JSON.stringify(o.presupuesto && o.presupuesto.partidas ? o.presupuesto : { modalidad: cfgObra({}).modalidad, partidas:[] }));
+  const f = calc ? null : finObra(o);
+  $("#od-nombre").textContent = o.nombre;
+  $("#od-sub").innerHTML = calc ? "Pon partidas y metrados para ver costo, precio y materiales. Puedes guardarlo como obra." :
+    `${chipEstado(o.estado)} ${esc([o.cliente, o.ubicacion].filter(Boolean).join(" · "))}${o.fecha_inicio?` · Inicio ${fDate(o.fecha_inicio)}`:""}${o.fecha_fin?` · Fin ${fDate(o.fecha_fin)}`:""}`;
+  $$("#od-acciones [data-obra-acc]").forEach(b => b.hidden = calc || !puedeEditarObras());
+  $("#ob-tabs").hidden = calc;
+  $$("#ob-tabs [data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === obraTab));
+  ["resumen","presupuesto","movs","bitacora"].forEach(t => $("#ot-"+t).hidden = t !== (calc ? "presupuesto" : obraTab));
+  if(calc || obraTab === "presupuesto") return renderPresObra(o);
+  if(obraTab === "resumen") return renderObraResumen(o, f);
+  if(obraTab === "movs") return renderObraMovs(o, f);
+  renderBitacora(o, f);
+}
+function renderObraResumen(o, f){
+  const sinPres = !f.pr.filas.length;
+  $("#or-kpis").innerHTML =
+    kpi("Precio final", fmt(f.precio), o.precio_acordado != null ? "Acordado con el cliente" : sinPres ? "Ponlo en Editar o arma el presupuesto" : "Total del presupuesto") +
+    kpi("Cobrado", fmt(f.cob), `Falta cobrar ${fmt(f.porCobrar)}${f.pend?` · ${fmt(f.pend)} pendiente registrado`:""}`, "in") +
+    kpi("Gastado", fmt(f.gas), sinPres ? "Sin presupuesto de costos" : `De ${fmt(f.pr.costo)} presupuestados (${Math.round(f.pctGas*100)} %)`, "out") +
+    kpi("Te queda hoy", fmt(f.queda), "Precio final − lo gastado", f.queda<0?"out":"") +
+    kpi("Utilidad proyectada", fmt(f.proy), sinPres ? "Arma el presupuesto para proyectar" : `Si gastas lo que falta: ${fmt(f.porGastar)}`, f.proy<0?"out":"in") +
+    kpi("Tiempo", f.dias ? `${f.dias} días` : "—", `${f.diasReg} día${f.diasReg===1?"":"s"} con jornada · ${n1(f.horas)} h${f.pr.dias?` · plazo estimado ${Math.ceil(f.pr.dias)} días`:""}`);
+  // Cascada: precio → gastos por categoría → te queda
+  const cats = {}; f.L.filter(m => mov(m)==="Gasto" && cuentaEnCaja(m)).forEach(m => cats[m.categoria] = (cats[m.categoria]||0) + m.monto);
+  $("#or-cascada").innerHTML = `<div class="cg-rows">${fila("Precio final de la obra", fmt(f.precio))}${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([c,v]) => fila("− "+esc(c), fmt(-v), "out")).join("")}
+    <div class="total"><span>Te queda</span><span class="${f.queda<0?"out":"in"}">${fmt(f.queda)}</span></div>
+    ${sinPres ? "" : fila("Falta gastar según presupuesto", fmt(-f.porGastar), "out") + `<div class="total"><span>Utilidad proyectada al terminar</span><span class="${f.proy<0?"out":"in"}">${fmt(f.proy)}</span></div>`}</div>`;
+  $("#or-avance").innerHTML = `<div class="ob-prog"><span>Cobrado ${Math.round(f.pctCob*100)} % · ${fmt(f.cob)} de ${fmt(f.precio)}</span>${pbar(f.pctCob,"in")}
+    <span>Costo usado ${Math.round(f.pctGas*100)} % · ${fmt(f.gas)} de ${fmt(f.pr.costo)}</span>${pbar(f.pctGas, f.pctGas>1?"out":"warn")}</div>
+    ${f.regs.slice(0,4).map(r => `<div class="bit-mini"><span class="chip ${r.tipo==="Pregunta"&&!r.resuelta?"warn":""}">${esc(r.tipo)}</span> <b>${esc(r.titulo||"")}</b> <span class="meta">${fDate(r.fecha)}${r.horas?` · ${n1(r.horas)} h`:""}</span></div>`).join("") || `<p class="meta" style="margin:0">Sin registros en la bitácora.</p>`}`;
+}
+function renderObraMovs(o, f){
+  const L = [...f.L].sort((a,b) => a.fecha < b.fecha ? 1 : -1);
+  $("#om-body").innerHTML = L.length ? L.map(m => `<tr><td>${fDate(m.fecha)}</td><td>${mov(m)==="Ingreso"?'<span class="chip in">Cobro</span>':'<span class="chip out">Gasto</span>'}</td><td>${esc(m.categoria)}${m.subcategoria?` <span class="meta">· ${esc(m.subcategoria)}</span>`:""}</td><td class="desc">${esc(m.descripcion||"")}${m.estado&&!VALIDOS.includes(m.estado)?` <span class="chip warn">${esc(m.estado)}</span>`:""}</td><td class="r num ${mov(m)==="Ingreso"?"in":"out"}">${mov(m)==="Ingreso"?"":"−"}${fmt(m.monto)}</td></tr>`).join("")
+    : `<tr><td colspan="5" class="empty">Aún no hay cobros ni gastos en esta obra.</td></tr>`;
+}
+function renderBitacora(o, f){
+  const R = f.regs;
+  $("#ob-bit").innerHTML = R.length ? R.map(r => `<div class="bit ${r.tipo==="Pregunta"&&!r.resuelta?"abierta":""}">
+      <div class="bit-h"><span class="chip ${r.tipo==="Pregunta"?(r.resuelta?"in":"warn"):r.tipo==="Jornada"?"in":""}">${esc(r.tipo)}${r.tipo==="Pregunta"?(r.resuelta?" · resuelta":" · pendiente"):""}</span><b>${esc(r.titulo||"(sin título)")}</b><span class="meta">${fDate(r.fecha)}${r.horas?` · ${n1(r.horas)} h`:""}${r.personas?` · ${r.personas} persona${r.personas>1?"s":""}`:""}</span></div>
+      ${r.texto?`<p>${esc(r.texto).replace(/\n/g,"<br>")}</p>`:""}
+      ${puedeEditarObras()?`<div class="bit-acc">${r.tipo==="Pregunta"?`<button class="link" data-resolver="${r.id}">${r.resuelta?"Marcar pendiente":"Marcar resuelta"}</button>`:""}<button class="link" data-borrar-reg="${r.id}" style="color:var(--out)">Eliminar</button></div>`:""}
+    </div>`).join("") : `<div class="empty">Anota aquí lo que pasa en la obra: jornadas con sus horas, avances, notas y preguntas para el cliente.</div>`;
+  $("#ob-bit-res").innerHTML = `${R.length} registro${R.length===1?"":"s"} · ${f.diasReg} día${f.diasReg===1?"":"s"} con jornada · ${n1(f.horas)} h${f.preguntas?` · ${f.preguntas} pregunta${f.preguntas>1?"s":""} pendiente${f.preguntas>1?"s":""}`:""}`;
+}
+$("#ob-bit").onclick = async e => {
+  const rs = e.target.closest("[data-resolver]"), bd = e.target.closest("[data-borrar-reg]");
+  try{
+    if(rs){ const r = state.obraRegs.find(x => x.id === rs.dataset.resolver); await obrasApi.updReg(r.id, { resuelta: !r.resuelta }); renderObraDetalle(); }
+    if(bd && confirm("¿Eliminar este registro de la bitácora?")){ await obrasApi.delReg(bd.dataset.borrarReg); renderObraDetalle(); toast("Registro eliminado"); }
+  } catch(err){ toast(traducir(err)); }
+};
+
+/* ---------- Presupuesto / calculadora ---------- */
+function renderPresObra(o){
+  const r = calcPresupuesto(presEdit), c = r.cfg, editable = obraSel === "calc" || puedeEditarObras();
+  $("#pr-mod").value = c.modalidad; $("#pr-gg").value = c.params.gg; $("#pr-ut").value = c.params.utilidad;
+  $("#pr-igv").checked = !!c.params.aplicarIgv; $("#pr-ant").value = c.params.anticipo; $("#pr-plazo").value = presEdit.plazo || "";
+  const opc = cod => Object.entries(PARTIDAS).map(([k,P]) => `<option value="${k}" ${k===cod?"selected":""}>${esc(P.n)} (${P.u})</option>`).join("") + `<option value="OTRO" ${!PARTIDAS[cod]?"selected":""}>Otro trabajo (pones tu precio)</option>`;
+  $("#pr-body").innerHTML = r.filas.length ? r.filas.map(({p, c: x}, i) => `<tr data-i="${i}">
+      <td class="pr-part"><select data-k="cod">${opc(p.cod)}</select>${x.libre?`<input data-k="nombre" placeholder="Nombre del trabajo" value="${esc(p.nombre||"")}">`:""}<input data-k="desc" class="pr-desc" placeholder="${esc(x.desc)}" value="${esc(p.desc||"")}"></td>
+      <td data-l="Und.">${x.libre?`<input data-k="und" class="pr-und" value="${esc(p.und||"glb")}">`:esc(x.und)}</td>
+      <td data-l="Metrado"><input data-k="metrado" type="number" inputmode="decimal" step="0.01" min="0" value="${esc(p.metrado ?? "")}" class="pr-num"></td>
+      <td class="r num meta" data-l="Costo / und." title="Mano de obra ${fmt(x.moU)} + gastos ${fmt(x.goU)}${r.todo?` + materiales ${fmt(x.matU)}`:""} por ${esc(x.und)}">${x.libre?`<input data-k="costo" type="number" step="0.01" min="0" class="pr-num" placeholder="Costo/u" value="${esc(p.costo ?? "")}">`:fmt(x.moU + x.goU + (r.todo?x.matU:0))}</td>
+      <td data-l="Tarifa / und."><input data-k="tarifa" type="number" inputmode="decimal" step="0.01" min="0" class="pr-num" placeholder="${x.sugU.toFixed(2)}" value="${esc(p.tarifa ?? "")}" title="${x.libre?"Tu precio por unidad":`Sugerida ${fmt(x.sugU)}${x.miTarifa!=null?" (de Mis precios)":""}. Escribe la tuya para reemplazarla.`}"></td>
+      <td class="r num" data-l="Importe">${fmt(x.importe)}</td>
+      <td class="r">${editable?`<button type="button" class="x-btn" data-quitar="${i}" aria-label="Quitar partida">×</button>`:""}</td></tr>`).join("")
+    : `<tr><td colspan="7" class="empty">Agrega una partida y su metrado.</td></tr>`;
+  $("#pr-tot").innerHTML = `${fila("Subtotal", fmt(r.subtotal))}${fila(`IGV ${c.params.igv} %`, c.params.aplicarIgv ? fmt(r.igv) : "No aplica")}
+    <div class="total"><span>Total para el cliente</span><span>${fmt(r.total)}</span></div>${fila(`Anticipo ${c.params.anticipo} %`, fmt(r.anticipo))}${fila("Saldo", fmt(r.saldo))}`;
+  $("#pr-costos").innerHTML = `${fila("Mano de obra (cuadrilla, con tu jornal)", fmt(r.mo))}${fila("Gastos operativos", fmt(r.go))}${fila(r.todo?"Materiales (los compras tú)":"Materiales (los compra el cliente)", r.todo?fmt(r.matTot):`<span class="meta">${fmt(r.matTot)} aparte</span>`)}
+    <div class="total"><span>Costo para ejecutarla</span><span>${fmt(r.costo)}</span></div>
+    ${fila("Utilidad estimada (sin IGV)", `<span class="${r.utilidad<0?"out":"in"}">${fmt(r.utilidad)}${r.subtotal?` · ${Math.round(r.utilidad/r.subtotal*100)} %`:""}</span>`)}
+    ${r.dias?fila("Plazo estimado con la cuadrilla base", `${Math.ceil(r.dias)} días`):""}`;
+  $("#pr-mats").innerHTML = r.mats.length ? r.mats.map(x => `<tr><td>${esc(x.n)}</td><td>${esc(x.u)}</td><td class="r">${n2(x.cant)}</td><td class="r">${fmt(x.precio)}</td><td class="r num">${fmt(x.costo)}</td><td class="meta">${esc([...x.partidas].join(", "))}</td></tr>`).join("")
+    + `<tr class="tot"><td colspan="4">Total referencial de materiales</td><td class="r num">${fmt(r.matTot)}</td><td></td></tr>`
+    : `<tr><td colspan="6" class="empty">Sin materiales: agrega partidas de la lista.</td></tr>`;
+  $("#pr-sucio").hidden = !presSucio || obraSel === "calc";
+  $("#pr-guardar").hidden = obraSel === "calc" || !puedeEditarObras() || !!state.obrasError;
+  $("#pr-nueva").hidden = obraSel !== "calc" || !!state.obrasError || !puedeEditarObras();
+  $("#pr-usar").hidden = obraSel === "calc" || !puedeEditarObras() || !!state.obrasError;
+  $$("#ot-presupuesto input, #ot-presupuesto select").forEach(i => { if(!i.closest("#pdf-opc")) i.disabled = !editable; });
+}
+const n2 = v => Number(v).toLocaleString("es-PE", { maximumFractionDigits:2 });
+function cambioPres(){ presSucio = true; renderPresObra(); }
+$("#pr-body").addEventListener("change", e => {
+  const tr = e.target.closest("tr[data-i]"), k = e.target.dataset.k; if(!tr || !k) return;
+  const p = presEdit.partidas[+tr.dataset.i], v = e.target.value;
+  if(k === "cod"){ p.cod = v; if(v !== "OTRO"){ delete p.nombre; delete p.und; delete p.costo; } p.tarifa = null; }
+  else if(["metrado","tarifa","costo"].includes(k)) p[k] = v === "" ? null : Number(v);
+  else p[k] = v;
+  cambioPres();
+});
+$("#pr-body").addEventListener("click", e => { const b = e.target.closest("[data-quitar]"); if(b){ presEdit.partidas.splice(+b.dataset.quitar, 1); cambioPres(); } });
+$("#pr-add").onclick = () => { presEdit.partidas.push({ cod:"TARR", metrado:null }); cambioPres(); const t = $$("#pr-body [data-k=metrado]").pop(); if(t) t.focus(); };
+["#pr-gg","#pr-ut","#pr-ant","#pr-igv","#pr-mod","#pr-plazo"].forEach(id => $(id).addEventListener("change", () => {
+  presEdit.params = { ...(presEdit.params||{}), gg:numOr($("#pr-gg").value, PARAMS_BASE.gg), utilidad:numOr($("#pr-ut").value, 0), anticipo:numOr($("#pr-ant").value, PARAMS_BASE.anticipo), aplicarIgv:$("#pr-igv").checked };
+  presEdit.modalidad = $("#pr-mod").value; presEdit.plazo = $("#pr-plazo").value.trim();
+  cambioPres();
+}));
+async function guardarPres(usarPrecio){
+  const o = state.obras.find(x => x.id === obraSel); if(!o) return;
+  const datos = { presupuesto: presEdit };
+  if(usarPrecio) datos.precio_acordado = calcPresupuesto(presEdit).total;
+  try{ await obrasApi.guardar(datos, o.id); presSucio = false; toast(usarPrecio ? `Presupuesto guardado y precio final ${fmt(datos.precio_acordado)}` : "Presupuesto guardado"); renderObraDetalle(); }
+  catch(err){ toast(traducir(err)); }
+}
+$("#pr-guardar").onclick = () => guardarPres(false);
+$("#pr-usar").onclick = () => guardarPres(true);
+$("#pr-nueva").onclick = () => abrirObra(null, presEdit);
+
+/* ---------- PDF (se imprime la página A4; en el diálogo se elige "Guardar como PDF") ---------- */
+function pdfObra(){
+  const calc = obraSel === "calc", o = calc ? { nombre:"Presupuesto", presupuesto:presEdit } : state.obras.find(x => x.id === obraSel);
+  const r = calcPresupuesto(presEdit || o.presupuesto), P = state.precios.empresa || {};
+  if(!r.filas.length){ toast("Agrega al menos una partida con su metrado"); return; }
+  const conMat = $("#pdf-mat").checked, conAna = $("#pdf-ana").checked, hoy = fDate(today());
+  const cab = (t, s) => `<div class="a4-cab"><div><div class="a4-emp">${esc(P.nombre || nombreDe(state.user||{email:""}) || "Maestro de obra")}</div><div class="a4-meta">${esc([P.responsable, P.telefono, P.ruc ? "RUC "+P.ruc : ""].filter(Boolean).join(" · "))}</div></div><div class="a4-tit"><b>${t}</b><span>${s}</span></div></div>
+    <table class="a4-datos"><tr><td>Cliente</td><td>${esc(o.cliente||"—")}</td><td>Obra</td><td>${esc(o.nombre)}</td></tr><tr><td>Ubicación</td><td>${esc(o.ubicacion||"—")}</td><td>Fecha</td><td>${hoy}</td></tr></table>`;
+  const cond = COND_BASE, todo = r.todo;
+  let h = `<section class="a4">${cab("PRESUPUESTO DE OBRA", todo ? "Suministro de materiales y mano de obra" : "Servicio de mano de obra · materiales en hoja aparte")}
+    <table class="a4-t"><thead><tr><th>Ítem</th><th>Trabajo y alcance</th><th>Und.</th><th class="r">Metrado</th><th class="r">P. unit.</th><th class="r">Importe</th></tr></thead><tbody>
+    ${r.filas.map(({c: x}, i) => `<tr><td>${i+1}</td><td><b>${esc(x.nombre)}</b><br><span class="a4-meta">${esc(x.desc)}</span></td><td>${esc(x.und)}</td><td class="r">${n2(x.m)}</td><td class="r">${fmt(x.tarifa)}</td><td class="r">${fmt(x.importe)}</td></tr>`).join("")}</tbody></table>
+    <table class="a4-tot"><tr><td>Subtotal</td><td>${fmt(r.subtotal)}</td></tr>${r.cfg.params.aplicarIgv?`<tr><td>IGV ${r.cfg.params.igv} %</td><td>${fmt(r.igv)}</td></tr>`:""}<tr class="g"><td>TOTAL</td><td>${fmt(r.total)}</td></tr><tr><td>Anticipo ${r.cfg.params.anticipo} %</td><td>${fmt(r.anticipo)}</td></tr><tr><td>Saldo</td><td>${fmt(r.saldo)}</td></tr></table>
+    <h4>Condiciones del servicio</h4><table class="a4-cond">
+      <tr><td>Plazo estimado</td><td>${esc(presEdit.plazo || (r.dias ? Math.ceil(r.dias)+" días calendario aprox." : cond.plazo))}</td></tr>
+      <tr><td>Forma de pago</td><td>Anticipo del ${r.cfg.params.anticipo} % y saldo según avance o entrega</td></tr>
+      <tr><td>Incluye</td><td>${todo ? cond.incluyeTodo : cond.incluyeServ}</td></tr><tr><td>No incluye</td><td>${todo ? cond.noIncluyeTodo : cond.noIncluyeServ}</td></tr></table>
+    <p class="a4-nota">Los trabajos adicionales o cambios de alcance se presupuestan por separado.${r.cfg.params.aplicarIgv?"":" Precios sin IGV."}</p>
+    <div class="a4-firmas"><div>Aceptado por el cliente<br><span>Firma / DNI</span></div><div>Responsable de obra<br><span>Firma / sello</span></div></div></section>`;
+  if(conMat && r.mats.length) h += `<section class="a4">${cab("REQUERIMIENTO DE MATERIALES", "Cantidades calculadas según los metrados del presupuesto")}
+    <p class="a4-nota">${todo ? "Materiales incluidos en el presupuesto." : "Este requerimiento no incluye mano de obra. Los precios de materiales son referenciales."}</p>
+    <table class="a4-t"><thead><tr><th>Material</th><th>Und.</th><th class="r">Cantidad</th><th class="r">Precio ref.</th><th class="r">Costo est.</th><th>Partidas</th></tr></thead><tbody>
+    ${r.mats.map(x => `<tr><td>${esc(x.n)}</td><td>${esc(x.u)}</td><td class="r">${n2(x.cant)}</td><td class="r">${fmt(x.precio)}</td><td class="r">${fmt(x.costo)}</td><td class="a4-meta">${esc([...x.partidas].join(", "))}</td></tr>`).join("")}
+    <tr class="g"><td colspan="4">TOTAL REFERENCIAL</td><td class="r">${fmt(r.matTot)}</td><td></td></tr></tbody></table>
+    <p class="a4-nota">Redondea las cantidades según la presentación del proveedor (bolsa, varilla, millar, viaje o m³). Verifica medidas antes de comprar.</p></section>`;
+  if(conAna) h += `<section class="a4">${cab("ANÁLISIS DE COSTOS", "Solo para el maestro · no entregar al cliente")}
+    <table class="a4-t"><thead><tr><th>Partida</th><th class="r">Metrado</th><th class="r">Mano de obra</th><th class="r">Gastos op.</th><th class="r">Materiales</th><th class="r">Costo</th><th class="r">Precio</th><th class="r">Utilidad</th></tr></thead><tbody>
+    ${r.filas.map(({c: x}) => { const co = (x.moU + x.goU + (todo?x.matU:0)) * x.m; return `<tr><td>${esc(x.nombre)}</td><td class="r">${n2(x.m)} ${esc(x.und)}</td><td class="r">${fmt(x.moU*x.m)}</td><td class="r">${fmt(x.goU*x.m)}</td><td class="r">${todo?fmt(x.matU*x.m):"—"}</td><td class="r">${fmt(co)}</td><td class="r">${fmt(x.importe)}</td><td class="r">${fmt(x.importe-co)}</td></tr>`; }).join("")}
+    <tr class="g"><td colspan="5">TOTAL</td><td class="r">${fmt(r.costo)}</td><td class="r">${fmt(r.subtotal)}</td><td class="r">${fmt(r.utilidad)}</td></tr></tbody></table>
+    <h4>Cuadrilla por partida</h4><table class="a4-t"><thead><tr><th>Partida</th><th>Trabajador</th><th class="r">Cuadrilla</th><th class="r">Rend./día</th><th class="r">Jornal</th><th class="r">Costo por unidad</th></tr></thead><tbody>
+    ${r.filas.flatMap(({c: x}) => x.cuadrilla.map(q => `<tr><td>${esc(x.nombre)}</td><td>${esc(q.t)}</td><td class="r">${n2(q.cu)}</td><td class="r">${n2(q.rend)} ${esc(x.und)}</td><td class="r">${fmt(q.jornal)}</td><td class="r">${fmt(q.u)}</td></tr>`)).join("")}</tbody></table>
+    <p class="a4-nota">Gastos generales ${r.cfg.params.gg} % y utilidad ${r.cfg.params.utilidad} % sobre el costo. Rendimientos y precios referenciales: valídalos con planos, proveedores y condiciones de la obra.</p></section>`;
+  $("#print-area").innerHTML = h;
+  document.title = `Presupuesto ${o.nombre}`.replace(/[\\/:*?"<>|]/g, "");
+  document.body.classList.add("imprimir");
+  setTimeout(() => { window.print(); }, 60);
+}
+window.addEventListener("afterprint", () => { document.body.classList.remove("imprimir"); document.title = "Caja Personal"; });
+$("#pr-pdf").onclick = pdfObra;
+
+/* ---------- Diálogos de obra ---------- */
+let obraEdit = null, presNueva = null;
+function abrirObra(id, pres){
+  obraEdit = id; presNueva = pres || null;
+  const o = id ? state.obras.find(x => x.id === id) : {};
+  $("#obra-titulo").textContent = id ? "Editar obra" : "Nueva obra";
+  $("#ob-nombre").value = o.nombre || ""; $("#ob-cliente").value = o.cliente || ""; $("#ob-tel").value = o.telefono || "";
+  $("#ob-ubic").value = o.ubicacion || ""; $("#ob-desc").value = o.descripcion || "";
+  $("#ob-estado").innerHTML = ESTADOS_OBRA.map(e => `<option ${e===(o.estado||(pres?"Presupuesto":"En curso"))?"selected":""}>${e}</option>`).join("");
+  $("#ob-ini").value = o.fecha_inicio || (id ? "" : today()); $("#ob-fin").value = o.fecha_fin || "";
+  $("#ob-precio").value = o.precio_acordado ?? (pres ? calcPresupuesto(pres).total : "");
+  $("#ob-borrar").hidden = !id || !(state.demo || state.cuenta.propia);
+  $("#obra-msg").hidden = true; $("#obra-dlg").showModal(); setTimeout(() => $("#ob-nombre").focus(), 50);
+}
+$("#ob-nueva").onclick = () => abrirObra(null);
+$("#od-editar").onclick = () => abrirObra(obraSel);
+$("#obra-no").onclick = () => $("#obra-dlg").close();
+$("#obra-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = t => { const m = $("#obra-msg"); m.textContent = t; m.hidden = false; };
+  const nombre = $("#ob-nombre").value.trim(); if(!nombre){ err("Ponle un nombre a la obra."); return; }
+  const ini = $("#ob-ini").value || null, fin = $("#ob-fin").value || null;
+  if(ini && fin && fin < ini){ err("La fecha de fin no puede ser antes del inicio."); return; }
+  const precio = $("#ob-precio").value === "" ? null : r2($("#ob-precio").value);
+  const datos = { nombre, cliente:$("#ob-cliente").value.trim()||null, telefono:$("#ob-tel").value.trim()||null, ubicacion:$("#ob-ubic").value.trim()||null,
+    descripcion:$("#ob-desc").value.trim()||null, estado:$("#ob-estado").value, fecha_inicio:ini, fecha_fin:fin, precio_acordado:precio };
+  if(presNueva) datos.presupuesto = presNueva;
+  const b = $("#obra-ok"); b.disabled = true;
+  try{
+    const viejo = obraEdit ? state.obras.find(x => x.id === obraEdit).nombre : null;
+    const id = await obrasApi.guardar(datos, obraEdit);
+    // Si cambió el nombre, los movimientos ligados llevan el nombre nuevo (así se ve igual en la hoja)
+    if(viejo && viejo !== nombre) for(const m of state.movs.filter(m => m.extra && m.extra.obra_id === id)) await api.update(m.id, { extra:{ ...m.extra, Obra:nombre } });
+    $("#obra-dlg").close(); obraSel = id; presEdit = null; presSucio = false; obraTab = presNueva ? "presupuesto" : (obraEdit ? obraTab : "resumen");
+    toast(obraEdit ? "Obra actualizada" : "Obra creada"); go("obras");
+  } catch(err2){ err(traducir(err2)); }
+  finally{ b.disabled = false; }
+});
+$("#ob-borrar").onclick = async () => {
+  const o = state.obras.find(x => x.id === obraEdit);
+  if(!confirm(`¿Eliminar la obra "${o.nombre}" y su bitácora? Sus cobros y gastos se quedan en Movimientos.`)) return;
+  try{ await obrasApi.borrar(o.id); $("#obra-dlg").close(); obraSel = null; renderObras(); toast("Obra eliminada"); } catch(err){ toast(traducir(err)); }
+};
+
+// Cobro o gasto de la obra
+let omTipo = "Gasto";
+function catsObra(t){
+  const cat = state.catsFull.filter(c => c.ambito==="Obra" && (c.movimiento||c.tipo)===t).map(c => c.nombre);
+  return cat.length ? cat : t==="Ingreso" ? ["Adelanto del cliente","Pago por avance","Pago final","Trabajos chicos"] : ["Materiales","Pago a la cuadrilla","Herramientas y equipo","Fletes y movilidad","Eliminación de desmonte","Comida de la cuadrilla","Otros gastos de obra"];
+}
+function pintarOm(){
+  $$("#om-seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === omTipo));
+  const cats = catsObra(omTipo), sel = $("#om-cat").value;
+  $("#om-cat").innerHTML = cats.map(c => `<option ${c===sel?"selected":""}>${esc(c)}</option>`).join("");
+  pintarOmSubs();
+  $("#om-estado").innerHTML = (omTipo==="Ingreso" ? ["Cobrado","Pendiente"] : ["Pagado","Pendiente"]).map(e => `<option>${e}</option>`).join("");
+}
+function pintarOmSubs(){ const c = state.catsFull.find(x => x.ambito==="Obra" && x.nombre===$("#om-cat").value); $("#om-subs").innerHTML = ((c && c.subcategorias) || []).map(s => `<option value="${esc(s)}">`).join(""); }
+$("#om-cat").onchange = pintarOmSubs;
+$$("#om-seg button").forEach(b => b.onclick = () => { omTipo = b.dataset.t; pintarOm(); });
+function abrirOm(t){
+  omTipo = t; const o = state.obras.find(x => x.id === obraSel);
+  $("#om-titulo").textContent = `${t==="Ingreso"?"Cobro":"Gasto"} · ${o.nombre}`;
+  ["#om-monto","#om-desc","#om-sub"].forEach(id => $(id).value = ""); $("#om-fecha").value = today(); $("#om-msg").hidden = true;
+  pintarOm(); $("#om-dlg").showModal(); setTimeout(() => $("#om-monto").focus(), 50);
+}
+$("#od-cobro").onclick = () => abrirOm("Ingreso");
+$("#od-gasto").onclick = () => abrirOm("Gasto");
+$("#om-no").onclick = () => $("#om-dlg").close();
+$("#om-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = t => { const m = $("#om-msg"); m.textContent = t; m.hidden = false; };
+  const o = state.obras.find(x => x.id === obraSel), monto = r2($("#om-monto").value);
+  if(!(monto > 0)){ err("Escribe el monto."); return; }
+  const cat = $("#om-cat").value, sub = $("#om-sub").value.trim(), ing = omTipo === "Ingreso";
+  const datos = { fecha:$("#om-fecha").value || today(), movimiento:omTipo, tipo:omTipo, ambito:"Obra", categoria:cat, subcategoria:sub||null,
+    descripcion:$("#om-desc").value.trim() || (sub ? `${cat} · ${sub}` : cat), monto, medio:$("#om-medio").value||null, estado:$("#om-estado").value,
+    tipo_gasto: ing ? "No aplica" : "Variable", necesidad:"No aplica", cuenta:null, costo:null, envio:null, origen:"web",
+    extra:{ Obra:o.nombre, obra_id:o.id, Origen:"Caja Personal · obra", "Precisión fecha":"Día" } };
+  const b = $("#om-ok"); b.disabled = true;
+  try{ await api.add(datos); $("#om-dlg").close(); renderObraDetalle(); toast(`${ing?"Cobro":"Gasto"} de ${fmt(monto)} guardado en ${o.nombre}`); }
+  catch(err2){ err(traducir(err2)); } finally{ b.disabled = false; }
+});
+
+// Bitácora: nota, pregunta, avance o jornada con horas y personas
+function abrirReg(){
+  $("#bit-tipo").value = "Jornada"; $("#bit-fecha").value = today();
+  ["#bit-titulo","#bit-texto","#bit-horas","#bit-personas"].forEach(id => $(id).value = ""); $("#bit-msg").hidden = true; bitCampos();
+  $("#bit-dlg").showModal(); setTimeout(() => $("#bit-titulo").focus(), 50);
+}
+function bitCampos(){ const t = $("#bit-tipo").value; $("#bit-tiempo").hidden = !(t==="Jornada" || t==="Avance"); $("#bit-titulo").placeholder = { Jornada:"Qué se hizo hoy", Avance:"Ej. Muros del 2do piso terminados", Nota:"Título de la nota", Pregunta:"Ej. ¿De qué color va el zócalo?" }[t]; }
+$("#bit-tipo").onchange = bitCampos;
+$("#od-registro").onclick = abrirReg; $("#ob-bit-add").onclick = abrirReg;
+$("#bit-no").onclick = () => $("#bit-dlg").close();
+$("#bit-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = t => { const m = $("#bit-msg"); m.textContent = t; m.hidden = false; };
+  const titulo = $("#bit-titulo").value.trim(), texto = $("#bit-texto").value.trim();
+  if(!titulo && !texto){ err("Escribe un título o una nota."); return; }
+  const t = $("#bit-tipo").value, h = $("#bit-horas").value, p = $("#bit-personas").value;
+  const b = $("#bit-ok"); b.disabled = true;
+  try{
+    await obrasApi.addReg({ obra_id:obraSel, fecha:$("#bit-fecha").value || today(), tipo:t, titulo:titulo||null, texto:texto||null,
+      horas: (t==="Jornada"||t==="Avance") && h !== "" ? Number(h) : null, personas: (t==="Jornada"||t==="Avance") && p !== "" ? parseInt(p) : null });
+    $("#bit-dlg").close(); if(obraTab !== "bitacora" && obraTab !== "resumen") obraTab = "bitacora"; renderObraDetalle(); toast("Registro guardado");
+  } catch(err2){ err(traducir(err2)); } finally{ b.disabled = false; }
+});
+
+// Mis precios: jornales, materiales, tarifas propias, parámetros y datos para el PDF
+function abrirPrecios(){
+  const P = state.precios || {}, g = { ...PARAMS_BASE, ...(P.params||{}) }, E = P.empresa || {};
+  $("#mp-emp").innerHTML = [["nombre","Nombre o empresa","Construcciones Rojas"],["responsable","Responsable","Maestro Juan Rojas"],["telefono","Teléfono","999 999 999"],["ruc","RUC (opcional)",""]]
+    .map(([k,l,ph]) => `<div class="field"><label for="mp-e-${k}">${l}</label><input id="mp-e-${k}" data-emp="${k}" value="${esc(E[k]||"")}" placeholder="${esc(ph)}"></div>`).join("");
+  $("#mp-jor").innerHTML = TRABAJADORES.map(t => `<label class="mp-row"><span>${t}</span><span class="multi-inp"><span>S/</span><input type="number" step="0.01" min="0" data-jor="${esc(t)}" placeholder="${JORNAL_BASE[t].toFixed(2)}" value="${esc((P.jornales||{})[t] ?? "")}"></span></label>`).join("");
+  $("#mp-tar").innerHTML = Object.entries(PARTIDAS).map(([k,X]) => { const s = calcPartida({ cod:k, metrado:1 }, { ...cfgObra({}), tarifas:{}, modalidad:"servicio" }).sugU;
+    return `<label class="mp-row"><span>${esc(X.n)} <span class="meta">/ ${X.u}</span></span><span class="multi-inp"><span>S/</span><input type="number" step="0.01" min="0" data-tar="${k}" placeholder="${s.toFixed(2)}" value="${esc((P.tarifas||{})[k] ?? "")}"></span></label>`; }).join("");
+  $("#mp-mat").innerHTML = Object.entries(MATERIALES).map(([n,x]) => `<label class="mp-row"><span>${esc(n)} <span class="meta">/ ${esc(x.u)}</span></span><span class="multi-inp"><span>S/</span><input type="number" step="0.01" min="0" data-mat="${esc(n)}" placeholder="${x.p.toFixed(2)}" value="${esc((P.materiales||{})[n] ?? "")}"></span></label>`).join("");
+  $("#mp-gg").value = g.gg; $("#mp-ut").value = g.utilidad; $("#mp-ant").value = g.anticipo; $("#mp-igv").checked = !!g.aplicarIgv; $("#mp-mod").value = P.modalidad || "servicio";
+  $("#mp-msg").hidden = true; $("#precios-dlg").showModal();
+}
+$("#ob-precios").onclick = abrirPrecios;
+$("#mp-no").onclick = () => $("#precios-dlg").close();
+$("#mp-ok").onclick = async () => {
+  const lee = (sel, attr) => { const o = {}; $$(sel).forEach(i => { if(i.value !== "") o[i.dataset[attr]] = attr === "emp" ? i.value.trim() : Number(i.value); }); return o; };
+  const datos = { empresa: lee("[data-emp]", "emp"), jornales: lee("[data-jor]", "jor"), tarifas: lee("[data-tar]", "tar"), materiales: lee("[data-mat]", "mat"),
+    params: { gg:numOr($("#mp-gg").value, PARAMS_BASE.gg), utilidad:numOr($("#mp-ut").value, 0), anticipo:numOr($("#mp-ant").value, PARAMS_BASE.anticipo), aplicarIgv:$("#mp-igv").checked, igv:18 },
+    modalidad: $("#mp-mod").value };
+  const b = $("#mp-ok"); b.disabled = true;
+  try{ await obrasApi.guardarPrecios(datos); $("#precios-dlg").close(); toast("Tus precios se guardaron"); render(); }
+  catch(err){ const m = $("#mp-msg"); m.textContent = state.obrasError ? "Las obras todavía no están activadas en la base de datos." : traducir(err); m.hidden = false; }
+  finally{ b.disabled = false; }
+};
+
 /* ---------- Uso de la cuenta: elegir actividades (plantillas) ---------- */
 const USOS = [
   { k:"taxista",  t:"Taxista",         d:"Carreras por app o en la calle, combustible y gastos del carro." },
@@ -2174,5 +3133,6 @@ $("#dlg-uso-ok").onclick = async () => {
 })();
 </script>
 
+<div id="print-area"></div>
 </body>
 </html>
