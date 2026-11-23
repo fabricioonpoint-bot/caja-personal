@@ -98,3 +98,17 @@ Campos de `movimientos` para estas cuentas: `movimiento`, `tipo_gasto`, `ambito`
 ## Próximos pasos
 
 - Registro desde foto de recibo (origen `foto`).
+
+
+## Registro de clientes y elección de uso (23/11/2026)
+
+Cualquier persona crea su cuenta desde la página de inicio, en dos pasos:
+
+1. **¿Para qué usarás tu caja?** Taxista, Maestro de obra y/o Vendedor. Personal va incluida siempre.
+2. **Tus datos:** nombre, correo y contraseña. Lo elegido viaja en los datos del registro (`usos`).
+
+Al entrar por primera vez, la web aplica esas plantillas con `aplicar_plantilla` y muestra la bienvenida (registrar el primer movimiento, el atajo y el resumen). Si la cuenta no tiene actividades ni movimientos y no eligió nada, la web le pregunta "¿Para qué usarás tu caja?" antes de abrir el resumen. Las cuentas con historial y sin plantillas no cambian.
+
+Después, en **Resumen → Mis actividades**, la persona agrega o quita actividades. Quitar una usa `quitar_plantilla`: desactiva la actividad y deja sus movimientos y categorías.
+
+El administrador sigue pudiendo crear cuentas en **Cuentas**. Migración: `supabase/migrations/20261123120000_registro_con_uso.sql`.
