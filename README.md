@@ -129,3 +129,24 @@ El administrador sigue pudiendo crear cuentas en **Cuentas**. Migración: `supab
 - Bitácora: jornadas y avances con horas y personas, notas y preguntas (pendiente o resuelta).
 
 Tablas: `obras`, `obra_registros`, `precios_maestro` (migración `20261123170000_obras_y_presupuestos.sql`).
+
+## Registro de usuarios, perfil y marca (23/11/2026)
+
+**Registro en la web (2 pasos):** 1) uso (Taxista, Maestro de obra, Vendedor; Personal siempre), 2) nombre, edad (14+), celular, correo, contraseña y aceptación del uso de datos. Todo viaja en los datos del registro y la base crea el perfil y las plantillas al instante (`crear_categorias_iniciales`). Si el correo debe confirmarse, al entrar la primera vez todo ya está listo.
+
+**Perfil** (`perfiles`): nombre, edad, celular, correo (copiado de Auth), usos (siguen a las plantillas activas), origen y fecha de consentimiento. Nunca contraseñas. La persona lo edita en **Mi perfil**, donde también cambia su contraseña. Si a una cuenta le falta celular o edad, la web lo pide al entrar (una vez por día si elige "Ahora no").
+
+**Olvidé mi contraseña:** enlace en el inicio de sesión → correo con enlace → la web pide la nueva contraseña.
+
+**Hoja de registro de usuarios** (`google-sheets/RegistroUsuarios.gs`, en la hoja "Caja Personal – Registro de cuentas"):
+1. En la web, como administrador: **Cuentas → Hoja de registro de usuarios → Generar clave** (`generar_clave_registro`, empieza con `regp_`).
+2. En la hoja: Extensiones → Apps Script → archivo `RegistroUsuarios` con este código → ejecutar `cpuInstalar`.
+3. Caja Personal → Conectar registro de usuarios… → pegar la clave.
+
+Pestaña **USUARIOS** (una fila por persona: nombre, edad, teléfono, correo, uso, registro, correo confirmado, último ingreso, movimientos, último movimiento, ingresos, gastos, saldo, atajo, hoja, cómo se registró, consentimiento, actualizado) y **RESUMEN** (totales y conteo por uso). Se sincroniza cada minuto (`registro_usuarios`). Nombre, Edad y Teléfono (columnas lila) se pueden corregir en la hoja y suben a la plataforma (`registro_guardar`); si un valor no es válido, queda una nota en la fila y no se pisa. La clave de la hoja del IMPORTDATA también sirve.
+
+**Marca:** isotipo (caja + moneda con la barra de S/) según el manual de identidad, en color y negativo (`isotipo-color.svg`, `isotipo-negativo.svg`), ícono de app (`icono-app.svg`, `icon-*.png`), eslogan "Tu plata, en orden.", texto verde pequeño en `#047857` para contraste AA.
+
+**Accesibilidad:** enlace "Saltar al contenido", mensajes y avisos con `aria-live`, foco en el primer campo con error, etiquetas en todos los campos, `autocomplete` para nombre, teléfono y contraseñas.
+
+Migración: `20261123190000_perfiles_y_registro.sql` (también corrige `_copiar_plantilla`, que fallaba con la plantilla Personal).

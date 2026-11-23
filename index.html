@@ -8,9 +8,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Caja">
 <meta name="theme-color" content="#1E1B4B">
+<meta name="description" content="Caja Personal · Tu plata, en orden. Registra tus ingresos y gastos de taxi, obra, ventas y del día a día.">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="icon" type="image/svg+xml" href="isotipo-color.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
 <style>
@@ -19,7 +21,7 @@
 :root{
   --bg:#F4F3FA; --surface:#FFFFFF; --surface-2:#F0EEF8; --line:#E4E1F0;
   --fg:#16132B; --muted:#6B6785; --accent:#7C3AED; --accent-2:#0EA5A4; --accent-soft:#EFE7FE;
-  --in:#059669; --in-soft:#DDF6EC; --out:#E11D48; --out-soft:#FDE4EA;
+  --in:#059669; --in-text:#047857; --pend:#B45309; --in-soft:#DDF6EC; --out:#E11D48; --out-soft:#FDE4EA;
   --grad:linear-gradient(135deg,#1E1B4B 0%,#4C1D95 52%,#0F766E 120%);
   --grad-btn:linear-gradient(135deg,#7C3AED 0%,#5B21B6 60%,#0F766E 140%);
   --shadow:0 1px 2px rgb(22 19 43/.04),0 8px 24px -12px rgb(22 19 43/.18);
@@ -30,12 +32,12 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0E0C1A; --surface:#17142A; --surface-2:#211D38; --line:#2D2848;
   --fg:#EDEBFA; --muted:#A29DC0; --accent:#A78BFA; --accent-2:#2DD4BF; --accent-soft:#2A2150;
-  --in:#34D399; --in-soft:#123328; --out:#FB7185; --out-soft:#3A1622;
+  --in:#34D399; --in-text:#34D399; --pend:#FBBF24; --in-soft:#123328; --out:#FB7185; --out-soft:#3A1622;
   --shadow:0 1px 2px rgb(0 0 0/.3),0 10px 30px -14px rgb(0 0 0/.6); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0E0C1A; --surface:#17142A; --surface-2:#211D38; --line:#2D2848;
   --fg:#EDEBFA; --muted:#A29DC0; --accent:#A78BFA; --accent-2:#2DD4BF; --accent-soft:#2A2150;
-  --in:#34D399; --in-soft:#123328; --out:#FB7185; --out-soft:#3A1622;
+  --in:#34D399; --in-text:#34D399; --pend:#FBBF24; --in-soft:#123328; --out:#FB7185; --out-soft:#3A1622;
   --shadow:0 1px 2px rgb(0 0 0/.3),0 10px 30px -14px rgb(0 0 0/.6); color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -47,7 +49,10 @@ button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .num{font-family:var(--display);font-weight:600;letter-spacing:-.01em}
 .label{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
-.in{color:var(--in)} .out{color:var(--out)}
+.in{color:var(--in-text,var(--in))} .out{color:var(--out)}
+.kp-v.in,.mod-big.in,.cal-d.verde{color:var(--in)}
+.skip{position:absolute;left:-9999px;top:8px;z-index:100;background:var(--surface);color:var(--fg);padding:10px 14px;border-radius:10px;font-weight:700;box-shadow:var(--shadow)}
+.skip:focus{left:8px}
 svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- Botones y campos ---------- */
@@ -58,7 +63,7 @@ svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .btn.small{padding:8px 14px;font-size:13px;border-radius:10px}
 .btn.confirm{background:var(--out)}
 form{display:grid;gap:14px}
-.field{display:grid;gap:6px}
+.field{display:grid;gap:6px;align-content:start}
 .field label{font-size:13px;font-weight:700}
 .field input,.field select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);transition:border-color .15s,box-shadow .15s}
 .field input:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
@@ -78,7 +83,12 @@ form{display:grid;gap:14px}
 .auth-hero::after{width:460px;height:460px;left:-160px;bottom:-200px;background:radial-gradient(circle,rgb(45 212 191/.45),transparent 65%)}
 .auth-hero>*{position:relative;z-index:1}
 .brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:700;font-size:18px}
-.brand-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#A78BFA,#2DD4BF);color:#1E1B4B;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;box-shadow:0 6px 18px -6px rgb(0 0 0/.4)}
+.iso{flex:none;display:block;height:32px;width:auto}
+.brand b{font-weight:800}
+.brand .p{font-weight:500;color:#C4B5FD}
+.brand.claro b{color:#1E1B4B}
+.brand.claro .p{color:#7C3AED}
+.eslogan{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13px;letter-spacing:.02em;background:rgb(255 255 255/.12);border:1px solid rgb(255 255 255/.2);border-radius:999px;padding:6px 12px;margin-bottom:14px}
 .auth-hero h1{font-size:clamp(34px,4.2vw,54px);line-height:1.05;max-width:13ch}
 .auth-hero h1 em{font-style:normal;background:linear-gradient(90deg,#C4B5FD,#5EEAD4);-webkit-background-clip:text;background-clip:text;color:transparent}
 .auth-hero p{margin:14px 0 0;opacity:.82;font-size:16px;max-width:40ch}
@@ -529,13 +539,15 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Saltar al contenido</a>
 
 
 <section id="auth">
   <div class="auth-hero">
-    <div class="brand"><div class="brand-mark">S/</div>Caja Personal</div>
+    <div class="brand"><img class="iso" src="isotipo-negativo.svg" alt="" width="36" height="32"><span><b>Caja</b> <span class="p">Personal</span></span></div>
     <div>
-      <h1>Ten tu dinero <em>en orden</em></h1>
+      <span class="eslogan">Para taxistas, maestros de obra, vendedores y tu día a día</span>
+      <h1>Tu plata, <em>en orden.</em></h1>
       <p>Cada entrada y cada salida en su lugar. Registra en segundos desde la web o el iPhone y mira, mes a mes, cuánto entra, cuánto sale y a dónde va.</p>
     </div>
     <div class="orden" aria-hidden="true">
@@ -560,7 +572,6 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
       <li><span><svg class="i" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>Solo tú ves tus movimientos</li>
       <li><span><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg></span>Ordenado por categoría</li>
       <li><span><svg class="i" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6"/></svg></span>Resumen de cada mes</li>
-      <li><span><svg class="i" viewBox="0 0 24 24"><path d="M4 16h16M5.5 16l1.6-5.2A2 2 0 019 9.4h6a2 2 0 011.9 1.4l1.6 5.2"/><circle cx="8" cy="17.5" r="1.6"/><circle cx="16" cy="17.5" r="1.6"/></svg></span>Para taxistas, maestros de obra, vendedores y tu día a día</li>
     </ul>
   </div>
 
@@ -581,7 +592,11 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
       </div>
       <form id="auth-form" novalidate>
         <div class="su-datos" id="su-elegido" hidden></div>
-        <div class="field" id="name-field" hidden><label for="a-name">Nombre</label><input id="a-name" autocomplete="name" placeholder="Ana P."></div>
+        <div class="field" id="name-field" hidden><label for="a-name">Nombre y apellido</label><input id="a-name" autocomplete="name" placeholder="Ana Pérez" maxlength="120"></div>
+        <div class="row2" id="datos-field" hidden>
+          <div class="field"><label for="a-edad">Edad</label><input id="a-edad" type="number" inputmode="numeric" min="14" max="120" step="1" placeholder="30" aria-describedby="edad-help"><small id="edad-help" class="meta">Desde 14 años</small></div>
+          <div class="field"><label for="a-tel">Celular</label><input id="a-tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="987 654 321" maxlength="20"></div>
+        </div>
         <div class="field"><label for="a-email">Correo</label><input id="a-email" type="email" required autocomplete="email" placeholder="tucorreo@gmail.com"></div>
         <div class="field">
           <label for="a-pass">Contraseña</label>
@@ -600,8 +615,10 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
           <label for="a-pass2">Repite la contraseña</label>
           <div class="pass-wrap"><input id="a-pass2" type="password" autocomplete="new-password" placeholder="Escríbela otra vez"><button type="button" class="toggle-pass" data-for="a-pass2">Mostrar</button></div>
         </div>
-        <div id="auth-msg" class="msg" hidden></div>
+        <label class="check" id="acepta-field" hidden style="align-items:flex-start;font-size:13.5px;font-weight:500"><input type="checkbox" id="a-acepta" style="margin-top:3px"> <span>Acepto que Caja Personal guarde mi nombre, edad, celular y correo para administrar mi cuenta y contactarme sobre ella. Mis movimientos solo los veo yo.</span></label>
+        <div id="auth-msg" class="msg" role="status" aria-live="polite" hidden></div>
         <button class="btn" id="auth-submit" type="submit">Entrar</button>
+        <p id="olvide-wrap" style="margin:0;text-align:center"><button class="link" type="button" id="olvide">¿Olvidaste tu contraseña?</button></p>
         <p class="secure-note"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 018 0v3"/></svg><span>Tu contraseña se guarda cifrada y nadie puede verla, ni siquiera el administrador.</span></p>
       </form>
       <p class="auth-foot">¿Solo quieres ver cómo funciona? <button class="link" id="demo-btn" type="button">Ver con datos de ejemplo</button></p>
@@ -611,7 +628,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
 
 <section id="onboard" hidden>
   <div class="ob-card">
-    <div class="brand"><div class="brand-mark">S/</div>Caja Personal</div>
+    <div class="brand claro"><img class="iso" src="isotipo-color.svg" alt="" width="36" height="32"><span><b>Caja</b> <span class="p">Personal</span></span></div>
     <div>
       <h2 id="ob-title">¿Para qué usarás tu caja?</h2>
       <p class="sub" id="ob-sub">Elige uno o más trabajos. Así tu caja trae las categorías y el resumen que necesitas.</p>
@@ -625,7 +642,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
 
 <div id="app" hidden>
   <aside class="side">
-    <div class="brand"><div class="brand-mark">S/</div><strong>Caja Personal</strong></div>
+    <div class="brand"><img class="iso" src="isotipo-negativo.svg" alt="" width="36" height="32"><span><b>Caja</b> <span class="p">Personal</span></span></div>
     <nav>
       <button data-view="resumen" aria-current="page"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Resumen</button>
       <button data-view="movimientos"><svg class="i" viewBox="0 0 24 24"><path d="M7 4v16M7 4L3 8M7 4l4 4M17 20V4M17 20l-4-4M17 20l4-4"/></svg>Movimientos</button>
@@ -635,9 +652,9 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
       <button data-view="compartir" id="nav-compartir"><svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="17" cy="7" r="2.5"/><path d="M2.5 19c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6"/><path d="M14.5 13.2c.7-.4 1.6-.6 2.5-.6 2.3 0 4.1 1.3 4.6 3.9"/></svg>Compartir</button>
       <button data-view="cuentas" id="nav-cuentas" hidden><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M17 8v6M14 11h6"/></svg>Cuentas</button>
     </nav>
-    <div class="who"><span id="who-email"></span><button id="logout">Cerrar sesión</button></div>
+    <div class="who"><span id="who-email"></span><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="mi-perfil" type="button">Mi perfil</button><button id="logout">Cerrar sesión</button></div></div>
   </aside>
-  <main>
+  <main id="main" tabindex="-1">
     <div id="demo-band" class="demo-band" hidden><span>Ejemplo inventado: una persona que hace taxi, vende ropa y tiene una obra. Nada se guarda.</span><button class="btn small ghost" id="exit-demo">Salir del ejemplo</button></div>
 
     <div id="acct-band" class="acct-band" hidden>
@@ -724,7 +741,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
         </table></div>
         <div class="list-mobile" id="m-list"></div>
       </div>
-      <div class="mobile-acct"><span id="who-email-m"></span><button class="btn small ghost" id="logout-m">Cerrar sesión</button></div>
+      <div class="mobile-acct"><span id="who-email-m"></span><span style="display:flex;gap:8px"><button class="btn small ghost" id="mi-perfil-m" type="button">Mi perfil</button><button class="btn small ghost" id="logout-m">Cerrar sesión</button></span></div>
     </section>
 
     <!-- COMPARTIR -->
@@ -782,6 +799,18 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
           <p class="meta" style="margin:0;font-size:14px">Envíaselos a la persona. La contraseña no se vuelve a mostrar aquí.</p>
           <div class="copy-list" id="c-entrega-datos"></div>
           <button class="btn small" id="c-copiar-todo" type="button">Copiar todo en un mensaje</button>
+        </div>
+        <div class="panel" id="c-registro">
+          <h3>Hoja de registro de usuarios</h3>
+          <p class="meta" style="margin:0;font-size:14px">Todas las personas registradas, con nombre, edad, celular, correo y uso, en tu hoja <b>Registro de cuentas</b>. Se sincroniza cada minuto. Nunca incluye contraseñas.</p>
+          <ol class="steps">
+            <li>Toca <b>Generar clave</b> y cópiala.</li>
+            <li>Abre la <a href="https://docs.google.com/spreadsheets/d/1viMcpo2X27c7m4PiGb59FgPiISvwdCyhMwyudgfnXg0/edit" target="_blank" rel="noopener">hoja Registro de cuentas</a> → <b>Extensiones → Apps Script</b>. Crea un archivo <b>RegistroUsuarios</b> y pega el <a href="https://github.com/fabricioonpoint-bot/caja-personal/blob/main/google-sheets/RegistroUsuarios.gs" target="_blank" rel="noopener">código del script</a>.</li>
+            <li>Elige <b>cpuInstalar</b>, pulsa <b>Ejecutar</b> y acepta los permisos.</li>
+            <li>En la hoja: <b>Caja Personal → Conectar registro de usuarios…</b> y pega la clave.</li>
+          </ol>
+          <div id="c-reg-clave"></div>
+          <button class="btn small" id="c-reg-gen" type="button">Generar clave</button>
         </div>
         <div class="panel" id="c-ayuda">
           <h3>Cómo activar su hoja de cálculo</h3>
@@ -1069,6 +1098,32 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
   </div>
 </dialog>
 
+<dialog id="perfil-dlg" aria-labelledby="perfil-titulo">
+  <form class="sheet" id="perfil-form" novalidate>
+    <div><h3 style="font-size:20px" id="perfil-titulo">Mi perfil</h3><p class="meta" style="margin:4px 0 0;font-size:14px" id="pf-sub">Tus datos para administrar tu cuenta. Nunca mostramos tu contraseña.</p></div>
+    <div class="field"><label for="pf-nombre">Nombre y apellido</label><input id="pf-nombre" autocomplete="name" maxlength="120"></div>
+    <div class="row2"><div class="field"><label for="pf-edad">Edad</label><input id="pf-edad" type="number" inputmode="numeric" min="14" max="120" step="1"></div>
+      <div class="field"><label for="pf-tel">Celular</label><input id="pf-tel" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="987 654 321"></div></div>
+    <div class="field"><label for="pf-correo">Correo electrónico</label><input id="pf-correo" type="email" readonly aria-describedby="pf-correo-n"><small class="meta" id="pf-correo-n">Para cambiar tu correo, escríbele al administrador.</small></div>
+    <div class="q-block"><span class="q-lab">Uso de tu caja</span><div class="listo-mods" id="pf-usos"></div><button type="button" class="link" id="pf-act" style="justify-self:start">Cambiar mis actividades</button></div>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:14px">Cambiar mi contraseña</summary>
+      <div style="display:grid;gap:10px;margin-top:10px"><div class="field"><label for="pf-pass">Nueva contraseña</label><input id="pf-pass" type="password" autocomplete="new-password" placeholder="8+ con letras y números"></div>
+      <div class="field"><label for="pf-pass2">Repítela</label><input id="pf-pass2" type="password" autocomplete="new-password"></div></div></details>
+    <div id="pf-msg" class="msg" role="status" aria-live="polite" hidden></div>
+    <div class="actions"><button type="button" class="btn ghost" id="pf-no">Ahora no</button><button type="submit" class="btn" id="pf-ok">Guardar</button></div>
+  </form>
+</dialog>
+
+<dialog id="clave-dlg" aria-labelledby="clave-titulo">
+  <form class="sheet" id="clave-form" novalidate>
+    <div><h3 style="font-size:20px" id="clave-titulo">Crea tu nueva contraseña</h3><p class="meta" style="margin:4px 0 0;font-size:14px">Entraste con el enlace de tu correo. Escribe la contraseña que usarás desde ahora.</p></div>
+    <div class="field"><label for="nc-pass">Nueva contraseña</label><input id="nc-pass" type="password" autocomplete="new-password" placeholder="8+ con letras y números"></div>
+    <div class="field"><label for="nc-pass2">Repítela</label><input id="nc-pass2" type="password" autocomplete="new-password"></div>
+    <div id="nc-msg" class="msg err" role="alert" hidden></div>
+    <div class="actions"><button type="submit" class="btn" id="nc-ok">Guardar contraseña</button></div>
+  </form>
+</dialog>
+
 <dialog id="uso-dlg">
   <div class="sheet">
     <div><h3 style="font-size:20px">Mis actividades</h3><p class="meta" style="margin:4px 0 0;font-size:14px">Marca a qué te dedicas. Si quitas una, sus movimientos se quedan guardados.</p></div>
@@ -1172,7 +1227,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
     <div class="actions"><button type="button" class="btn ghost" id="det-close">Cerrar</button></div>
   </div>
 </dialog>
-<div class="toast" id="toast" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
@@ -1400,6 +1455,7 @@ function setMode(m){
   $("#tab-login").setAttribute("aria-selected", !su);
   $("#tab-signup").setAttribute("aria-selected", su);
   $("#name-field").hidden = !su; $("#pass2-field").hidden = !su; $("#pass-help").hidden = !su;
+  $("#datos-field").hidden = !su; $("#acepta-field").hidden = !su; $("#olvide-wrap").hidden = su;
   $("#auth-title").textContent = su ? "Crea tu cuenta" : "Bienvenido de vuelta";
   $("#auth-sub").textContent = su ? "Es gratis y tus datos son solo tuyos." : "Entra con tu correo y contraseña.";
   $("#auth-submit").textContent = su ? "Crear cuenta" : "Entrar";
@@ -1445,6 +1501,11 @@ $("#auth-form").addEventListener("submit", async e => {
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ authMsg("Escribe un correo válido.", true); return; }
   if(!password){ authMsg("Escribe tu contraseña.", true); return; }
   if(mode==="signup"){
+    const nom = $("#a-name").value.trim(), edad = parseInt($("#a-edad").value, 10), tel = $("#a-tel").value.trim();
+    if(nom.length < 2){ authMsg("Escribe tu nombre.", true); $("#a-name").focus(); return; }
+    if(!(edad >= 14 && edad <= 120)){ authMsg("Escribe tu edad (desde 14 años).", true); $("#a-edad").focus(); return; }
+    if(!telValido(tel)){ authMsg("Escribe tu celular, por ejemplo 987 654 321.", true); $("#a-tel").focus(); return; }
+    if(!$("#a-acepta").checked){ authMsg("Para crear tu cuenta, acepta que guardemos tus datos.", true); $("#a-acepta").focus(); return; }
     if(!checkPass()){ authMsg("La contraseña necesita 8 caracteres o más, con letras y números.", true); return; }
     if(password !== $("#a-pass2").value){ authMsg("Las dos contraseñas no coinciden.", true); return; }
   }
@@ -1455,7 +1516,8 @@ $("#auth-form").addEventListener("submit", async e => {
       if(error) throw error; await enter(data.user);
     } else {
       const usos = [...suSel];
-      const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ nombre:$("#a-name").value.trim(), usos }, emailRedirectTo: APP_URL } });
+      const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ nombre:$("#a-name").value.trim(), usos,
+        edad: parseInt($("#a-edad").value, 10), telefono: $("#a-tel").value.trim(), acepta_datos: true }, emailRedirectTo: APP_URL } });
       if(error) throw error;
       // Si el correo ya existía, Supabase no avisa: devuelve un usuario sin identidades
       if(data.user && Array.isArray(data.user.identities) && !data.user.identities.length){ setMode("login"); $("#a-email").value = email; authMsg("Ese correo ya tiene una cuenta. Inicia sesión.", true); return; }
@@ -1473,9 +1535,24 @@ $("#demo-btn").onclick = () => {
 };
 $("#exit-demo").onclick = () => { state.demo=false; state.cg=false; state.movs=[]; state.config=null; state.plantillas=[]; state.rMes="todo"; showAuth(); };
 
-function nombreDe(user){ return (user.user_metadata && user.user_metadata.nombre) || user.email; }
+function nombreDe(user){ return (state.perfil && state.user && user.id === state.user.id && state.perfil.nombre) || (user.user_metadata && user.user_metadata.nombre) || user.email; }
+const telValido = t => { const d = String(t||"").replace(/[^\d]/g, ""); return d.length >= 7 && d.length <= 15; };
+// Perfil (nombre, edad, celular, correo y usos). Si no existe, se crea con lo que se escribió al registrarse.
+async function cargarPerfil(user){
+  state.perfil = null;
+  try{
+    const { data, error } = await sb.from("perfiles").select("*").eq("user_id", user.id).maybeSingle();
+    if(error) throw error;
+    if(data){ state.perfil = data; return; }
+    const m = user.user_metadata || {};
+    const nuevo = { user_id:user.id, nombre:m.nombre || null, edad: m.edad >= 14 && m.edad <= 120 ? parseInt(m.edad, 10) : null, telefono:m.telefono || null, acepta_datos: !!m.acepta_datos };
+    const r = await sb.from("perfiles").insert(nuevo).select().single();
+    state.perfil = r.error ? nuevo : r.data;
+  } catch(e){ state.perfil = null; }
+}
 async function enter(user){
   state.user = user; state.demo = false;
+  await cargarPerfil(user);
   state.cuenta = { id:user.id, nombre:nombreDe(user), propia:true, registrar:true };
   try{ const { data } = await sb.rpc("cuentas_compartidas"); state.compartidas = data || []; } catch(e){ state.compartidas = []; }
   try{ await api.load(); } catch(err){ authMsg(traducir(err), true); return; }
@@ -1494,6 +1571,7 @@ async function enter(user){
   showApp(user.email);
   refirmar();
   if(!state.movs.length && state.plantillas.length && !recordado("bienvenida-"+user.id)) bienvenida();
+  else if(state.perfil && (!state.perfil.telefono || !state.perfil.edad) && !recordado("perfil-luego-"+user.id+"-"+today())) setTimeout(() => abrirPerfil(true), 400);
 }
 function showAuth(){ $("#app").hidden = true; $("#onboard").hidden = true; $("#auth").hidden = false; }
 function renderAcct(){
@@ -1524,11 +1602,12 @@ $("#acct-sel").onchange = async e => {
 
 function showApp(label){
   $("#auth").hidden = true; $("#onboard").hidden = true; $("#app").hidden = false;
+  if(state.user && !state.demo) label = nombreDe(state.user);
   $("#who-email").textContent = label; $("#who-email-m").textContent = label;
   $("#demo-band").hidden = !state.demo;
   renderAcct(); render();
 }
-async function logout(){ if(!state.demo && sb) await sb.auth.signOut(); claveNueva=null; state.admin=false; state.cg=false; state.rMes="todo"; $("#nav-cuentas").hidden=true; if(state.view==="cuentas") go("resumen"); state.demo=false; state.user=null; state.cuenta=null; state.compartidas=[]; state.movs=[]; state.plantillas=[]; state.catsFull=[]; state.config=null; state.pulso=null; firma=""; obSel.clear(); showAuth(); }
+async function logout(){ if(!state.demo && sb) await sb.auth.signOut(); claveNueva=null; state.admin=false; state.cg=false; state.rMes="todo"; $("#nav-cuentas").hidden=true; if(state.view==="cuentas") go("resumen"); state.demo=false; state.user=null; state.cuenta=null; state.compartidas=[]; state.movs=[]; state.plantillas=[]; state.catsFull=[]; state.config=null; state.pulso=null; firma=""; obSel.clear(); state.perfil=null; showAuth(); }
 $("#logout").onclick = logout; $("#logout-m").onclick = logout;
 
 
@@ -3119,6 +3198,75 @@ $("#dlg-uso-ok").onclick = async () => {
   try{ await guardarUso(dlgSel); $("#uso-dlg").close(); refirmar(); render(); toast("Actividades guardadas"); }
   catch(err){ const m = $("#dlg-uso-msg"); m.textContent = "No se pudo guardar: " + traducir(err); m.hidden = false; }
   finally{ b.disabled = false; }
+};
+
+/* ---------- Mi perfil ---------- */
+function abrirPerfil(aviso){
+  if(state.demo){ toast("En el ejemplo no hay perfil"); return; }
+  const f = state.perfil || {}, u = state.user;
+  $("#pf-nombre").value = f.nombre || nombreDe(u) || ""; $("#pf-edad").value = f.edad || ""; $("#pf-tel").value = f.telefono || ""; $("#pf-correo").value = u.email;
+  $("#pf-usos").innerHTML = modsActivos().map(k => `<span class="chip in">${esc(MODS[k].nombre)}</span>`).join("");
+  $("#pf-sub").textContent = aviso ? "Te falta completar algunos datos de tu perfil. Así podemos ayudarte si pierdes el acceso." : "Tus datos para administrar tu cuenta. Nunca mostramos tu contraseña.";
+  $("#pf-pass").value = ""; $("#pf-pass2").value = ""; $("#pf-msg").hidden = true; $("#pf-no").textContent = aviso ? "Ahora no" : "Cerrar";
+  $("#perfil-dlg").showModal(); setTimeout(() => (aviso && !f.telefono ? $("#pf-tel") : $("#pf-nombre")).focus(), 50);
+}
+$("#mi-perfil").onclick = () => abrirPerfil(false); $("#mi-perfil-m").onclick = () => abrirPerfil(false);
+$("#pf-no").onclick = () => { recordar("perfil-luego-"+state.user.id+"-"+today(), "1"); $("#perfil-dlg").close(); };
+$("#pf-act").onclick = () => { $("#perfil-dlg").close(); go("resumen"); $("#mis-act").click(); };
+$("#perfil-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = (t, err) => { const m = $("#pf-msg"); m.textContent = t; m.className = "msg" + (err ? " err" : " ok"); m.setAttribute("role", err ? "alert" : "status"); m.hidden = false; };
+  const nombre = $("#pf-nombre").value.trim(), edadTxt = $("#pf-edad").value.trim(), tel = $("#pf-tel").value.trim(), p1 = $("#pf-pass").value;
+  const edad = edadTxt ? parseInt(edadTxt, 10) : null;
+  if(nombre.length < 2){ msg("Escribe tu nombre.", true); $("#pf-nombre").focus(); return; }
+  if(edadTxt && !(edad >= 14 && edad <= 120)){ msg("La edad debe estar entre 14 y 120.", true); $("#pf-edad").focus(); return; }
+  if(tel && !telValido(tel)){ msg("Revisa tu celular, por ejemplo 987 654 321.", true); $("#pf-tel").focus(); return; }
+  if(p1){ const r = passRules(p1); if(!(r.len && r.let && r.dig)){ msg("La contraseña necesita 8 caracteres o más, con letras y números.", true); $("#pf-pass").focus(); return; }
+    if(p1 !== $("#pf-pass2").value){ msg("Las dos contraseñas no coinciden.", true); $("#pf-pass2").focus(); return; } }
+  const b = $("#pf-ok"); b.disabled = true;
+  try{
+    const { data, error } = await sb.from("perfiles").upsert({ user_id: state.user.id, nombre, edad, telefono: tel || null }).select().single();
+    if(error) throw error;
+    state.perfil = data;
+    await sb.auth.updateUser({ data:{ nombre, edad, telefono: tel || null } });
+    if(p1){ const r = await sb.auth.updateUser({ password: p1 }); if(r.error) throw r.error; }
+    $("#who-email").textContent = nombre; $("#who-email-m").textContent = nombre;
+    $("#perfil-dlg").close(); toast(p1 ? "Perfil y contraseña guardados" : "Perfil guardado");
+  } catch(err){ msg(traducir(err), true); }
+  finally{ b.disabled = false; }
+});
+
+/* ---------- Olvidé mi contraseña ---------- */
+$("#olvide").onclick = async () => {
+  const email = $("#a-email").value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ authMsg("Escribe tu correo arriba y vuelve a tocar «¿Olvidaste tu contraseña?».", true); $("#a-email").focus(); return; }
+  const b = $("#olvide"); b.disabled = true;
+  try{
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: APP_URL });
+    if(error) throw error;
+    authMsg(`Si ${email} tiene una cuenta, te llegará un correo con un enlace para crear una nueva contraseña. Revisa también Spam.`);
+  } catch(err){ authMsg(traducir(err), true); }
+  finally{ b.disabled = false; }
+};
+if(sb) sb.auth.onAuthStateChange(ev => { if(ev === "PASSWORD_RECOVERY") setTimeout(() => { $("#nc-msg").hidden = true; $("#clave-dlg").showModal(); $("#nc-pass").focus(); }, 300); });
+$("#clave-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = t => { const m = $("#nc-msg"); m.textContent = t; m.hidden = false; };
+  const p1 = $("#nc-pass").value, r = passRules(p1);
+  if(!(r.len && r.let && r.dig)){ err("Necesita 8 caracteres o más, con letras y números."); return; }
+  if(p1 !== $("#nc-pass2").value){ err("Las dos contraseñas no coinciden."); return; }
+  const b = $("#nc-ok"); b.disabled = true;
+  try{ const { error } = await sb.auth.updateUser({ password: p1 }); if(error) throw error; $("#clave-dlg").close(); toast("Contraseña cambiada"); history.replaceState(null, "", location.pathname); }
+  catch(e2){ err(traducir(e2)); } finally{ b.disabled = false; }
+});
+
+/* ---------- Clave de la hoja de registro (administrador) ---------- */
+$("#c-reg-gen").onclick = async () => {
+  if(!confirm("Se creará una clave nueva para la hoja de registro. Si ya conectaste la hoja con otra clave, tendrás que pegar esta. ¿Continuar?")) return;
+  try{
+    const { data, error } = await sb.rpc("generar_clave_registro"); if(error) throw error;
+    $("#c-reg-clave").innerHTML = copyRow("Clave de la hoja de registro", data, true) + `<p class="meta" style="margin:6px 0 0;font-size:13px">No se vuelve a mostrar. Pégala en la hoja: Caja Personal → Conectar registro de usuarios…</p>`;
+  } catch(err){ toast(traducir(err)); }
 };
 
 /* ---------- Inicio ---------- */

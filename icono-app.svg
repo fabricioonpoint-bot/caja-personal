@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1E1B4B"/><stop offset=".52" stop-color="#4C1D95"/><stop offset="1.2" stop-color="#0F766E"/></linearGradient></defs>
+<rect width="120" height="120" fill="url(#fondo)"/><g transform="translate(60 62) scale(.62) translate(-60 -66)"><defs><linearGradient id="gc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A78BFA"/><stop offset="1" stop-color="#2DD4BF"/></linearGradient>
+<clipPath id="cc"><rect x="0" y="0" width="120" height="59"/></clipPath>
+<mask id="mc" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="120"><rect width="120" height="120" fill="#fff"/><line x1="30" y1="62" x2="90" y2="62" stroke="#000" stroke-width="6" stroke-linecap="round"/><circle cx="60" cy="40" r="24" fill="#000" clip-path="url(#cc)"/></mask>
+<mask id="nc" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="120"><rect width="120" height="120" fill="#fff"/><line x1="55" y1="48" x2="65" y2="31" stroke="#000" stroke-width="5.6" stroke-linecap="round"/></mask></defs>
+<rect x="8" y="40" width="104" height="72" rx="24" fill="url(#gc)" mask="url(#mc)"/>
+<g clip-path="url(#cc)"><circle cx="60" cy="40" r="20" fill="#FFFFFF" mask="url(#nc)"/></g></g></svg>

@@ -38,10 +38,8 @@ create table if not exists public.precios_maestro (
 
 create or replace function public._tocar_updated_at() returns trigger
 language plpgsql set search_path to '' as $$ begin new.updated_at := now(); return new; end $$;
-drop trigger if exists obras_updated on public.obras;
-create trigger obras_updated before update on public.obras for each row execute function public._tocar_updated_at();
-drop trigger if exists precios_maestro_updated on public.precios_maestro;
-create trigger precios_maestro_updated before update on public.precios_maestro for each row execute function public._tocar_updated_at();
+create or replace trigger obras_updated before update on public.obras for each row execute function public._tocar_updated_at();
+create or replace trigger precios_maestro_updated before update on public.precios_maestro for each row execute function public._tocar_updated_at();
 
 -- Un registro de bitácora siempre pertenece al dueño de su obra
 create or replace function public._registro_de_su_obra() returns trigger
@@ -52,8 +50,7 @@ begin
   return new;
 end $$;
 revoke execute on function public._registro_de_su_obra() from public, anon, authenticated;
-drop trigger if exists obra_registros_dueno on public.obra_registros;
-create trigger obra_registros_dueno before insert or update on public.obra_registros for each row execute function public._registro_de_su_obra();
+create or replace trigger obra_registros_dueno before insert or update on public.obra_registros for each row execute function public._registro_de_su_obra();
 
 alter table public.obras enable row level security;
 alter table public.obra_registros enable row level security;
