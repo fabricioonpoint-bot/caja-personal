@@ -655,6 +655,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
     <div class="who"><span id="who-email"></span><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="mi-perfil" type="button">Mi perfil</button><button id="logout">Cerrar sesión</button></div></div>
   </aside>
   <main id="main" tabindex="-1">
+    <div id="uso-band" class="demo-band" hidden><span>Aún no eliges para qué usas tu caja (taxi, obra, ventas o solo personal). Al elegirlo tendrás sus categorías y su panel; tus movimientos se quedan como están.</span><button class="btn small" type="button" id="uso-band-btn">Elegir mi uso</button></div>
     <div id="demo-band" class="demo-band" hidden><span>Ejemplo inventado: una persona que hace taxi, vende ropa y tiene una obra. Nada se guarda.</span><button class="btn small ghost" id="exit-demo">Salir del ejemplo</button></div>
 
     <div id="acct-band" class="acct-band" hidden>
@@ -1828,6 +1829,7 @@ function renderResumen(){
   $("#k-in-label").textContent = cg ? "Entra a la caja" : "Entradas"; $("#k-out-label").textContent = cg ? "Sale de la caja" : "Salidas";
   $("#r-sub").textContent = state.rMes==="todo" ? "Todo el historial" : mesLabel(state.rMes);
   $("#cg-panel").hidden = !cg;
+  $("#uso-band").hidden = !!(state.demo || !state.cuenta || !state.cuenta.propia || state.plantillas.length);
   if(cg){
     const fuera = list.filter(m=>efecto(m)===0 && !m.es_prueba && VALIDOS.includes(m.estado));
     $("#k-real-label").textContent = "Fuera de la caja"; $("#k-real").textContent = fmt(sum(fuera));
@@ -3192,6 +3194,7 @@ $("#mis-act").onclick = () => {
   usoPicker($("#dlg-usos"), dlgSel);
   $("#uso-dlg").showModal();
 };
+$("#uso-band-btn").onclick = () => $("#mis-act").click();
 $("#dlg-uso-no").onclick = () => $("#uso-dlg").close();
 $("#dlg-uso-ok").onclick = async () => {
   const b = $("#dlg-uso-ok"); b.disabled = true;
