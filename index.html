@@ -1490,6 +1490,7 @@ function traducir(e){
   if(/Password should|weak|at least/i.test(m)) return "La contraseña es muy débil: usa 8 caracteres o más, con letras y números.";
   if(/rate limit|too many/i.test(m)) return "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.";
   if(/Unable to validate email|invalid format/i.test(m)) return "Ese correo no es válido.";
+  if(/Signups? not allowed|signup.*disabled/i.test(m)) return "Por ahora no se están creando cuentas nuevas. Escríbele al administrador de Caja Personal.";
   if(/Email not confirmed/i.test(m)) return "Confirma tu correo primero: revisa la bandeja de entrada (y spam).";
   if(/Failed to fetch|NetworkError|Load failed/i.test(m)) return "No se pudo conectar con el servidor. Revisa tu internet e inténtalo de nuevo.";
   return m || "Algo salió mal. Inténtalo de nuevo.";
