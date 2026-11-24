@@ -150,3 +150,17 @@ Pestaña **USUARIOS** (una fila por persona: nombre, edad, teléfono, correo, us
 **Accesibilidad:** enlace "Saltar al contenido", mensajes y avisos con `aria-live`, foco en el primer campo con error, etiquetas en todos los campos, `autocomplete` para nombre, teléfono y contraseñas.
 
 Migración: `20261123190000_perfiles_y_registro.sql` (también corrige `_copiar_plantilla`, que fallaba con la plantilla Personal).
+
+## Enfoque personal en la web pública y hoja de datos por cuenta (24/11/2026)
+
+**Web pública = enfoque personal.** El registro va directo a los datos (nombre, edad, celular, correo, contraseña) y la cuenta se crea con la plantilla **Personal**. No aparece la elección de uso ni "Mis actividades" para cuentas nuevas. Las cuentas que ya tienen un trabajo (Fabricio: Taxista + Vendedor; Luis: Maestro de obra) siguen viendo sus paneles.
+
+**Piloto con usos:** se ve en la misma web con `?usos=1` (registro con "¿Para qué usarás tu caja?") y queda guardado en la rama `piloto-usos`. El interruptor es `USOS_ABIERTOS` en `index.html`.
+
+**Hoja de datos por cuenta.** Cuando una cuenta creada en la web confirma su correo, el script `RegistroUsuarios.gs` (hoja Registro de cuentas):
+1. Crea una vez la plantilla "Caja Personal – Plantilla de hoja de datos" (RESUMEN con el mes, el total, los últimos 12 meses y gastos por categoría; MOVIMIENTOS).
+2. La copia como "Caja Personal – Nombre" en la carpeta "Caja Personal · Hojas de usuarios" del Drive del administrador y la comparte con el correo de la persona (solo lectura). Si el correo no tiene cuenta de Google, queda una nota.
+3. Guarda el enlace en el perfil (`hoja_registrar`): la persona lo ve en **Mi perfil → Tu hoja de datos**.
+4. Cada minuto copia sus movimientos si cambiaron (`hoja_movimientos`, comparando una huella de conteo y última modificación).
+
+La aceptación de datos del registro lo dice: la hoja queda en la cuenta de Caja Personal y el administrador puede verla. Migración: `20261124230000_hoja_de_datos_por_cuenta.sql`.

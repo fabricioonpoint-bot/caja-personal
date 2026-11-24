@@ -7,6 +7,7 @@
  *    fecha de registro, si confirmó el correo, último ingreso y sus números (movimientos, ingresos,
  *    gastos, saldo). Nunca trae contraseñas: la base solo guarda su versión cifrada y esto no la lee.
  *  - Pestaña RESUMEN: totales por uso, registros de la semana y del mes.
+ *  - Hoja de datos: cada cuenta nueva recibe su propia hoja con sus movimientos, compartida con su correo.
  *  - Sincroniza cada minuto. Si corriges Nombre, Edad o Teléfono en USUARIOS, el cambio sube a la
  *    plataforma (y la persona lo ve en "Mi perfil"). Las demás columnas las llena la plataforma.
  *
@@ -36,6 +37,7 @@ const CPU_COLS = [
   { k: 'saldo', t: 'Saldo (S/)', w: 105 },
   { k: 'atajo', t: 'Atajo iPhone', w: 80 },
   { k: 'hoja', t: 'Hoja conectada', w: 85 },
+  { k: 'hoja_datos', t: 'Hoja de datos', w: 150 },
   { k: 'origen', t: 'Cómo se registró', w: 110 },
   { k: 'acepta_datos', t: 'Aceptó uso de datos', w: 95 },
   { k: 'actualizado', t: 'Perfil actualizado', w: 130 }
@@ -110,6 +112,7 @@ function cpuSincronizar() {
     const lista = cpuRpc_('registro_usuarios', { p_clave: clave }) || [];
     cpuEscribir_(sh, lista);
     cpuResumen_(lista);
+    cpuHojas_(lista, clave);
     sh.getRange(2, 1).setValue('Sincronizado: ' + Utilities.formatDate(new Date(), 'America/Lima', 'dd/MM/yyyy HH:mm') + ' · ' + lista.length + ' usuarios · Corrige solo Nombre, Edad y Teléfono (columnas lila).');
   } catch (e) {
     const sh = SpreadsheetApp.getActive().getSheetByName(CPU_HOJA);
@@ -162,7 +165,8 @@ function cpuEscribir_(sh, lista) {
       registro: fecha(u.registro), confirmado: sino(u.confirmado), ultimo_ingreso: u.ultimo_ingreso ? new Date(u.ultimo_ingreso) : 'Nunca',
       movimientos: Number(u.movimientos) || 0, ultimo_movimiento: u.ultimo_movimiento ? new Date(u.ultimo_movimiento + 'T12:00:00') : '',
       ingresos: Number(u.ingresos) || 0, gastos: Number(u.gastos) || 0, saldo: Number(u.saldo) || 0,
-      atajo: sino(u.atajo), hoja: sino(u.hoja), origen: u.admin ? 'Administrador (dueño)' : (u.origen === 'web' ? 'Se registró en la web' : 'Creada por el administrador'),
+      atajo: sino(u.atajo), hoja: sino(u.hoja),
+      hoja_datos: u.hoja_url ? u.hoja_url : (u.hoja_estado === 'error' ? 'Error: ' + (u.hoja_nota || '') : (u.necesita_hoja ? 'Se crea en un minuto' : (u.confirmado ? '—' : 'Al confirmar su correo'))), origen: u.admin ? 'Administrador (dueño)' : (u.origen === 'web' ? 'Se registró en la web' : 'Creada por el administrador'),
       acepta_datos: sino(u.acepta_datos), actualizado: fecha(u.actualizado)
     };
     return CPU_COLS.map(c => o[c.k]);
@@ -211,7 +215,7 @@ function cpuResumen_(lista) {
 function cpuPrepararHojas_() {
   const ss = SpreadsheetApp.getActive();
   let sh = ss.getSheetByName(CPU_HOJA);
-  if (sh && sh.getRange(CPU_FILA_CAB, 1).getValue() === 'ID') return sh;
+  if (sh && sh.getRange(CPU_FILA_CAB, 1).getValue() === 'ID' && sh.getRange(CPU_FILA_CAB, CPU_COLS.length).getValue() === CPU_COLS[CPU_COLS.length - 1].t) return sh;
   if (!sh) sh = ss.insertSheet(CPU_HOJA, 0);
   sh.clear();
   const n = CPU_COLS.length;
@@ -253,3 +257,138 @@ function cpuRpc_(fn, cuerpo) {
 }
 
 function cpuAviso_(t) { try { SpreadsheetApp.getActive().toast(t, 'Caja Personal', 8); } catch (_) {} }
+
+/* =====================================================================
+ * Hoja de datos de cada persona
+ * Al confirmar su correo, cada cuenta creada en la web recibe su propia hoja
+ * "Caja Personal – Nombre" en la carpeta "Caja Personal · Hojas de usuarios" de este Drive.
+ * Se comparte con su correo (solo lectura) y su enlace aparece en "Mi perfil" de la web.
+ * Cada minuto se copian ahí sus movimientos si cambiaron. Registra en la web o el atajo:
+ * lo que se escriba a mano en esa hoja se reemplaza en la siguiente copia.
+ * ===================================================================== */
+const CPU_MOV_COLS = ['Fecha', 'Tipo', 'Categoría', 'Detalle', 'Descripción', 'Monto (S/)', 'Efecto en tu caja (S/)', 'Medio', 'Estado', 'Ámbito', 'Registrado', 'Quién registró', 'ID'];
+const CPU_MOV_FILA = 4;            // primera fila de datos en MOVIMIENTOS
+const CPU_MAX_NUEVAS = 5;          // hojas nuevas por pasada
+const CPU_MAX_COPIAS = 15;         // hojas actualizadas por pasada
+
+function cpuHojas_(lista, clave) {
+  const props = PropertiesService.getScriptProperties();
+  let nuevas = 0, copias = 0;
+  for (const u of lista) {
+    if (!u.necesita_hoja || nuevas >= CPU_MAX_NUEVAS) continue;
+    nuevas++;
+    try { cpuCrearHoja_(u, clave, props); }
+    catch (e) { try { cpuRpc_('hoja_registrar', { p_clave: clave, p_user: u.id, p_id: '', p_url: null, p_estado: 'error', p_nota: 'No se pudo crear: ' + e.message }); } catch (_) {} }
+  }
+  for (const u of lista) {
+    if (!u.hoja_id || copias >= CPU_MAX_COPIAS) continue;
+    const k = 'CPU_H_' + u.id;
+    if (props.getProperty(k) === u.huella) continue;
+    copias++;
+    try {
+      const movs = cpuRpc_('hoja_movimientos', { p_clave: clave, p_user: u.id }) || [];
+      cpuEscribirHoja_(SpreadsheetApp.openById(u.hoja_id), u, movs);
+      props.setProperty(k, u.huella);
+    } catch (e) {
+      try { cpuRpc_('hoja_registrar', { p_clave: clave, p_user: u.id, p_id: u.hoja_id, p_url: u.hoja_url, p_estado: 'error', p_nota: 'No se pudo actualizar: ' + e.message }); } catch (_) {}
+    }
+  }
+}
+
+function cpuCrearHoja_(u, clave, props) {
+  const nombre = (u.nombre || u.correo || 'Usuario').trim();
+  const copia = DriveApp.getFileById(cpuPlantillaHoja_(props)).makeCopy('Caja Personal – ' + nombre, cpuCarpeta_(props));
+  let nota = null;
+  try { copia.addViewer(u.correo); }
+  catch (e) { nota = 'No se pudo compartir con ' + u.correo + ' (puede que ese correo no tenga cuenta de Google). Compártela a mano o pídele un Gmail.'; }
+  const id = copia.getId(), url = 'https://docs.google.com/spreadsheets/d/' + id + '/edit';
+  cpuEscribirHoja_(SpreadsheetApp.openById(id), u, cpuRpc_('hoja_movimientos', { p_clave: clave, p_user: u.id }) || []);
+  cpuRpc_('hoja_registrar', { p_clave: clave, p_user: u.id, p_id: id, p_url: url, p_estado: 'lista', p_nota: nota });
+  props.setProperty('CPU_H_' + u.id, u.huella);
+  u.hoja_id = id; u.hoja_url = url;
+}
+
+function cpuCarpeta_(props) {
+  const id = props.getProperty('CPU_CARPETA');
+  if (id) { try { return DriveApp.getFolderById(id); } catch (_) {} }
+  const f = DriveApp.createFolder('Caja Personal · Hojas de usuarios');
+  props.setProperty('CPU_CARPETA', f.getId());
+  return f;
+}
+
+/** Crea (una sola vez) la plantilla con RESUMEN y MOVIMIENTOS, con la marca de Caja Personal. */
+function cpuPlantillaHoja_(props) {
+  const id = props.getProperty('CPU_PLANTILLA');
+  if (id) { try { DriveApp.getFileById(id); return id; } catch (_) {} }
+  const ss = SpreadsheetApp.create('Caja Personal – Plantilla de hoja de datos');
+  DriveApp.getFileById(ss.getId()).moveTo(cpuCarpeta_(props));
+  const M = CPU_MARCA;
+  // MOVIMIENTOS
+  const mv = ss.getSheets()[0].setName('MOVIMIENTOS');
+  const n = CPU_MOV_COLS.length;
+  mv.getRange(1, 1, 1, n).merge().setValue('Tus movimientos').setFontFamily('Arial').setFontSize(15).setFontWeight('bold').setFontColor('#FFFFFF').setBackground(M.indigo);
+  mv.getRange(2, 1, 1, n).merge().setValue('Se copian solos desde tu Caja Personal. Para registrar o corregir, usa la web o el atajo.').setFontFamily('Arial').setFontStyle('italic').setFontColor(M.gris).setBackground(M.fondo);
+  mv.getRange(3, 1, 1, n).setValues([CPU_MOV_COLS]).setFontFamily('Arial').setFontWeight('bold').setFontColor('#FFFFFF').setBackground(M.violeta).setWrap(true);
+  [95, 80, 150, 120, 220, 95, 110, 105, 85, 85, 125, 120, 60].forEach((w, i) => mv.setColumnWidth(i + 1, w));
+  mv.setFrozenRows(3); mv.setRowHeight(1, 38); mv.setRowHeight(3, 34);
+  mv.hideColumns(13);
+  // RESUMEN
+  const r = ss.insertSheet('RESUMEN', 0);
+  const G = "MOVIMIENTOS!$G$4:$G", F = "MOVIMIENTOS!$A$4:$A", C = "MOVIMIENTOS!$C$4:$C";
+  const ini = 'EOMONTH(TODAY(),-1)+1', fin = 'EOMONTH(TODAY(),0)';
+  r.getRange('A1:D1').merge().setValue('Caja Personal').setFontFamily('Arial').setFontSize(18).setFontWeight('bold').setFontColor('#FFFFFF').setBackground(M.indigo);
+  r.getRange('A2:D2').merge().setValue('Tu plata, en orden.').setFontFamily('Arial').setFontColor(M.gris).setBackground(M.fondo);
+  r.getRange('A4:B4').setValues([['Este mes', '']]).setFontWeight('bold').setFontColor(M.violeta);
+  r.getRange('A5:A7').setValues([['Entró'], ['Salió'], ['Te queda']]);
+  r.getRange('B5').setFormula('=SUMIFS(' + G + ',' + G + ',">0",' + F + ',">="&' + ini + ',' + F + ',"<="&' + fin + ')');
+  r.getRange('B6').setFormula('=-SUMIFS(' + G + ',' + G + ',"<0",' + F + ',">="&' + ini + ',' + F + ',"<="&' + fin + ')');
+  r.getRange('B7').setFormula('=B5-B6');
+  r.getRange('A9:B9').setValues([['Desde que empezaste', '']]).setFontWeight('bold').setFontColor(M.violeta);
+  r.getRange('A10:A12').setValues([['Entró'], ['Salió'], ['Saldo']]);
+  r.getRange('B10').setFormula('=SUMIF(' + G + ',">0")');
+  r.getRange('B11').setFormula('=-SUMIF(' + G + ',"<0")');
+  r.getRange('B12').setFormula('=B10-B11');
+  r.getRange('A14:D14').setValues([['Últimos 12 meses', 'Entró', 'Salió', 'Te quedó']]).setFontWeight('bold').setFontColor('#FFFFFF').setBackground(M.violeta);
+  const meses = [];
+  for (let i = 0; i < 12; i++) {
+    const m = 'EDATE(EOMONTH(TODAY(),-1)+1,-' + i + ')', mf = 'EOMONTH(' + m + ',0)';
+    meses.push(['=' + m,
+      '=SUMIFS(' + G + ',' + G + ',">0",' + F + ',">="&' + m + ',' + F + ',"<="&' + mf + ')',
+      '=-SUMIFS(' + G + ',' + G + ',"<0",' + F + ',">="&' + m + ',' + F + ',"<="&' + mf + ')',
+      '=B' + (15 + i) + '-C' + (15 + i)]);
+  }
+  r.getRange(15, 1, 12, 4).setFormulas(meses);
+  r.getRange(15, 1, 12, 1).setNumberFormat('mmmm yyyy');
+  r.getRange('F4').setValue('En qué gastaste este mes').setFontWeight('bold').setFontColor(M.violeta);
+  r.getRange('F5').setFormula('=IFERROR(QUERY({' + C + ',ARRAYFORMULA(-' + G + '),' + F + '},"select Col1, sum(Col2) where Col2 > 0 and Col3 >= date \'"&TEXT(' + ini + ',"yyyy-mm-dd")&"\' group by Col1 order by sum(Col2) desc label Col1 \'Categoría\', sum(Col2) \'Gastado (S/)\'",1),"Aún no hay gastos este mes")');
+  ['B5:B7', 'B10:B12', 'B15:D26', 'G5:G40'].forEach(a => r.getRange(a).setNumberFormat('"S/ "#,##0.00;"−S/ "#,##0.00'));
+  r.getRange('A1:H40').setFontFamily('Arial');
+  r.getRange('A7:B7').setFontWeight('bold'); r.getRange('A12:B12').setFontWeight('bold');
+  r.setColumnWidth(1, 190); [2, 3, 4].forEach(c => r.setColumnWidth(c, 110)); r.setColumnWidth(5, 30); r.setColumnWidth(6, 190); r.setColumnWidth(7, 120);
+  r.setRowHeight(1, 42);
+  SpreadsheetApp.flush();
+  props.setProperty('CPU_PLANTILLA', ss.getId());
+  return ss.getId();
+}
+
+function cpuEscribirHoja_(ss, u, movs) {
+  const r = ss.getSheetByName('RESUMEN'), mv = ss.getSheetByName('MOVIMIENTOS');
+  const nombre = (u.nombre || u.correo || '').trim();
+  if (r) r.getRange('A1').setValue('Caja Personal · ' + nombre);
+  if (r) r.getRange('A2').setValue('Tu plata, en orden. · ' + movs.length + ' movimientos · Actualizado ' + Utilities.formatDate(new Date(), 'America/Lima', 'dd/MM/yyyy HH:mm'));
+  if (!mv) return;
+  const n = CPU_MOV_COLS.length;
+  const filas = movs.map(m => {
+    const p = String(m.fecha || '').split('-').map(Number);
+    return [p.length === 3 ? new Date(p[0], p[1] - 1, p[2]) : '', m.tipo || '', m.categoria || '', m.subcategoria || '', m.descripcion || '',
+      Number(m.monto) || 0, Number(m.efecto) || 0, m.medio || '', m.estado || '', m.ambito || '', m.registrado ? new Date(m.registrado) : '', m.quien || '', m.id];
+  });
+  const viejas = Math.max(mv.getLastRow() - CPU_MOV_FILA + 1, 0);
+  if (filas.length) mv.getRange(CPU_MOV_FILA, 1, filas.length, n).setValues(filas);
+  if (viejas > filas.length) mv.getRange(CPU_MOV_FILA + filas.length, 1, viejas - filas.length, n).clearContent();
+  if (filas.length) {
+    mv.getRange(CPU_MOV_FILA, 1, filas.length, 1).setNumberFormat('dd/mm/yyyy');
+    mv.getRange(CPU_MOV_FILA, 6, filas.length, 2).setNumberFormat('"S/ "#,##0.00;"−S/ "#,##0.00');
+    mv.getRange(CPU_MOV_FILA, 11, filas.length, 1).setNumberFormat('dd/mm/yyyy hh:mm');
+  }
+}

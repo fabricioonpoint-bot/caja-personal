@@ -546,7 +546,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
   <div class="auth-hero">
     <div class="brand"><img class="iso" src="isotipo-negativo.svg" alt="" width="36" height="32"><span><b>Caja</b> <span class="p">Personal</span></span></div>
     <div>
-      <span class="eslogan">Para taxistas, maestros de obra, vendedores y tu día a día</span>
+      <span class="eslogan" id="eslogan-usos" hidden>Para taxistas, maestros de obra, vendedores y tu día a día</span>
       <h1>Tu plata, <em>en orden.</em></h1>
       <p>Cada entrada y cada salida en su lugar. Registra en segundos desde la web o el iPhone y mira, mes a mes, cuánto entra, cuánto sale y a dónde va.</p>
     </div>
@@ -569,7 +569,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
       </div>
     </div>
     <ul class="feats">
-      <li><span><svg class="i" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>Solo tú ves tus movimientos</li>
+      <li><span><svg class="i" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>Tu hoja de cálculo con todo, al día</li>
       <li><span><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg></span>Ordenado por categoría</li>
       <li><span><svg class="i" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6"/></svg></span>Resumen de cada mes</li>
     </ul>
@@ -615,7 +615,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
           <label for="a-pass2">Repite la contraseña</label>
           <div class="pass-wrap"><input id="a-pass2" type="password" autocomplete="new-password" placeholder="Escríbela otra vez"><button type="button" class="toggle-pass" data-for="a-pass2">Mostrar</button></div>
         </div>
-        <label class="check" id="acepta-field" hidden style="align-items:flex-start;font-size:13.5px;font-weight:500"><input type="checkbox" id="a-acepta" style="margin-top:3px"> <span>Acepto que Caja Personal guarde mi nombre, edad, celular y correo para administrar mi cuenta y contactarme sobre ella. Mis movimientos solo los veo yo.</span></label>
+        <label class="check" id="acepta-field" hidden style="align-items:flex-start;font-size:13.5px;font-weight:500"><input type="checkbox" id="a-acepta" style="margin-top:3px"> <span>Acepto que Caja Personal guarde mi nombre, edad, celular y correo para administrar mi cuenta y contactarme sobre ella, y que cree <b>mi hoja de datos</b>: una hoja de Google con mis movimientos, guardada en la cuenta de Caja Personal y compartida con mi correo. El administrador de Caja Personal puede ver esa hoja.</span></label>
         <div id="auth-msg" class="msg" role="status" aria-live="polite" hidden></div>
         <button class="btn" id="auth-submit" type="submit">Entrar</button>
         <p id="olvide-wrap" style="margin:0;text-align:center"><button class="link" type="button" id="olvide">¿Olvidaste tu contraseña?</button></p>
@@ -803,7 +803,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
         </div>
         <div class="panel" id="c-registro">
           <h3>Hoja de registro de usuarios</h3>
-          <p class="meta" style="margin:0;font-size:14px">Todas las personas registradas, con nombre, edad, celular, correo y uso, en tu hoja <b>Registro de cuentas</b>. Se sincroniza cada minuto. Nunca incluye contraseñas.</p>
+          <p class="meta" style="margin:0;font-size:14px">Todas las personas registradas, con nombre, edad, celular, correo y uso, en tu hoja <b>Registro de cuentas</b>. Se sincroniza cada minuto y nunca incluye contraseñas. El mismo script crea la <b>hoja de datos</b> de cada cuenta nueva (en tu Drive, carpeta "Caja Personal · Hojas de usuarios"), se la comparte a su correo y le copia sus movimientos.</p>
           <ol class="steps">
             <li>Toca <b>Generar clave</b> y cópiala.</li>
             <li>Abre la <a href="https://docs.google.com/spreadsheets/d/1viMcpo2X27c7m4PiGb59FgPiISvwdCyhMwyudgfnXg0/edit" target="_blank" rel="noopener">hoja Registro de cuentas</a> → <b>Extensiones → Apps Script</b>. Crea un archivo <b>RegistroUsuarios</b> y pega el <a href="https://github.com/fabricioonpoint-bot/caja-personal/blob/main/google-sheets/RegistroUsuarios.gs" target="_blank" rel="noopener">código del script</a>.</li>
@@ -1110,6 +1110,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--
     <details><summary style="cursor:pointer;font-weight:700;font-size:14px">Cambiar mi contraseña</summary>
       <div style="display:grid;gap:10px;margin-top:10px"><div class="field"><label for="pf-pass">Nueva contraseña</label><input id="pf-pass" type="password" autocomplete="new-password" placeholder="8+ con letras y números"></div>
       <div class="field"><label for="pf-pass2">Repítela</label><input id="pf-pass2" type="password" autocomplete="new-password"></div></div></details>
+    <div class="q-block" id="pf-hoja" hidden><span class="q-lab">Tu hoja de datos</span><div id="pf-hoja-c" style="display:grid;gap:6px;font-size:14px"></div></div>
     <div id="pf-msg" class="msg" role="status" aria-live="polite" hidden></div>
     <div class="actions"><button type="button" class="btn ghost" id="pf-no">Ahora no</button><button type="submit" class="btn" id="pf-ok">Guardar</button></div>
   </form>
@@ -1458,13 +1459,13 @@ function setMode(m){
   $("#name-field").hidden = !su; $("#pass2-field").hidden = !su; $("#pass-help").hidden = !su;
   $("#datos-field").hidden = !su; $("#acepta-field").hidden = !su; $("#olvide-wrap").hidden = su;
   $("#auth-title").textContent = su ? "Crea tu cuenta" : "Bienvenido de vuelta";
-  $("#auth-sub").textContent = su ? "Es gratis y tus datos son solo tuyos." : "Entra con tu correo y contraseña.";
+  $("#auth-sub").textContent = su ? "Es gratis. Anota tus ingresos y gastos y míralos en orden." : "Entra con tu correo y contraseña.";
   $("#auth-submit").textContent = su ? "Crear cuenta" : "Entrar";
   $("#a-pass").autocomplete = su ? "new-password" : "current-password";
   $("#a-pass").placeholder = su ? "Mínimo 8, con letras y números" : "Tu contraseña";
   $("#auth-msg").hidden = true;
   checkPass();
-  pasoRegistro(su ? 1 : 0);
+  pasoRegistro(su ? (USOS_ABIERTOS ? 1 : 2) : 0);
 }
 
 /* Reglas de contraseña (las mismas que exige Supabase: 8+ caracteres, letras y números) */
@@ -1568,7 +1569,10 @@ async function enter(user){
       try{ await guardarUso(new Set(elegidos)); showApp(user.email); refirmar(); bienvenida(); return; }
       catch(err){ /* si falla, se le pregunta abajo */ }
     }
-    if(!state.movs.length){ mostrarOnboard(); return; }
+    if(!state.movs.length){
+      if(USOS_ABIERTOS){ mostrarOnboard(); return; }
+      try{ await guardarUso(new Set()); showApp(user.email); refirmar(); bienvenida(); return; } catch(err){ /* sigue con la caja tal cual */ }
+    }
   }
   showApp(user.email);
   refirmar();
@@ -1830,7 +1834,8 @@ function renderResumen(){
   $("#k-in-label").textContent = cg ? "Entra a la caja" : "Entradas"; $("#k-out-label").textContent = cg ? "Sale de la caja" : "Salidas";
   $("#r-sub").textContent = state.rMes==="todo" ? "Todo el historial" : mesLabel(state.rMes);
   $("#cg-panel").hidden = !cg;
-  $("#uso-band").hidden = !!(state.demo || !state.cuenta || !state.cuenta.propia || state.plantillas.length);
+  $("#uso-band").hidden = !USOS_ABIERTOS || !!(state.demo || !state.cuenta || !state.cuenta.propia || state.plantillas.length);
+  $("#mis-act").hidden = !state.demo && !USOS_ABIERTOS && !tieneTrabajo();
   if(cg){
     const fuera = list.filter(m=>efecto(m)===0 && !m.es_prueba && VALIDOS.includes(m.estado));
     $("#k-real-label").textContent = "Fuera de la caja"; $("#k-real").textContent = fmt(sum(fuera));
@@ -3091,6 +3096,9 @@ $("#mp-ok").onclick = async () => {
 };
 
 /* ---------- Uso de la cuenta: elegir actividades (plantillas) ---------- */
+// Web pública: enfoque personal (registro directo con Personal). El piloto con usos se ve con ?usos=1.
+const USOS_ABIERTOS = /[?&]usos=1\b/.test(location.search);
+const tieneTrabajo = () => state.plantillas.some(p => p !== "personal");
 const USOS = [
   { k:"taxista",  t:"Taxista",         d:"Carreras por app o en la calle, combustible y gastos del carro." },
   { k:"obra",     t:"Maestro de obra", d:"Cobros por obra, materiales y pago a la cuadrilla." },
@@ -3136,8 +3144,8 @@ async function guardarUso(sel){
 // Registro: paso 1 (uso) → paso 2 (datos)
 const suSel = new Set();
 function pasoRegistro(n){
-  $("#su-paso").hidden = !n; $("#su-uso").hidden = n !== 1; $("#auth-form").hidden = n === 1;
-  $("#su-elegido").hidden = n !== 2; $(".auth-foot").hidden = n === 2;
+  $("#su-paso").hidden = !n || !USOS_ABIERTOS; $("#su-uso").hidden = n !== 1; $("#auth-form").hidden = n === 1;
+  $("#su-elegido").hidden = n !== 2 || !USOS_ABIERTOS; $(".auth-foot").hidden = n === 2;
   if(!n) return;
   $("#su-paso-txt").textContent = `Paso ${n} de 2`; $("#su-paso-bar").style.width = n===1 ? "50%" : "100%";
   if(n === 1){
@@ -3146,13 +3154,14 @@ function pasoRegistro(n){
     usoPicker($("#su-usos"), suSel, () => { $("#su-seguir").textContent = suSel.size ? "Continuar" : "Continuar solo con Personal"; });
   } else {
     $("#auth-title").textContent = "Crea tu cuenta";
-    $("#auth-sub").textContent = "Es gratis y tus datos son solo tuyos.";
+    $("#auth-sub").textContent = "Es gratis. Anota tus ingresos y gastos y míralos en orden.";
     $("#su-elegido").innerHTML = `Tu caja: ${nombresUso(suSel).map(x=>`<span class="chip">${esc(x)}</span>`).join("")} <button class="link" type="button" id="su-cambiar">Cambiar</button>`;
     $("#su-cambiar").onclick = () => pasoRegistro(1);
     $("#a-name").focus();
   }
 }
 $("#su-seguir").onclick = () => pasoRegistro(2);
+$("#eslogan-usos").hidden = !USOS_ABIERTOS;
 
 // Primer ingreso sin uso elegido
 const obSel = new Set();
@@ -3179,6 +3188,7 @@ function bienvenida(){
   const mods = modsActivos();
   $("#listo-sub").textContent = mods.length > 1 ? "Ya tiene las categorías de cada actividad. Cada una muestra cuánto te deja." : "Ya tiene las categorías para tus ingresos y gastos del día a día.";
   $("#listo-mods").innerHTML = mods.map(k=>`<span class="chip in">${esc(MODS[k].nombre)}</span>`).join("");
+  if(state.perfil && state.perfil.origen === "web") $("#listo-sub").textContent += " También se está creando tu hoja de datos con tus movimientos: la verás en Mi perfil.";
   recordar("bienvenida-"+state.user.id, "1");
   $("#listo-dlg").showModal();
 }
@@ -3210,6 +3220,9 @@ function abrirPerfil(aviso){
   const f = state.perfil || {}, u = state.user;
   $("#pf-nombre").value = f.nombre || nombreDe(u) || ""; $("#pf-edad").value = f.edad || ""; $("#pf-tel").value = f.telefono || ""; $("#pf-correo").value = u.email;
   $("#pf-usos").innerHTML = modsActivos().map(k => `<span class="chip in">${esc(MODS[k].nombre)}</span>`).join("");
+  $("#pf-act").hidden = !USOS_ABIERTOS && !tieneTrabajo();
+  pintarHoja();
+  cargarPerfil(u).then(pintarHoja);
   $("#pf-sub").textContent = aviso ? "Te falta completar algunos datos de tu perfil. Así podemos ayudarte si pierdes el acceso." : "Tus datos para administrar tu cuenta. Nunca mostramos tu contraseña.";
   $("#pf-pass").value = ""; $("#pf-pass2").value = ""; $("#pf-msg").hidden = true; $("#pf-no").textContent = aviso ? "Ahora no" : "Cerrar";
   $("#perfil-dlg").showModal(); setTimeout(() => (aviso && !f.telefono ? $("#pf-tel") : $("#pf-nombre")).focus(), 50);
@@ -3239,6 +3252,21 @@ $("#perfil-form").addEventListener("submit", async e => {
   } catch(err){ msg(traducir(err), true); }
   finally{ b.disabled = false; }
 });
+
+function pintarHoja(){
+  const f = state.perfil || {}, box = $("#pf-hoja"), c = $("#pf-hoja-c");
+  if(f.hoja_url){
+    box.hidden = false;
+    c.innerHTML = `<a class="btn small ghost" style="justify-self:start" href="${esc(f.hoja_url)}" target="_blank" rel="noopener">Abrir mi hoja de datos</a>
+      <span class="meta">Una hoja de Google con todos tus movimientos y un resumen por mes. Se actualiza sola cada minuto; para registrar o corregir usa esta web o el atajo.</span>
+      ${f.hoja_nota ? `<span class="meta" style="color:var(--pend)">${esc(f.hoja_nota)}</span>` : ""}`;
+  } else if(f.origen === "web"){
+    box.hidden = false;
+    c.innerHTML = f.hoja_estado === "error"
+      ? `<span class="meta" style="color:var(--pend)">No se pudo crear tu hoja todavía. El administrador ya tiene el aviso.</span>`
+      : `<span class="meta">Tu hoja de datos se está creando. Estará lista en unos minutos y aquí verás el enlace.</span>`;
+  } else box.hidden = true;
+}
 
 /* ---------- Olvidé mi contraseña ---------- */
 $("#olvide").onclick = async () => {
